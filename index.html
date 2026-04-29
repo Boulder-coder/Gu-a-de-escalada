@@ -141,7 +141,7 @@
             border-radius: 12px;
             padding: 20px;
         }
-        /* Nuevo estilo para el listado de líneas */
+        /* ===== NUEVO ESTILO PARA EL LISTADO DE LÍNEAS ===== */
         .bloque-group {
             background: #ffffff;
             border-radius: 12px;
@@ -157,11 +157,13 @@
             margin: 0;
         }
         .linea-item {
-            padding: 10px 16px;
+            padding: 12px 16px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background 0.2s;
-            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .linea-item:last-child {
             border-bottom: none;
@@ -171,12 +173,21 @@
         }
         .linea-nombre {
             font-weight: 500;
+            font-size: 0.9rem;
+            flex: 1;
+            text-align: left;
         }
-        .linea-grado {
-            color: #6674FF;
+        .linea-grado-badge {
+            display: inline-block;
+            color: white;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
             font-weight: 500;
-            margin-left: 8px;
+            white-space: nowrap;
+            margin-left: 10px;
         }
+        /* ===== FIN DEL NUEVO ESTILO ===== */
         .croquis-container {
             position: relative;
             background: #ffffff;
@@ -518,7 +529,7 @@
             // Agrupar bloques por su número entero (1.0, 2.1, 2.2, 2.3 → Bloque 1, Bloque 2)
             const grupos = {};
             currentSector.bloques.forEach((bloque, idx) => {
-                const numeroBase = parseInt(bloque.id, 10); // Extrae el número entero (1, 2, 3...)
+                const numeroBase = parseInt(bloque.id, 10);
                 if (!grupos[numeroBase]) {
                     grupos[numeroBase] = {
                         numeroBase: numeroBase,
@@ -528,7 +539,6 @@
                 grupos[numeroBase].bloques.push({ ...bloque, idx });
             });
             
-            // Ordenar grupos por número base
             const gruposOrdenados = Object.values(grupos).sort((a, b) => a.numeroBase - b.numeroBase);
             
             gruposOrdenados.forEach(grupo => {
@@ -536,7 +546,6 @@
                 grupoDiv.className = 'bloque-group';
                 grupoDiv.innerHTML = `<h3>Bloque ${grupo.numeroBase}</h3>`;
                 const listaDiv = document.createElement('div');
-                // Recorrer cada bloque del grupo y cada vía
                 grupo.bloques.forEach(bloqueInfo => {
                     const bloque = bloqueInfo;
                     bloque.vias.forEach(via => {
@@ -544,12 +553,10 @@
                         lineaDiv.className = 'linea-item';
                         const gradoColor = getColorByGrado(via.grado);
                         lineaDiv.innerHTML = `
-                            <div class="linea-nombre">${via.linea_id} · ${via.nombre}</div>
-                            ${via.grado ? `<div class="linea-grado" style="color: ${gradoColor};">${via.grado}</div>` : ''}
+                            <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                         `;
-                        // Al hacer clic, navegamos al bloque correcto y al slide correcto (por si el bloque tiene varias fotos, pero en el listado mostramos las vías agrupadas)
                         lineaDiv.onclick = () => {
-                            // Buscamos el índice REAL del bloque en el array currentSector.bloques
                             const bloqueRealIdx = currentSector.bloques.findIndex(b => b.id === bloque.id);
                             if (bloqueRealIdx !== -1) {
                                 openFichaBloque(bloqueRealIdx);
