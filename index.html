@@ -14,7 +14,6 @@
             box-sizing: border-box;
         }
         
-        /* Fuente Cocogoose para elementos específicos */
         .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn {
             font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
         }
@@ -167,6 +166,7 @@
         }
         .linea-item:last-child {
             border-bottom: none;
+            margin-bottom: 15px; /* Espacio extra al final */
         }
         .linea-item:active {
             background: #f0f0f0;
@@ -188,6 +188,28 @@
             margin-left: 10px;
         }
         /* ===== FIN DEL NUEVO ESTILO ===== */
+        /* ===== NUEVO ESTILO PARA LA GRÁFICA ===== */
+        .grafica-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .grafica-titulo {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+        canvas {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        /* ===== FIN NUEVO ESTILO ===== */
         .croquis-container {
             position: relative;
             background: #ffffff;
@@ -347,7 +369,7 @@
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
 
-        // ====================== COLORES DE GRADOS ======================
+        // ====================== COLORES DE GRADOS (también usada para la gráfica) ======================
         function getColorByGrado(grado) {
             if (!grado) return '#00DFEB';
             const g = grado.toUpperCase().trim();
@@ -370,6 +392,78 @@
             if (num === 7 && letra === 'C') return '#FF1A1A';
             if (num >= 8) return '#FF9800';
             return '#00DFEB';
+        }
+
+        // ====================== NUEVA FUNCIÓN PARA GENERAR LA GRÁFICA ======================
+        function dibujarGrafica(sector) {
+            // 1. Contar las apariciones de cada grado
+            const conteo = {};
+            sector.bloques.forEach(bloque => {
+                bloque.vias.forEach(via => {
+                    if (via.grado && via.grado.trim() !== "") {
+                        const gradoNorm = via.grado.trim();
+                        conteo[gradoNorm] = (conteo[gradoNorm] || 0) + 1;
+                    }
+                });
+            });
+            
+            // Ordenar grados de manera lógica (por dificultad)
+            const ordenGrados = [
+                "3", "4", "4+", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+",
+                "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+", "9A", "Pr", "*"
+            ];
+            const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
+            const valores = gradosFiltrados.map(g => conteo[g]);
+            const maxValor = Math.max(...valores, 1);
+            
+            // 2. Preparar el canvas
+            const canvas = document.getElementById('grafica-sector');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.clientWidth;
+            const height = 300;
+            canvas.width = width;
+            canvas.height = height;
+            
+            const barWidth = (width - 60) / gradosFiltrados.length;
+            const startX = 40;
+            const startY = height - 30;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Dibujar ejes
+            ctx.beginPath();
+            ctx.moveTo(30, 10);
+            ctx.lineTo(30, startY);
+            ctx.lineTo(width - 20, startY);
+            ctx.strokeStyle = '#aaa';
+            ctx.stroke();
+            
+            // Títulos de los ejes
+            ctx.fillStyle = '#555';
+            ctx.font = '10px Roboto';
+            ctx.fillText('Nº vías', 10, 30);
+            ctx.fillText('Grado', width/2 - 20, height - 5);
+            
+            // Dibujar las barras
+            gradosFiltrados.forEach((grado, i) => {
+                const valor = conteo[grado];
+                const barHeight = (valor / maxValor) * (startY - 30);
+                const x = startX + i * barWidth + 5;
+                const y = startY - barHeight;
+                const color = getColorByGrado(grado);
+                
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, barWidth - 10, barHeight);
+                
+                ctx.fillStyle = '#000';
+                ctx.font = '10px Roboto';
+                ctx.fillText(grado, x + 2, startY + 12);
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 10px Roboto';
+                ctx.fillText(valor, x + barWidth/2 - 5, y - 5);
+            });
         }
 
         function getSalidaSymbol(salida) {
@@ -508,7 +602,16 @@
                     <button class="tab-btn" data-tab="croquis">🗺️ Croquis</button>
                     <button class="tab-btn" data-tab="bloques">🧗 Bloques</button>
                 </div>
-                <div id="tab-info" class="tab-pane active"><div class="info-sector"><h4>Información</h4><p>Próximamente: aproximación, material, etc.</p></div></div>
+                <div id="tab-info" class="tab-pane active">
+                    <div class="grafica-container">
+                        <div class="grafica-titulo">Distribución de grados</div>
+                        <canvas id="grafica-sector" style="width:100%; height:auto; max-height:300px;"></canvas>
+                    </div>
+                    <div class="info-sector">
+                        <h4>Información del sector</h4>
+                        <p>Próximamente: aproximación, material, etc.</p>
+                    </div>
+                </div>
                 <div id="tab-croquis" class="tab-pane"><div class="croquis-container"><img src="${croquisUrl}" class="croquis-img" onerror="this.src='https://picsum.photos/id/20/800/600'"></div></div>
                 <div id="tab-bloques" class="tab-pane"><div id="bloques-list"></div></div>
             `;
@@ -520,27 +623,24 @@
                     document.getElementById('tab-croquis').classList.remove('active');
                     document.getElementById('tab-bloques').classList.remove('active');
                     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+                    if (btn.dataset.tab === 'info') {
+                        setTimeout(() => dibujarGrafica(currentSector), 100);
+                    }
                 };
             });
             
-            // NUEVO: Generar listado agrupado por bloque (sin la coletilla)
+            // Generar listado agrupado por bloque
             const bloquesContainer = document.getElementById('bloques-list');
             bloquesContainer.innerHTML = '';
-            // Agrupar bloques por su número entero (1.0, 2.1, 2.2, 2.3 → Bloque 1, Bloque 2)
             const grupos = {};
             currentSector.bloques.forEach((bloque, idx) => {
                 const numeroBase = parseInt(bloque.id, 10);
                 if (!grupos[numeroBase]) {
-                    grupos[numeroBase] = {
-                        numeroBase: numeroBase,
-                        bloques: []
-                    };
+                    grupos[numeroBase] = { numeroBase: numeroBase, bloques: [] };
                 }
                 grupos[numeroBase].bloques.push({ ...bloque, idx });
             });
-            
             const gruposOrdenados = Object.values(grupos).sort((a, b) => a.numeroBase - b.numeroBase);
-            
             gruposOrdenados.forEach(grupo => {
                 const grupoDiv = document.createElement('div');
                 grupoDiv.className = 'bloque-group';
@@ -558,9 +658,7 @@
                         `;
                         lineaDiv.onclick = () => {
                             const bloqueRealIdx = currentSector.bloques.findIndex(b => b.id === bloque.id);
-                            if (bloqueRealIdx !== -1) {
-                                openFichaBloque(bloqueRealIdx);
-                            }
+                            if (bloqueRealIdx !== -1) openFichaBloque(bloqueRealIdx);
                         };
                         listaDiv.appendChild(lineaDiv);
                     });
@@ -571,6 +669,7 @@
             
             navigateToScreen('screen-sector-detalle');
             history.pushState({ sectorNombre: sectorNombre }, '');
+            setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
         // ====================== FICHA DE BLOQUE ======================
