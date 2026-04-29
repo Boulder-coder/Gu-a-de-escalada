@@ -8,8 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/cocogoose" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
+        /* Fuente Cocogoose para elementos específicos */
         .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn {
             font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
         }
@@ -49,7 +54,9 @@
             flex-direction: column;
             background: #3a3a3a;
         }
-        .dropdown-menu.show { display: flex; }
+        .dropdown-menu.show {
+            display: flex;
+        }
         .dropdown-menu button {
             background: none;
             border: none;
@@ -61,15 +68,22 @@
             cursor: pointer;
             letter-spacing: 0.5px;
         }
-        .dropdown-menu button:hover { background: #6674FF; color: #ffffff; }
+        .dropdown-menu button:hover {
+            background: #6674FF;
+            color: #ffffff;
+        }
         .app-content {
             margin-top: 70px;
             height: calc(100vh - 70px);
             overflow-y: auto;
             padding: 15px;
         }
-        .screen { display: none; }
-        .screen.active { display: block; }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
         .sector-card {
             background: #ffffff;
             border-radius: 12px;
@@ -88,7 +102,10 @@
             background: #d4d4d4;
             color: #2c2c2c;
         }
-        .sector-info h3 { color: #2c2c2c; font-size: 1.2rem; }
+        .sector-info h3 {
+            color: #2c2c2c;
+            font-size: 1.2rem;
+        }
         .tabs {
             display: flex;
             gap: 5px;
@@ -109,21 +126,56 @@
             color: #2c2c2c;
             transition: all 0.2s;
         }
-        .tab-btn.active { background: #FFDE66; color: #2c2c2c; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
+        .tab-btn.active {
+            background: #FFDE66;
+            color: #2c2c2c;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
         .info-sector, .condiciones-content {
             background: #ffffff;
             border-radius: 12px;
             padding: 20px;
         }
-        .subsector-card {
+        /* Nuevo estilo para el listado de líneas */
+        .bloque-group {
             background: #ffffff;
             border-radius: 12px;
-            margin-bottom: 10px;
-            padding: 15px;
-            cursor: pointer;
+            margin-bottom: 20px;
+            overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .bloque-group h3 {
+            background: #d4d4d4;
+            padding: 12px 16px;
+            font-size: 1rem;
+            color: #2c2c2c;
+            margin: 0;
+        }
+        .linea-item {
+            padding: 10px 16px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+        .linea-item:last-child {
+            border-bottom: none;
+        }
+        .linea-item:active {
+            background: #f0f0f0;
+        }
+        .linea-nombre {
+            font-weight: 500;
+        }
+        .linea-grado {
+            color: #6674FF;
+            font-weight: 500;
+            margin-left: 8px;
         }
         .croquis-container {
             position: relative;
@@ -189,7 +241,9 @@
             border-bottom: 1px solid #eee;
             padding: 8px 0;
         }
-        .ficha-via-item:last-child { border-bottom: none; }
+        .ficha-via-item:last-child {
+            border-bottom: none;
+        }
         .via-header {
             display: flex;
             flex-wrap: wrap;
@@ -219,7 +273,9 @@
             margin-top: 3px;
             line-height: 1.3;
         }
-        .detalles-texto div { margin-top: 2px; }
+        .detalles-texto div {
+            margin-top: 2px;
+        }
         .swiper-button-next, .swiper-button-prev {
             color: #6674FF !important;
             background: rgba(255,255,255,0.8);
@@ -227,9 +283,17 @@
             width: 32px;
             height: 32px;
         }
-        .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px; }
-        .swiper-pagination-bullet-active { background: #6674FF !important; }
-        .loader { text-align: center; padding: 40px; color: #666; }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 14px;
+        }
+        .swiper-pagination-bullet-active {
+            background: #6674FF !important;
+        }
+        .loader {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
         .back-hint {
             text-align: center;
             padding: 8px;
@@ -238,8 +302,14 @@
             border-top: 1px solid #ddd;
             margin-top: 8px;
         }
-        h2, h3, h4 { color: #6674FF; letter-spacing: 0.5px; }
-        h1 { font-weight: 300 !important; letter-spacing: 1px; }
+        h2, h3, h4 {
+            color: #6674FF;
+            letter-spacing: 0.5px;
+        }
+        h1 {
+            font-weight: 300 !important;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
@@ -279,23 +349,14 @@
             
             if (num >= 3 && num <= 5) return '#FFD700';
             if (num === 5 && mas === '+') return '#FFD700';
-            
-            // 6A, 6A+, 6B -> Verde
             if (num === 6 && (letra === 'A' || letra === 'B') && mas !== '+') return '#4CAF50';
             if (num === 6 && letra === 'A' && mas === '+') return '#4CAF50';
-            
-            // 6B+, 6C, 6C+ -> Azul
             if (num === 6 && letra === 'B' && mas === '+') return '#312EFF';
             if (num === 6 && letra === 'C') return '#312EFF';
-            
-            // 7A, 7A+, 7B -> Rosa
             if (num === 7 && (letra === 'A' || letra === 'B')) return '#FF48DA';
             if (num === 7 && letra === 'A' && mas === '+') return '#FF48DA';
-            
-            // 7B+, 7C, 7C+ -> Rojo
             if (num === 7 && letra === 'B' && mas === '+') return '#FF1A1A';
             if (num === 7 && letra === 'C') return '#FF1A1A';
-            
             if (num >= 8) return '#FF9800';
             return '#00DFEB';
         }
@@ -308,14 +369,11 @@
             return '●';
         }
 
-        // ====================== NUEVA FUNCIÓN PARA MANOS (SIN IZQ/DER SI HAY JUNTAS) ======================
+        // ====================== NUEVA FUNCIÓN PARA MANOS ======================
         function getTextoManos(via) {
-            // Caso 1: Si manos_juntas tiene contenido real
             if (via.manos_juntas && via.manos_juntas.trim() !== "") {
                 return `Manos juntas: ${via.manos_juntas}`;
             }
-            
-            // Caso 2: Manos separadas
             let partes = [];
             if (via.mano_izq && via.mano_izq.trim() !== "") {
                 partes.push(`Izq: ${via.mano_izq}`);
@@ -323,11 +381,7 @@
             if (via.mano_der && via.mano_der.trim() !== "") {
                 partes.push(`Der: ${via.mano_der}`);
             }
-            
-            if (partes.length > 0) {
-                return partes.join(" · ");
-            }
-            return "";
+            return partes.length > 0 ? partes.join(" · ") : "";
         }
 
         // ====================== APLICAR ESTILOS AL SVG ======================
@@ -457,19 +511,62 @@
                     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
                 };
             });
+            
+            // NUEVO: Generar listado agrupado por bloque (sin la coletilla)
             const bloquesContainer = document.getElementById('bloques-list');
+            bloquesContainer.innerHTML = '';
+            // Agrupar bloques por su número entero (1.0, 2.1, 2.2, 2.3 → Bloque 1, Bloque 2)
+            const grupos = {};
             currentSector.bloques.forEach((bloque, idx) => {
-                const card = document.createElement('div');
-                card.className = 'subsector-card';
-                card.innerHTML = `<h4 style="font-family: 'Cocogoose', sans-serif;">📌 Bloque ${bloque.id}</h4><p>${bloque.vias.length} vías</p>`;
-                card.onclick = () => openFichaBloque(idx);
-                bloquesContainer.appendChild(card);
+                const numeroBase = parseInt(bloque.id, 10); // Extrae el número entero (1, 2, 3...)
+                if (!grupos[numeroBase]) {
+                    grupos[numeroBase] = {
+                        numeroBase: numeroBase,
+                        bloques: []
+                    };
+                }
+                grupos[numeroBase].bloques.push({ ...bloque, idx });
             });
+            
+            // Ordenar grupos por número base
+            const gruposOrdenados = Object.values(grupos).sort((a, b) => a.numeroBase - b.numeroBase);
+            
+            gruposOrdenados.forEach(grupo => {
+                const grupoDiv = document.createElement('div');
+                grupoDiv.className = 'bloque-group';
+                grupoDiv.innerHTML = `<h3>Bloque ${grupo.numeroBase}</h3>`;
+                const listaDiv = document.createElement('div');
+                // Recorrer cada bloque del grupo y cada vía
+                grupo.bloques.forEach(bloqueInfo => {
+                    const bloque = bloqueInfo;
+                    bloque.vias.forEach(via => {
+                        const lineaDiv = document.createElement('div');
+                        lineaDiv.className = 'linea-item';
+                        const gradoColor = getColorByGrado(via.grado);
+                        lineaDiv.innerHTML = `
+                            <div class="linea-nombre">${via.linea_id} · ${via.nombre}</div>
+                            ${via.grado ? `<div class="linea-grado" style="color: ${gradoColor};">${via.grado}</div>` : ''}
+                        `;
+                        // Al hacer clic, navegamos al bloque correcto y al slide correcto (por si el bloque tiene varias fotos, pero en el listado mostramos las vías agrupadas)
+                        lineaDiv.onclick = () => {
+                            // Buscamos el índice REAL del bloque en el array currentSector.bloques
+                            const bloqueRealIdx = currentSector.bloques.findIndex(b => b.id === bloque.id);
+                            if (bloqueRealIdx !== -1) {
+                                openFichaBloque(bloqueRealIdx);
+                            }
+                        };
+                        listaDiv.appendChild(lineaDiv);
+                    });
+                });
+                grupoDiv.appendChild(listaDiv);
+                bloquesContainer.appendChild(grupoDiv);
+            });
+            
             navigateToScreen('screen-sector-detalle');
             history.pushState({ sectorNombre: sectorNombre }, '');
         }
 
-        // ====================== FICHA DE BLOQUE CON LA CORRECCIÓN DE MANOS ======================
+        // ====================== FICHA DE BLOQUE ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -492,7 +589,7 @@
                             <img src="${b.foto_base}.jpg" class="foto-bloque" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
                         </div>
                         <div class="ficha-footer" style="font-family: 'Cocogoose', sans-serif;">
-                            <span>Bloque ${b.id}</span>
+                            <span>Bloque ${parseInt(b.id, 10)}</span>
                             <span>${currentSector.nombre}</span>
                         </div>
                         <div class="ficha-vias" id="vias-${idx}"></div>
@@ -502,21 +599,11 @@
                 
                 const viasContainer = document.getElementById(`vias-${idx}`);
                 b.vias.forEach(via => {
-                    // --- USAMOS LA NUEVA FUNCIÓN getTextoManos ---
                     const textoManos = getTextoManos(via);
-                    
-                    // Construimos los detalles solo con la información no vacía
                     let detallesHtml = "";
-                    if (textoManos) {
-                        detallesHtml += `<div>${textoManos}</div>`;
-                    }
-                    if (via.definicion && via.definicion.trim() !== "") {
-                        detallesHtml += `<div>${via.definicion}</div>`;
-                    }
-                    if (via.expuesta && via.expuesta.trim() !== "") {
-                        detallesHtml += `<div>⚠️ ${via.expuesta}</div>`;
-                    }
-                    
+                    if (textoManos) detallesHtml += `<div>${textoManos}</div>`;
+                    if (via.definicion && via.definicion.trim() !== "") detallesHtml += `<div>${via.definicion}</div>`;
+                    if (via.expuesta && via.expuesta.trim() !== "") detallesHtml += `<div>⚠️ ${via.expuesta}</div>`;
                     const gradoColor = getColorByGrado(via.grado);
                     const viaDiv = document.createElement('div');
                     viaDiv.className = 'ficha-via-item';
