@@ -149,7 +149,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .bloque-group:last-child {
-            margin-bottom: 20px; /* Espacio extra al final */
+            margin-bottom: 60px; /* Margen extra grande para que se vea todo el bloque y fondo gris */
         }
         .bloque-group h3 {
             background: #d4d4d4;
@@ -397,7 +397,7 @@
             return '#00DFEB';
         }
 
-        // ====================== NUEVA FUNCIÓN PARA GENERAR LA GRÁFICA ======================
+        // ====================== FUNCIÓN PARA GENERAR LA GRÁFICA ======================
         function dibujarGrafica(sector) {
             const conteo = {};
             sector.bloques.forEach(bloque => {
@@ -421,7 +421,7 @@
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const width = canvas.clientWidth;
-            const height = 200; // Altura más pequeña para que no sea tan alargada verticalmente
+            const height = 200;
             canvas.width = width;
             canvas.height = height;
             
@@ -473,7 +473,7 @@
             return '●';
         }
 
-        // ====================== NUEVA FUNCIÓN PARA MANOS ======================
+        // ====================== FUNCIÓN PARA MANOS ======================
         function getTextoManos(via) {
             if (via.manos_juntas && via.manos_juntas.trim() !== "") {
                 return `Manos juntas: ${via.manos_juntas}`;
