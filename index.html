@@ -153,10 +153,10 @@
             return '●';
         }
 
-        // ====================== FUNCIÓN CORREGIDA ======================
-        function aplicarEstilosSVG(svgDoc, vias) {
-            if (!svgDoc || !svgDoc.documentElement) return;
-            console.log("🎨 Aplicando estilos a SVG");
+        // ====================== NUEVA FUNCIÓN: CLONAR Y MODIFICAR EL SVG ======================
+        function crearSVGConColores(svgDoc, vias) {
+            // Clonar el SVG para no modificar el original
+            const clon = svgDoc.documentElement.cloneNode(true);
             
             vias.forEach(via => {
                 const letra = via.linea_id;
@@ -164,74 +164,63 @@
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 
-                console.log(`  Procesando: ${letraBase}, color: ${color}`);
-                
                 // Línea
-                const linea = svgDoc.querySelector(`[inkscape\\:label="${letraBase}_linea"]`);
+                const linea = clon.querySelector(`[inkscape\\:label="${letraBase}_linea"]`);
                 if (linea) {
                     linea.setAttribute('stroke', color);
                     linea.setAttribute('fill', 'none');
                     linea.removeAttribute('style');
-                    console.log(`    ✅ Línea ${letraBase}_linea coloreada`);
                 }
                 
                 // Círculo entrada
-                const circuloEntrada = svgDoc.querySelector(`[inkscape\\:label="${letraBase}_entrada"]`);
+                const circuloEntrada = clon.querySelector(`[inkscape\\:label="${letraBase}_entrada"]`);
                 if (circuloEntrada) {
                     circuloEntrada.setAttribute('fill', color);
                     circuloEntrada.setAttribute('stroke', color);
                     circuloEntrada.removeAttribute('style');
-                    console.log(`    ✅ Círculo entrada ${letraBase}_entrada coloreado`);
                     
                     // Añadir texto si es entrada principal
                     if (!letra.includes('.') || (letra.includes('.') && letra.split('.')[1] === '1')) {
-                        let texto = circuloEntrada.querySelector('text');
-                        if (!texto) {
-                            const cx = circuloEntrada.getAttribute('cx');
-                            const cy = circuloEntrada.getAttribute('cy');
-                            const r = parseFloat(circuloEntrada.getAttribute('r')) || 16;
-                            texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                            texto.setAttribute('x', cx);
-                            texto.setAttribute('y', cy);
-                            texto.setAttribute('text-anchor', 'middle');
-                            texto.setAttribute('dominant-baseline', 'central');
-                            texto.setAttribute('fill', 'white');
-                            texto.setAttribute('font-size', `${r * 0.8}px`);
-                            texto.setAttribute('font-weight', 'bold');
-                            texto.textContent = letraBase;
-                            circuloEntrada.appendChild(texto);
-                            console.log(`      ✅ Texto "${letraBase}" añadido`);
-                        }
-                    }
-                }
-                
-                // Círculo salida
-                const circuloSalida = svgDoc.querySelector(`[inkscape\\:label="${letraBase}_salida"]`);
-                if (circuloSalida) {
-                    circuloSalida.setAttribute('fill', color);
-                    circuloSalida.setAttribute('stroke', color);
-                    circuloSalida.removeAttribute('style');
-                    console.log(`    ✅ Círculo salida ${letraBase}_salida coloreado`);
-                    
-                    let texto = circuloSalida.querySelector('text');
-                    if (!texto) {
-                        const cx = circuloSalida.getAttribute('cx');
-                        const cy = circuloSalida.getAttribute('cy');
-                        const r = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
-                        texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        const cx = circuloEntrada.getAttribute('cx');
+                        const cy = circuloEntrada.getAttribute('cy');
+                        const r = parseFloat(circuloEntrada.getAttribute('r')) || 16;
+                        const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         texto.setAttribute('x', cx);
                         texto.setAttribute('y', cy);
                         texto.setAttribute('text-anchor', 'middle');
                         texto.setAttribute('dominant-baseline', 'central');
                         texto.setAttribute('fill', 'white');
-                        texto.setAttribute('font-size', `${r * 0.7}px`);
+                        texto.setAttribute('font-size', `${r * 0.8}px`);
                         texto.setAttribute('font-weight', 'bold');
-                        texto.textContent = simbolo;
-                        circuloSalida.appendChild(texto);
-                        console.log(`      ✅ Símbolo "${simbolo}" añadido`);
+                        texto.textContent = letraBase;
+                        circuloEntrada.appendChild(texto);
                     }
                 }
+                
+                // Círculo salida
+                const circuloSalida = clon.querySelector(`[inkscape\\:label="${letraBase}_salida"]`);
+                if (circuloSalida) {
+                    circuloSalida.setAttribute('fill', color);
+                    circuloSalida.setAttribute('stroke', color);
+                    circuloSalida.removeAttribute('style');
+                    
+                    const cx = circuloSalida.getAttribute('cx');
+                    const cy = circuloSalida.getAttribute('cy');
+                    const r = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
+                    const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    texto.setAttribute('x', cx);
+                    texto.setAttribute('y', cy);
+                    texto.setAttribute('text-anchor', 'middle');
+                    texto.setAttribute('dominant-baseline', 'central');
+                    texto.setAttribute('fill', 'white');
+                    texto.setAttribute('font-size', `${r * 0.7}px`);
+                    texto.setAttribute('font-weight', 'bold');
+                    texto.textContent = simbolo;
+                    circuloSalida.appendChild(texto);
+                }
             });
+            
+            return clon;
         }
 
         function dibujarGrafica(sector) {
@@ -459,7 +448,7 @@
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
-        // ====================== FICHA DE BLOQUE ======================
+        // ====================== FICHA DE BLOQUE CON CLONADO DEL SVG ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -480,6 +469,7 @@
                     <div class="ficha-bloque">
                         <div class="media-container" style="position: relative;">
                             <img src="${b.foto_base}.jpg" class="foto-bloque" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
+                            <div id="svgClon-${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
                         </div>
                         <div class="ficha-footer" style="font-family: 'Cocogoose', sans-serif;">
                             <span>Bloque ${parseInt(b.id, 10)}</span>
@@ -519,20 +509,25 @@
                         console.log(`✅ SVG cargado: ${svgUrl}`);
                         const parser = new DOMParser();
                         const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                        const svgElement = svgDoc.documentElement;
-                        svgElement.classList.add('svg-overlay');
-                        const mediaContainer = slide.querySelector('.media-container');
-                        const img = mediaContainer.querySelector('img');
-                        if (img.complete && img.naturalWidth) {
-                            svgElement.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
-                        }
-                        svgElement.setAttribute('preserveAspectRatio', 'none');
-                        svgElement.style.width = '100%';
-                        svgElement.style.height = 'auto';
-                        mediaContainer.appendChild(svgElement);
                         
-                        console.log(`🎨 Aplicando estilos a SVG del bloque ${b.id}`);
-                        aplicarEstilosSVG(svgDoc, b.vias);
+                        // Crear un clon modificado con los colores
+                        const svgModificado = crearSVGConColores(svgDoc, b.vias);
+                        svgModificado.classList.add('svg-overlay');
+                        
+                        const img = slide.querySelector('.foto-bloque');
+                        if (img.complete && img.naturalWidth) {
+                            svgModificado.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
+                        }
+                        svgModificado.setAttribute('preserveAspectRatio', 'none');
+                        svgModificado.style.width = '100%';
+                        svgModificado.style.height = 'auto';
+                        
+                        const svgContainer = document.getElementById(`svgClon-${idx}`);
+                        if (svgContainer) {
+                            svgContainer.innerHTML = '';
+                            svgContainer.appendChild(svgModificado);
+                            console.log(`🎨 SVG modificado insertado para bloque ${b.id}`);
+                        }
                     })
                     .catch(err => console.log(`❌ Error cargando SVG: ${err}`));
             });
