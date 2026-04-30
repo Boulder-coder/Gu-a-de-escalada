@@ -8,349 +8,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/cocogoose" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn {
             font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
         }
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #e8e8e8;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .app-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: #2c2c2c;
-            color: #ffffff;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .header-top {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: #FFDE66;
-            font-size: 1.5rem;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-        }
-        .dropdown-menu {
-            display: none;
-            flex-direction: column;
-            background: #3a3a3a;
-        }
-        .dropdown-menu.show {
-            display: flex;
-        }
-        .dropdown-menu button {
-            background: none;
-            border: none;
-            color: #ffffff;
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 0.9rem;
-            font-weight: 300;
-            cursor: pointer;
-            letter-spacing: 0.5px;
-        }
-        .dropdown-menu button:hover {
-            background: #6674FF;
-            color: #ffffff;
-        }
-        .app-content {
-            margin-top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            padding: 15px;
-        }
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-        .sector-card {
-            background: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            cursor: pointer;
-        }
-        .sector-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-        .sector-info {
-            padding: 12px;
-            background: #d4d4d4;
-            color: #2c2c2c;
-        }
-        .sector-info h3 {
-            color: #2c2c2c;
-            font-size: 1.2rem;
-        }
-        .tabs {
-            display: flex;
-            gap: 5px;
-            background: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            padding: 5px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: none;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: normal;
-            color: #2c2c2c;
-            transition: all 0.2s;
-        }
-        .tab-btn.active {
-            background: #FFDE66;
-            color: #2c2c2c;
-        }
-        .tab-pane {
-            display: none;
-        }
-        .tab-pane.active {
-            display: block;
-        }
-        .info-sector, .condiciones-content {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-        }
-        .bloque-group {
-            background: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .bloque-group:last-child {
-            margin-bottom: 60px;
-        }
-        .bloque-group h3 {
-            background: #d4d4d4;
-            padding: 12px 16px;
-            font-size: 1rem;
-            color: #2c2c2c;
-            margin: 0;
-        }
-        .linea-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .linea-item:last-child {
-            border-bottom: none;
-        }
-        .linea-item:active {
-            background: #f0f0f0;
-        }
-        .linea-nombre {
-            font-weight: 500;
-            font-size: 0.9rem;
-            flex: 1;
-            text-align: left;
-        }
-        .linea-grado-badge {
-            display: inline-block;
-            color: white;
-            border-radius: 20px;
-            padding: 2px 10px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            white-space: nowrap;
-            margin-left: 10px;
-        }
-        .grafica-container {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .grafica-titulo {
-            text-align: left;
-            margin-bottom: 15px;
-            font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
-            color: #6674FF;
-            font-size: 1.1rem;
-        }
-        canvas {
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            background: transparent;
-            display: block;
-        }
-        .croquis-container {
-            position: relative;
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .croquis-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            pointer-events: none;
-        }
-        .croquis-svg-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: auto;
-        }
-        .ficha-bloque {
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 0;
-        }
-        .media-container {
-            position: relative;
-            background: #d4d4d4;
-            min-height: 200px;
-        }
-        .media-container img, .media-container svg {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .svg-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-            pointer-events: none;
-        }
-        .bloque-id {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #6674FF;
-            padding: 10px 16px 5px;
-            font-family: 'Roboto', sans-serif;
-        }
-        .bloque-id-small {
-            font-size: 0.85rem;
-            font-weight: normal;
-            color: #888;
-        }
-        .ficha-footer {
-            background: #d4d4d4;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #2c2c2c;
-            letter-spacing: 0.5px;
-        }
-        .ficha-vias {
-            padding: 5px 16px 12px;
-        }
-        .ficha-via-item {
-            border-bottom: 1px solid #eee;
-            padding: 8px 0;
-        }
-        .ficha-via-item:last-child {
-            border-bottom: none;
-        }
-        .via-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 6px;
-            margin-bottom: 4px;
-        }
-        .via-nombre {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-        .grado-badge {
-            display: inline-block;
-            color: white;
-            border-radius: 20px;
-            padding: 2px 10px;
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-        .entrada-texto {
-            font-size: 0.8rem;
-            color: #444;
-        }
-        .detalles-texto {
-            font-size: 0.75rem;
-            color: #555;
-            margin-top: 3px;
-            line-height: 1.3;
-        }
-        .detalles-texto div {
-            margin-top: 2px;
-        }
-        .swiper-button-next, .swiper-button-prev {
-            color: #6674FF !important;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-        }
-        .swiper-button-next:after, .swiper-button-prev:after {
-            font-size: 14px;
-        }
-        .swiper-pagination-bullet-active {
-            background: #6674FF !important;
-        }
-        .loader {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        .back-hint {
-            text-align: center;
-            padding: 8px;
-            font-size: 0.65rem;
-            color: #888;
-            border-top: 1px solid #ddd;
-            margin-top: 8px;
-        }
-        h2, h3, h4 {
-            color: #6674FF;
-            letter-spacing: 0.5px;
-        }
-        h1 {
-            font-weight: 300 !important;
-            letter-spacing: 1px;
-        }
+        body { font-family: 'Roboto', sans-serif; background: #e8e8e8; height: 100vh; overflow: hidden; }
+        .app-header { position: fixed; top: 0; left: 0; right: 0; background: #2c2c2c; color: #ffffff; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header-top { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .menu-toggle { background: none; border: none; color: #FFDE66; font-size: 1.5rem; cursor: pointer; font-family: 'Roboto', sans-serif; }
+        .dropdown-menu { display: none; flex-direction: column; background: #3a3a3a; }
+        .dropdown-menu.show { display: flex; }
+        .dropdown-menu button { background: none; border: none; color: #ffffff; padding: 12px 20px; text-align: left; font-size: 0.9rem; font-weight: 300; cursor: pointer; letter-spacing: 0.5px; }
+        .dropdown-menu button:hover { background: #6674FF; color: #ffffff; }
+        .app-content { margin-top: 70px; height: calc(100vh - 70px); overflow-y: auto; padding: 15px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .sector-card { background: #ffffff; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        .sector-card img { width: 100%; height: 160px; object-fit: cover; }
+        .sector-info { padding: 12px; background: #d4d4d4; color: #2c2c2c; }
+        .sector-info h3 { color: #2c2c2c; font-size: 1.2rem; }
+        .tabs { display: flex; gap: 5px; background: #ffffff; border-radius: 12px; margin-bottom: 15px; padding: 5px; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: normal; color: #2c2c2c; transition: all 0.2s; }
+        .tab-btn.active { background: #FFDE66; color: #2c2c2c; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .info-sector, .condiciones-content { background: #ffffff; border-radius: 12px; padding: 20px; }
+        .bloque-group { background: #ffffff; border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .bloque-group:last-child { margin-bottom: 60px; }
+        .bloque-group h3 { background: #d4d4d4; padding: 12px 16px; font-size: 1rem; color: #2c2c2c; margin: 0; }
+        .linea-item { padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .linea-item:last-child { border-bottom: none; }
+        .linea-item:active { background: #f0f0f0; }
+        .linea-nombre { font-weight: 500; font-size: 0.9rem; flex: 1; text-align: left; }
+        .linea-grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; margin-left: 10px; }
+        .grafica-container { background: #ffffff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .grafica-titulo { text-align: left; margin-bottom: 15px; font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif; color: #6674FF; font-size: 1.1rem; }
+        canvas { width: 100%; max-width: 100%; height: auto; background: transparent; display: block; }
+        .croquis-container { position: relative; background: #ffffff; border-radius: 12px; overflow: hidden; }
+        .croquis-img { width: 100%; height: auto; display: block; pointer-events: none; }
+        .croquis-svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
+        .ficha-bloque { background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 0; }
+        .media-container { position: relative; background: #d4d4d4; min-height: 200px; }
+        .media-container img, .media-container svg { width: 100%; height: auto; display: block; }
+        .svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: auto; pointer-events: none; }
+        .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
+        .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
+        .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; letter-spacing: 0.5px; }
+        .ficha-vias { padding: 5px 16px 12px; }
+        .ficha-via-item { border-bottom: 1px solid #eee; padding: 8px 0; }
+        .ficha-via-item:last-child { border-bottom: none; }
+        .via-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-bottom: 4px; }
+        .via-nombre { font-weight: 600; font-size: 0.95rem; }
+        .grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; }
+        .entrada-texto { font-size: 0.8rem; color: #444; }
+        .detalles-texto { font-size: 0.75rem; color: #555; margin-top: 3px; line-height: 1.3; }
+        .detalles-texto div { margin-top: 2px; }
+        .swiper-button-next, .swiper-button-prev { color: #6674FF !important; background: rgba(255,255,255,0.8); border-radius: 50%; width: 32px; height: 32px; }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px; }
+        .swiper-pagination-bullet-active { background: #6674FF !important; }
+        .loader { text-align: center; padding: 40px; color: #666; }
+        .back-hint { text-align: center; padding: 8px; font-size: 0.65rem; color: #888; border-top: 1px solid #ddd; margin-top: 8px; }
+        h2, h3, h4 { color: #6674FF; letter-spacing: 0.5px; }
+        h1 { font-weight: 300 !important; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -427,10 +146,14 @@
             return '●';
         }
 
-        // ====================== FUNCIÓN CORREGIDA PARA APLICAR ESTILOS ======================
+        // ====================== FUNCIÓN PARA APLICAR ESTILOS (CON DEPURACIÓN) ======================
         function aplicarEstilosSVG(svgDoc, vias) {
-            // Asegurarse de que svgDoc es un documento SVG válido
-            if (!svgDoc || !svgDoc.documentElement) return;
+            if (!svgDoc || !svgDoc.documentElement) {
+                console.log("❌ svgDoc inválido");
+                return;
+            }
+            
+            console.log("🎨 Aplicando estilos a SVG. Vías:", vias);
             
             vias.forEach(via => {
                 const letra = via.linea_id;
@@ -438,16 +161,18 @@
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 
+                console.log(`  Procesando vía: ${letra} (base: ${letraBase}), color: ${color}, símbolo: ${simbolo}`);
+                
                 // 1. Línea
                 const linea = svgDoc.getElementById(`${letraBase}_linea`);
                 if (linea) {
                     linea.setAttribute('stroke', color);
-                    if (!linea.getAttribute('stroke-width')) linea.setAttribute('stroke-width', '4');
+                    console.log(`    ✅ Línea ${letraBase}_linea encontrada, color cambiado a ${color}`);
                 } else {
-                    console.warn(`No se encontró la línea: ${letraBase}_linea`);
+                    console.log(`    ❌ No se encontró la línea: ${letraBase}_linea`);
                 }
                 
-                // 2. Círculo de entrada principal (sin punto o .1)
+                // 2. Círculo de entrada principal
                 const esPrimeraVariante = letra.includes('.') && letra.split('.')[1] === '1';
                 const esPrincipal = !letra.includes('.') || esPrimeraVariante;
                 
@@ -456,8 +181,9 @@
                     if (circuloEntrada) {
                         circuloEntrada.setAttribute('fill', color);
                         circuloEntrada.setAttribute('stroke', color);
+                        console.log(`    ✅ Círculo entrada ${letraBase}_entrada encontrado, relleno cambiado a ${color}`);
                         
-                        // Añadir texto solo si no existe
+                        // Añadir texto
                         let texto = circuloEntrada.querySelector('text');
                         if (!texto) {
                             const cx = circuloEntrada.getAttribute('cx');
@@ -473,11 +199,10 @@
                             texto.setAttribute('font-weight', 'bold');
                             texto.textContent = letraBase;
                             circuloEntrada.parentNode.appendChild(texto);
-                        } else {
-                            texto.textContent = letraBase;
+                            console.log(`    ✅ Texto "${letraBase}" añadido al círculo entrada`);
                         }
                     } else {
-                        console.warn(`No se encontró el círculo de entrada: ${letraBase}_entrada`);
+                        console.log(`    ❌ No se encontró el círculo entrada: ${letraBase}_entrada`);
                     }
                 }
                 
@@ -488,8 +213,9 @@
                     if (circuloVariante) {
                         circuloVariante.setAttribute('fill', color);
                         circuloVariante.setAttribute('stroke', color);
+                        console.log(`    ✅ Círculo variante ${letra}_entrada encontrado, relleno cambiado a ${color}`);
                     } else {
-                        console.warn(`No se encontró el círculo de variante: ${letra}_entrada`);
+                        console.log(`    ❌ No se encontró el círculo variante: ${letra}_entrada`);
                     }
                 }
                 
@@ -498,6 +224,7 @@
                 if (circuloSalida) {
                     circuloSalida.setAttribute('fill', color);
                     circuloSalida.setAttribute('stroke', color);
+                    console.log(`    ✅ Círculo salida ${letraBase}_salida encontrado, relleno cambiado a ${color}`);
                     
                     let texto = circuloSalida.querySelector('text');
                     if (!texto) {
@@ -514,16 +241,15 @@
                         texto.setAttribute('font-weight', 'bold');
                         texto.textContent = simbolo;
                         circuloSalida.parentNode.appendChild(texto);
-                    } else {
-                        texto.textContent = simbolo;
+                        console.log(`    ✅ Símbolo "${simbolo}" añadido al círculo salida`);
                     }
                 } else {
-                    console.warn(`No se encontró el círculo de salida: ${letraBase}_salida`);
+                    console.log(`    ❌ No se encontró el círculo salida: ${letraBase}_salida`);
                 }
             });
         }
 
-        // ====================== FUNCIÓN PARA LA GRÁFICA (ALTA CALIDAD) ======================
+        // ====================== GRÁFICA ======================
         function dibujarGrafica(sector) {
             const conteo = {};
             sector.bloques.forEach(bloque => {
@@ -535,10 +261,7 @@
                 });
             });
             
-            const ordenGrados = [
-                "3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+",
-                "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"
-            ];
+            const ordenGrados = ["3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
             const maxValor = Math.max(...valores, 1);
@@ -546,7 +269,6 @@
             const canvas = document.getElementById('grafica-sector');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
             const container = canvas.parentElement;
             const width = container.clientWidth;
             const height = 220;
@@ -564,14 +286,12 @@
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, width, height);
-            
             ctx.beginPath();
             ctx.moveTo(30, 10);
             ctx.lineTo(30, startY);
             ctx.lineTo(width - 20, startY);
             ctx.strokeStyle = '#aaa';
             ctx.stroke();
-            
             ctx.fillStyle = '#555';
             ctx.font = '11px Roboto';
             ctx.fillText('Nº vías', 10, 30);
@@ -583,14 +303,11 @@
                 const x = startX + i * barWidth + 5;
                 const y = startY - barHeight;
                 const color = getColorByGrado(grado);
-                
                 ctx.fillStyle = color;
                 ctx.fillRect(x, y, barWidth - 10, barHeight);
-                
                 ctx.fillStyle = '#000';
                 ctx.font = '11px Roboto';
                 ctx.fillText(grado, x + 2, startY + 12);
-                
                 ctx.fillStyle = '#333';
                 ctx.font = 'bold 11px Roboto';
                 ctx.fillText(valor, x + barWidth/2 - 5, y - 5);
@@ -606,16 +323,10 @@
         }
 
         function getTextoManos(via) {
-            if (via.manos_juntas && via.manos_juntas.trim() !== "") {
-                return `Manos juntas: ${via.manos_juntas}`;
-            }
+            if (via.manos_juntas && via.manos_juntas.trim() !== "") return `Manos juntas: ${via.manos_juntas}`;
             let partes = [];
-            if (via.mano_izq && via.mano_izq.trim() !== "") {
-                partes.push(`Izq: ${via.mano_izq}`);
-            }
-            if (via.mano_der && via.mano_der.trim() !== "") {
-                partes.push(`Der: ${via.mano_der}`);
-            }
+            if (via.mano_izq && via.mano_izq.trim() !== "") partes.push(`Izq: ${via.mano_izq}`);
+            if (via.mano_der && via.mano_der.trim() !== "") partes.push(`Der: ${via.mano_der}`);
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
@@ -690,16 +401,12 @@
                         <div class="grafica-titulo">Distribución de grados</div>
                         <canvas id="grafica-sector" style="width:100%; height:auto;"></canvas>
                     </div>
-                    <div class="info-sector">
-                        <h4>Información del sector</h4>
-                        <p>Próximamente: aproximación, material, etc.</p>
-                    </div>
+                    <div class="info-sector"><h4>Información del sector</h4><p>Próximamente: aproximación, material, etc.</p></div>
                 </div>
                 <div id="tab-croquis" class="tab-pane"></div>
                 <div id="tab-bloques" class="tab-pane"><div id="bloques-list"></div></div>
             `;
             
-            // Cargar croquis interactivo si existe el SVG
             const croquisPane = document.getElementById('tab-croquis');
             if (croquisPane) {
                 croquisPane.innerHTML = `<div class="croquis-container" id="croquisContainer"></div>`;
@@ -732,8 +439,6 @@
                                     if (bloqueEncontrado) {
                                         const indice = currentSector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
                                         if (indice !== -1) openFichaBloque(indice);
-                                    } else {
-                                        console.warn(`No se encontró un bloque para el ID: ${bloqueId}`);
                                     }
                                 });
                             }
@@ -750,9 +455,7 @@
                     document.getElementById('tab-croquis').classList.remove('active');
                     document.getElementById('tab-bloques').classList.remove('active');
                     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
-                    if (btn.dataset.tab === 'info') {
-                        setTimeout(() => dibujarGrafica(currentSector), 100);
-                    }
+                    if (btn.dataset.tab === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
                 };
             });
             
@@ -761,9 +464,7 @@
             const grupos = {};
             currentSector.bloques.forEach((bloque, idx) => {
                 const numeroBase = parseInt(bloque.id, 10);
-                if (!grupos[numeroBase]) {
-                    grupos[numeroBase] = { numeroBase: numeroBase, bloques: [] };
-                }
+                if (!grupos[numeroBase]) grupos[numeroBase] = { numeroBase: numeroBase, bloques: [] };
                 grupos[numeroBase].bloques.push({ ...bloque, idx });
             });
             const gruposOrdenados = Object.values(grupos).sort((a, b) => a.numeroBase - b.numeroBase);
@@ -778,10 +479,7 @@
                         const lineaDiv = document.createElement('div');
                         lineaDiv.className = 'linea-item';
                         const gradoColor = getColorByGrado(via.grado);
-                        lineaDiv.innerHTML = `
-                            <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
-                            ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
-                        `;
+                        lineaDiv.innerHTML = `<span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}`;
                         lineaDiv.onclick = () => {
                             const bloqueRealIdx = currentSector.bloques.findIndex(b => b.id === bloque.id);
                             if (bloqueRealIdx !== -1) openFichaBloque(bloqueRealIdx);
@@ -798,7 +496,7 @@
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
-        // ====================== FICHA DE BLOQUE ======================
+        // ====================== FICHA DE BLOQUE (CORREGIDA) ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -850,19 +548,22 @@
                     viasContainer.appendChild(viaDiv);
                 });
                 
-                // Cargar SVG y aplicarle los estilos
+                // Cargar SVG y aplicar estilos con un pequeño retraso para asegurar que el DOM está listo
                 const svgUrl = `${b.foto_base}.svg`;
+                console.log(`📂 Cargando SVG: ${svgUrl}`);
                 fetch(svgUrl)
-                    .then(res => res.text())
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        return res.text();
+                    })
                     .then(svgText => {
+                        console.log(`✅ SVG cargado correctamente: ${svgUrl}`);
                         const parser = new DOMParser();
                         const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
                         const svgElement = svgDoc.documentElement;
                         svgElement.classList.add('svg-overlay');
                         
-                        // Aplicar estilos ANTES de insertar
-                        aplicarEstilosSVG(svgDoc, b.vias);
-                        
+                        // Primero añadimos el SVG al DOM
                         const mediaContainer = slide.querySelector('.media-container');
                         const img = mediaContainer.querySelector('img');
                         if (img.complete && img.naturalWidth) {
@@ -872,8 +573,14 @@
                         svgElement.style.width = '100%';
                         svgElement.style.height = 'auto';
                         mediaContainer.appendChild(svgElement);
+                        
+                        // Aplicamos estilos después de un breve retraso para asegurar que el SVG está en el DOM
+                        setTimeout(() => {
+                            console.log(`🎨 Aplicando estilos a SVG de ${b.id}`);
+                            aplicarEstilosSVG(svgDoc, b.vias);
+                        }, 100);
                     })
-                    .catch(err => console.log('Error cargando SVG:', err));
+                    .catch(err => console.log(`❌ Error cargando SVG ${svgUrl}:`, err));
             });
             
             if (swiperBloques) swiperBloques.destroy();
