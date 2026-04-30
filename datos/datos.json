@@ -3,7 +3,6 @@
     {
       "nombre": "Monte La Cruz - Norte",
       "croquis": "fotos/MLC_NORTE_CROQUIS",
-      "hotspots": [],
       "bloques": [
         {
           "id": "1.0",
@@ -28,7 +27,6 @@
     {
       "nombre": "Monte La Cruz - Este",
       "croquis": "fotos/MLC_ESTE_CROQUIS",
-      "hotspots": [],
       "bloques": [
         {
           "id": "1.0",
