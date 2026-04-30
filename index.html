@@ -377,7 +377,7 @@
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
 
-        // ====================== PALETA ARCOÍRIS ACTUALIZADA ======================
+        // ====================== PALETA ARCOÍRIS ======================
         function getColorByGrado(grado) {
             if (!grado) return '#FF93DB'; // Comodín rosa bebé
             const g = grado.toUpperCase().trim();
@@ -401,31 +401,31 @@
             
             // Grados 6
             if (num === 6) {
-                if (letra === 'A') return '#00BD48';      // 6A, 6A+
+                if (letra === 'A') return '#00BD48';
                 if (letra === 'A' && mas === '+') return '#00BD48';
-                if (letra === 'B') return '#00ADD4';      // 6B, 6B+
+                if (letra === 'B') return '#00ADD4';
                 if (letra === 'B' && mas === '+') return '#00ADD4';
-                if (letra === 'C') return '#0055DB';      // 6C, 6C+
+                if (letra === 'C') return '#0055DB';
                 if (letra === 'C' && mas === '+') return '#0055DB';
             }
             
             // Grados 7
             if (num === 7) {
-                if (letra === 'A') return '#7C00DB';      // 7A, 7A+
+                if (letra === 'A') return '#7C00DB';
                 if (letra === 'A' && mas === '+') return '#7C00DB';
-                if (letra === 'B') return '#CA00DB';      // 7B, 7B+
+                if (letra === 'B') return '#CA00DB';
                 if (letra === 'B' && mas === '+') return '#CA00DB';
-                if (letra === 'C') return '#B30040';      // 7C, 7C+
+                if (letra === 'C') return '#B30040';
                 if (letra === 'C' && mas === '+') return '#B30040';
             }
             
             // Grados 8
             if (num === 8) {
-                if (letra === 'A') return '#DC0A00';      // 8A, 8A+
+                if (letra === 'A') return '#DC0A00';
                 if (letra === 'A' && mas === '+') return '#DC0A00';
-                if (letra === 'B') return '#DB5300';      // 8B, 8B+
+                if (letra === 'B') return '#DB5300';
                 if (letra === 'B' && mas === '+') return '#DB5300';
-                if (letra === 'C') return '#DB8800';      // 8C, 8C+
+                if (letra === 'C') return '#DB8800';
                 if (letra === 'C' && mas === '+') return '#DB8800';
             }
             
@@ -433,6 +433,96 @@
             if (num > 8) return '#FF9800';
             
             return '#FF93DB';
+        }
+
+        function getSimboloSalida(salida) {
+            if (!salida) return '●';
+            const s = salida.toLowerCase();
+            if (s.includes('top-out') && s.includes('derecha')) return '▶';
+            if (s.includes('top-out') && s.includes('izquierda')) return '◀';
+            if (s.includes('top-out')) return '▲';
+            if (s.includes('top')) return '■';
+            return '●';
+        }
+
+        // ====================== APLICAR ESTILOS AL SVG (NUEVA VERSIÓN) ======================
+        function aplicarEstilosSVG(svgDoc, vias) {
+            vias.forEach(via => {
+                const letra = via.linea_id;
+                const letraBase = letra.split('.')[0];
+                const color = getColorByGrado(via.grado);
+                const simbolo = getSimboloSalida(via.salida);
+                
+                // 1. LÍNEA DE RECORRIDO
+                const linea = svgDoc.getElementById(`${letraBase}_linea`);
+                if (linea) {
+                    linea.setAttribute('stroke', color);
+                    if (!linea.getAttribute('stroke-width')) {
+                        linea.setAttribute('stroke-width', '4');
+                    }
+                }
+                
+                // 2. CÍRCULO DE ENTRADA PRINCIPAL
+                const esPrimeraVariante = letra.includes('.') && letra.split('.')[1] === '1';
+                const esPrincipal = !letra.includes('.') || esPrimeraVariante;
+                
+                if (esPrincipal) {
+                    const circuloEntrada = svgDoc.getElementById(`${letraBase}_entrada`);
+                    if (circuloEntrada) {
+                        circuloEntrada.setAttribute('fill', color);
+                        circuloEntrada.setAttribute('stroke', color);
+                        
+                        if (!circuloEntrada.querySelector('text')) {
+                            const cx = circuloEntrada.getAttribute('cx');
+                            const cy = circuloEntrada.getAttribute('cy');
+                            const r = parseFloat(circuloEntrada.getAttribute('r')) || 16;
+                            const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                            texto.setAttribute('x', cx);
+                            texto.setAttribute('y', cy);
+                            texto.setAttribute('text-anchor', 'middle');
+                            texto.setAttribute('dominant-baseline', 'central');
+                            texto.setAttribute('fill', 'white');
+                            texto.setAttribute('font-size', `${r * 0.8}px`);
+                            texto.setAttribute('font-weight', 'bold');
+                            texto.textContent = letraBase;
+                            circuloEntrada.parentNode.appendChild(texto);
+                        }
+                    }
+                }
+                
+                // 3. CÍRCULO DE ENTRADA PARA VARIANTES SECUNDARIAS
+                const esVarianteSecundaria = letra.includes('.') && letra.split('.')[1] !== '1';
+                if (esVarianteSecundaria) {
+                    const circuloVariante = svgDoc.getElementById(`${letra}_entrada`);
+                    if (circuloVariante) {
+                        circuloVariante.setAttribute('fill', color);
+                        circuloVariante.setAttribute('stroke', color);
+                    }
+                }
+                
+                // 4. CÍRCULO DE SALIDA
+                const circuloSalida = svgDoc.getElementById(`${letraBase}_salida`);
+                if (circuloSalida) {
+                    circuloSalida.setAttribute('fill', color);
+                    circuloSalida.setAttribute('stroke', color);
+                    
+                    if (!circuloSalida.querySelector('text')) {
+                        const cx = circuloSalida.getAttribute('cx');
+                        const cy = circuloSalida.getAttribute('cy');
+                        const r = parseFloat(circuloSalida.getAttribute('r')) || 16;
+                        const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        texto.setAttribute('x', cx);
+                        texto.setAttribute('y', cy);
+                        texto.setAttribute('text-anchor', 'middle');
+                        texto.setAttribute('dominant-baseline', 'central');
+                        texto.setAttribute('fill', 'white');
+                        texto.setAttribute('font-size', `${r * 0.7}px`);
+                        texto.setAttribute('font-weight', 'bold');
+                        texto.textContent = simbolo;
+                        circuloSalida.parentNode.appendChild(texto);
+                    }
+                }
+            });
         }
 
         // ====================== FUNCIÓN PARA LA GRÁFICA (ALTA CALIDAD) ======================
@@ -529,54 +619,6 @@
                 partes.push(`Der: ${via.mano_der}`);
             }
             return partes.length > 0 ? partes.join(" · ") : "";
-        }
-
-        function aplicarEstilosSVG(svgDoc, vias) {
-            vias.forEach(via => {
-                const letra = via.linea_id;
-                const color = getColorByGrado(via.grado);
-                const simbolo = getSalidaSymbol(via.salida);
-                const linea = svgDoc.getElementById(letra);
-                if (linea) linea.setAttribute('stroke', color);
-                const circuloInicio = svgDoc.getElementById(`${letra}-inicio`);
-                if (circuloInicio) {
-                    circuloInicio.setAttribute('fill', color);
-                    circuloInicio.setAttribute('stroke', color);
-                    if (!circuloInicio.querySelector('text')) {
-                        const cx = circuloInicio.getAttribute('cx');
-                        const cy = circuloInicio.getAttribute('cy');
-                        const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        texto.setAttribute('x', cx);
-                        texto.setAttribute('y', cy);
-                        texto.setAttribute('text-anchor', 'middle');
-                        texto.setAttribute('dominant-baseline', 'central');
-                        texto.setAttribute('fill', 'white');
-                        texto.setAttribute('font-size', '11');
-                        texto.setAttribute('font-weight', 'bold');
-                        texto.textContent = letra;
-                        circuloInicio.parentNode.appendChild(texto);
-                    }
-                }
-                const circuloFinal = svgDoc.getElementById(`${letra}-final`);
-                if (circuloFinal) {
-                    circuloFinal.setAttribute('fill', color);
-                    circuloFinal.setAttribute('stroke', color);
-                    if (!circuloFinal.querySelector('text')) {
-                        const cx = circuloFinal.getAttribute('cx');
-                        const cy = circuloFinal.getAttribute('cy');
-                        const icono = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        icono.setAttribute('x', cx);
-                        icono.setAttribute('y', cy);
-                        icono.setAttribute('text-anchor', 'middle');
-                        icono.setAttribute('dominant-baseline', 'central');
-                        icono.setAttribute('fill', 'white');
-                        icono.setAttribute('font-size', '11');
-                        icono.setAttribute('font-weight', 'bold');
-                        icono.textContent = simbolo;
-                        circuloFinal.parentNode.appendChild(icono);
-                    }
-                }
-            });
         }
 
         // ====================== NAVEGACIÓN Y CARGA ======================
