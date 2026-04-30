@@ -377,64 +377,65 @@
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
 
-        // ====================== NUEVA PALETA DE COLORES POR GRADO ======================
+        // ====================== PALETA ARCOÍRIS ======================
         function getColorByGrado(grado) {
-            if (!grado) return '#00DFEB'; // Comodín aguamarina
+            if (!grado) return '#BAEAD8'; // Comodín menta
             const g = grado.toUpperCase().trim();
             
-            // Caso especial para el comodín *
-            if (g === '*') return '#FAC601';
+            // Pr → Negro
+            if (g === 'PR') return '#212121';
             
             // Extraer número y letra
             const match = g.match(/(\d+)([A-Z]?)(\+?)/);
-            if (!match) return '#00DFEB';
+            if (!match) return '#BAEAD8';
             
             const num = parseInt(match[1], 10);
             const letra = match[2] || '';
             const mas = match[3] || '';
             
-            // Grados 3, 4, 5, 5+ (Verdes)
-            if (num === 3) return '#00F763';
-            if (num === 4) return '#00B347';
+            // Grados 3, 4 - Amarillo limón
+            if (num === 3 || num === 4) return '#FADF00';
+            
+            // Grados 5, 5+ - Verde lima
             if (num === 5) {
-                if (mas === '+') return '#00732E';
-                return '#00732E';
+                if (mas === '+') return '#8CDB00';
+                return '#8CDB00';
             }
             
-            // Grados 6 (Azules)
+            // Grados 6
             if (num === 6) {
-                if (letra === 'A') return '#00ACFF';
-                if (letra === 'A' && mas === '+') return '#00ACFF';
-                if (letra === 'B') return '#0085C7';
-                if (letra === 'B' && mas === '+') return '#0085C7';
-                if (letra === 'C') return '#005A87';
-                if (letra === 'C' && mas === '+') return '#005A87';
+                if (letra === 'A') return '#00DB53';      // 6A, 6A+ - Verde esmeralda
+                if (letra === 'A' && mas === '+') return '#00DB53';
+                if (letra === 'B') return '#00D9DB';      // 6B, 6B+ - Cian
+                if (letra === 'B' && mas === '+') return '#00D9DB';
+                if (letra === 'C') return '#0055DB';      // 6C, 6C+ - Azul eléctrico
+                if (letra === 'C' && mas === '+') return '#0055DB';
             }
             
-            // Grados 7 (Rosas)
+            // Grados 7
             if (num === 7) {
-                if (letra === 'A') return '#F600FF';
-                if (letra === 'A' && mas === '+') return '#F600FF';
-                if (letra === 'B') return '#BB00C2';
-                if (letra === 'B' && mas === '+') return '#BB00C2';
-                if (letra === 'C') return '#7E0082';
-                if (letra === 'C' && mas === '+') return '#7E0082';
+                if (letra === 'A') return '#7C00DB';      // 7A, 7A+ - Púrpura
+                if (letra === 'A' && mas === '+') return '#7C00DB';
+                if (letra === 'B') return '#CA00DB';      // 7B, 7B+ - Magenta
+                if (letra === 'B' && mas === '+') return '#CA00DB';
+                if (letra === 'C') return '#B30040';      // 7C, 7C+ - Carmesí
+                if (letra === 'C' && mas === '+') return '#B30040';
             }
             
-            // Grados 8 (Rojos) - eliminado 9A
+            // Grados 8
             if (num === 8) {
-                if (letra === 'A' && mas === '+') return '#FF0D00';
-                if (letra === 'A') return '#FF0D00';
-                if (letra === 'B') return '#C20A00';
-                if (letra === 'B' && mas === '+') return '#C20A00';
-                if (letra === 'C') return '#850700';
-                if (letra === 'C' && mas === '+') return '#850700';
+                if (letra === 'A') return '#DC0A00';      // 8A, 8A+ - Rojo intenso
+                if (letra === 'A' && mas === '+') return '#DC0A00';
+                if (letra === 'B') return '#DB5300';      // 8B, 8B+ - Naranja
+                if (letra === 'B' && mas === '+') return '#DB5300';
+                if (letra === 'C') return '#DB8800';      // 8C, 8C+ - Ámbar
+                if (letra === 'C' && mas === '+') return '#DB8800';
             }
             
-            // Grados superiores a 8 (por si acaso, aunque no deberían existir)
+            // Grados superiores (por si acaso)
             if (num > 8) return '#FF9800';
             
-            return '#00DFEB';
+            return '#BAEAD8';
         }
 
         // ====================== FUNCIÓN PARA LA GRÁFICA (ALTA CALIDAD) ======================
@@ -451,7 +452,7 @@
             
             const ordenGrados = [
                 "3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+",
-                "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+", "*"
+                "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"
             ];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
