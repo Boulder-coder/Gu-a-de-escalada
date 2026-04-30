@@ -379,27 +379,16 @@
 
         // ====================== PALETA ARCOÍRIS ======================
         function getColorByGrado(grado) {
-            if (!grado) return '#FF93DB'; // Comodín rosa bebé
+            if (!grado) return '#FF93DB';
             const g = grado.toUpperCase().trim();
-            
-            // Pr → Negro
             if (g === 'PR') return '#212121';
-            
-            // Extraer número y letra
             const match = g.match(/(\d+)([A-Z]?)(\+?)/);
             if (!match) return '#FF93DB';
-            
             const num = parseInt(match[1], 10);
             const letra = match[2] || '';
             const mas = match[3] || '';
-            
-            // Grados 3, 4 - Amarillo limón
             if (num === 3 || num === 4) return '#FADF00';
-            
-            // Grados 5, 5+ - Verde lima
             if (num === 5) return '#8CDB00';
-            
-            // Grados 6
             if (num === 6) {
                 if (letra === 'A') return '#00BD48';
                 if (letra === 'A' && mas === '+') return '#00BD48';
@@ -408,8 +397,6 @@
                 if (letra === 'C') return '#0055DB';
                 if (letra === 'C' && mas === '+') return '#0055DB';
             }
-            
-            // Grados 7
             if (num === 7) {
                 if (letra === 'A') return '#7C00DB';
                 if (letra === 'A' && mas === '+') return '#7C00DB';
@@ -418,8 +405,6 @@
                 if (letra === 'C') return '#B30040';
                 if (letra === 'C' && mas === '+') return '#B30040';
             }
-            
-            // Grados 8
             if (num === 8) {
                 if (letra === 'A') return '#DC0A00';
                 if (letra === 'A' && mas === '+') return '#DC0A00';
@@ -428,10 +413,7 @@
                 if (letra === 'C') return '#DB8800';
                 if (letra === 'C' && mas === '+') return '#DB8800';
             }
-            
-            // Grados superiores (por si acaso)
             if (num > 8) return '#FF9800';
-            
             return '#FF93DB';
         }
 
@@ -445,24 +427,27 @@
             return '●';
         }
 
-        // ====================== APLICAR ESTILOS AL SVG (NUEVA VERSIÓN) ======================
+        // ====================== FUNCIÓN CORREGIDA PARA APLICAR ESTILOS ======================
         function aplicarEstilosSVG(svgDoc, vias) {
+            // Asegurarse de que svgDoc es un documento SVG válido
+            if (!svgDoc || !svgDoc.documentElement) return;
+            
             vias.forEach(via => {
                 const letra = via.linea_id;
                 const letraBase = letra.split('.')[0];
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 
-                // 1. LÍNEA DE RECORRIDO
+                // 1. Línea
                 const linea = svgDoc.getElementById(`${letraBase}_linea`);
                 if (linea) {
                     linea.setAttribute('stroke', color);
-                    if (!linea.getAttribute('stroke-width')) {
-                        linea.setAttribute('stroke-width', '4');
-                    }
+                    if (!linea.getAttribute('stroke-width')) linea.setAttribute('stroke-width', '4');
+                } else {
+                    console.warn(`No se encontró la línea: ${letraBase}_linea`);
                 }
                 
-                // 2. CÍRCULO DE ENTRADA PRINCIPAL
+                // 2. Círculo de entrada principal (sin punto o .1)
                 const esPrimeraVariante = letra.includes('.') && letra.split('.')[1] === '1';
                 const esPrincipal = !letra.includes('.') || esPrimeraVariante;
                 
@@ -472,11 +457,13 @@
                         circuloEntrada.setAttribute('fill', color);
                         circuloEntrada.setAttribute('stroke', color);
                         
-                        if (!circuloEntrada.querySelector('text')) {
+                        // Añadir texto solo si no existe
+                        let texto = circuloEntrada.querySelector('text');
+                        if (!texto) {
                             const cx = circuloEntrada.getAttribute('cx');
                             const cy = circuloEntrada.getAttribute('cy');
                             const r = parseFloat(circuloEntrada.getAttribute('r')) || 16;
-                            const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                            texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                             texto.setAttribute('x', cx);
                             texto.setAttribute('y', cy);
                             texto.setAttribute('text-anchor', 'middle');
@@ -486,31 +473,38 @@
                             texto.setAttribute('font-weight', 'bold');
                             texto.textContent = letraBase;
                             circuloEntrada.parentNode.appendChild(texto);
+                        } else {
+                            texto.textContent = letraBase;
                         }
+                    } else {
+                        console.warn(`No se encontró el círculo de entrada: ${letraBase}_entrada`);
                     }
                 }
                 
-                // 3. CÍRCULO DE ENTRADA PARA VARIANTES SECUNDARIAS
+                // 3. Círculo de entrada para variantes secundarias
                 const esVarianteSecundaria = letra.includes('.') && letra.split('.')[1] !== '1';
                 if (esVarianteSecundaria) {
                     const circuloVariante = svgDoc.getElementById(`${letra}_entrada`);
                     if (circuloVariante) {
                         circuloVariante.setAttribute('fill', color);
                         circuloVariante.setAttribute('stroke', color);
+                    } else {
+                        console.warn(`No se encontró el círculo de variante: ${letra}_entrada`);
                     }
                 }
                 
-                // 4. CÍRCULO DE SALIDA
+                // 4. Círculo de salida
                 const circuloSalida = svgDoc.getElementById(`${letraBase}_salida`);
                 if (circuloSalida) {
                     circuloSalida.setAttribute('fill', color);
                     circuloSalida.setAttribute('stroke', color);
                     
-                    if (!circuloSalida.querySelector('text')) {
+                    let texto = circuloSalida.querySelector('text');
+                    if (!texto) {
                         const cx = circuloSalida.getAttribute('cx');
                         const cy = circuloSalida.getAttribute('cy');
                         const r = parseFloat(circuloSalida.getAttribute('r')) || 16;
-                        const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         texto.setAttribute('x', cx);
                         texto.setAttribute('y', cy);
                         texto.setAttribute('text-anchor', 'middle');
@@ -520,7 +514,11 @@
                         texto.setAttribute('font-weight', 'bold');
                         texto.textContent = simbolo;
                         circuloSalida.parentNode.appendChild(texto);
+                    } else {
+                        texto.textContent = simbolo;
                     }
+                } else {
+                    console.warn(`No se encontró el círculo de salida: ${letraBase}_salida`);
                 }
             });
         }
@@ -852,22 +850,30 @@
                     viasContainer.appendChild(viaDiv);
                 });
                 
-                fetch(`${b.foto_base}.svg`).then(res => res.text()).then(svgText => {
-                    const mediaContainer = slide.querySelector('.media-container');
-                    const parser = new DOMParser();
-                    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                    const svgElement = svgDoc.documentElement;
-                    svgElement.classList.add('svg-overlay');
-                    const img = mediaContainer.querySelector('img');
-                    if (img.complete && img.naturalWidth) {
-                        svgElement.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
-                    }
-                    svgElement.setAttribute('preserveAspectRatio', 'none');
-                    svgElement.style.width = '100%';
-                    svgElement.style.height = 'auto';
-                    mediaContainer.appendChild(svgElement);
-                    aplicarEstilosSVG(svgElement, b.vias);
-                }).catch(() => {});
+                // Cargar SVG y aplicarle los estilos
+                const svgUrl = `${b.foto_base}.svg`;
+                fetch(svgUrl)
+                    .then(res => res.text())
+                    .then(svgText => {
+                        const parser = new DOMParser();
+                        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                        const svgElement = svgDoc.documentElement;
+                        svgElement.classList.add('svg-overlay');
+                        
+                        // Aplicar estilos ANTES de insertar
+                        aplicarEstilosSVG(svgDoc, b.vias);
+                        
+                        const mediaContainer = slide.querySelector('.media-container');
+                        const img = mediaContainer.querySelector('img');
+                        if (img.complete && img.naturalWidth) {
+                            svgElement.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
+                        }
+                        svgElement.setAttribute('preserveAspectRatio', 'none');
+                        svgElement.style.width = '100%';
+                        svgElement.style.height = 'auto';
+                        mediaContainer.appendChild(svgElement);
+                    })
+                    .catch(err => console.log('Error cargando SVG:', err));
             });
             
             if (swiperBloques) swiperBloques.destroy();
