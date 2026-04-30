@@ -427,10 +427,10 @@
             return '●';
         }
 
-        // ====================== FUNCIÓN PARA APLICAR ESTILOS (TRABAJA SOBRE EL SVG INSERTADO) ======================
-        function aplicarEstilosSVG(svgElement, vias) {
-            if (!svgElement) {
-                console.log("❌ svgElement inválido");
+        // ====================== FUNCIÓN PARA APLICAR ESTILOS (TRABAJA SOBRE EL SVG CARGADO) ======================
+        function aplicarEstilosSVG(svgRoot, vias) {
+            if (!svgRoot) {
+                console.log("❌ svgRoot inválido");
                 return;
             }
             
@@ -444,13 +444,14 @@
                 
                 console.log(`  Procesando: ${letraBase}, color ${color}, símbolo ${simbolo}`);
                 
-                // Buscar elementos dentro del SVG usando querySelector
-                const linea = svgElement.querySelector(`#${letraBase}_linea`);
-                const circuloEntrada = svgElement.querySelector(`#${letraBase}_entrada`);
-                const circuloSalida = svgElement.querySelector(`#${letraBase}_salida`);
+                // Buscar elementos dentro del SVG
+                const linea = svgRoot.getElementById(`${letraBase}_linea`);
+                const circuloEntrada = svgRoot.getElementById(`${letraBase}_entrada`);
+                const circuloSalida = svgRoot.getElementById(`${letraBase}_salida`);
                 
                 if (linea) {
                     linea.setAttribute('stroke', color);
+                    if (!linea.getAttribute('stroke-width')) linea.setAttribute('stroke-width', '4');
                     console.log(`    ✅ Línea ${letraBase}_linea coloreada`);
                 } else {
                     console.log(`    ❌ No se encontró ${letraBase}_linea`);
@@ -746,7 +747,7 @@
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
-        // ====================== FICHA DE BLOQUE CORREGIDA ======================
+        // ====================== FICHA DE BLOQUE (CON SVG VÍA OBJECT TAG) ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -800,28 +801,35 @@
                 
                 const svgUrl = `${b.foto_base}.svg`;
                 console.log(`📂 Cargando SVG: ${svgUrl}`);
-                fetch(svgUrl)
-                    .then(res => res.text())
-                    .then(svgText => {
-                        console.log(`✅ SVG cargado: ${svgUrl}`);
-                        const parser = new DOMParser();
-                        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                        const svgElement = svgDoc.documentElement;
-                        svgElement.classList.add('svg-overlay');
-                        const mediaContainer = slide.querySelector('.media-container');
-                        const img = mediaContainer.querySelector('img');
-                        if (img.complete && img.naturalWidth) {
-                            svgElement.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
-                        }
-                        svgElement.setAttribute('preserveAspectRatio', 'none');
-                        svgElement.style.width = '100%';
-                        svgElement.style.height = 'auto';
-                        mediaContainer.appendChild(svgElement);
-                        
+                
+                // Usar object tag para cargar el SVG y acceder a su contenido después de cargado
+                const objectTag = document.createElement('object');
+                objectTag.setAttribute('data', svgUrl);
+                objectTag.setAttribute('type', 'image/svg+xml');
+                objectTag.style.width = '100%';
+                objectTag.style.height = 'auto';
+                objectTag.style.position = 'absolute';
+                objectTag.style.top = '0';
+                objectTag.style.left = '0';
+                objectTag.style.pointerEvents = 'none';
+                
+                const mediaContainer = slide.querySelector('.media-container');
+                mediaContainer.appendChild(objectTag);
+                
+                objectTag.addEventListener('load', function() {
+                    console.log(`✅ SVG cargado y listo: ${svgUrl}`);
+                    const svgRoot = objectTag.contentDocument;
+                    if (svgRoot) {
                         console.log(`🎨 Aplicando estilos a SVG del bloque ${b.id}`);
-                        aplicarEstilosSVG(svgElement, b.vias);
-                    })
-                    .catch(err => console.log(`❌ Error cargando SVG: ${err}`));
+                        aplicarEstilosSVG(svgRoot, b.vias);
+                    } else {
+                        console.log(`❌ No se pudo acceder al contenido del SVG: ${svgUrl}`);
+                    }
+                });
+                
+                objectTag.addEventListener('error', function() {
+                    console.log(`❌ Error al cargar el SVG: ${svgUrl}`);
+                });
             });
             
             if (swiperBloques) swiperBloques.destroy();
