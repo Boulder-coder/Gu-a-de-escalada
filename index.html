@@ -340,23 +340,28 @@
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
-        // ====================== CARGAR MAPA SVG INTERACTIVO ======================
+        // ====================== CARGAR MAPA INTERACTIVO ======================
         function cargarMapaInteractivo(sector) {
-            const mapaUrl = sector.croquis ? `${sector.croquis}.jpg` : '';
-            const svgMapaUrl = sector.croquis ? `${sector.croquis}.svg` : null;
+            if (!sector.mapa) {
+                return '<div class="info-sector"><p>No hay mapa disponible</p></div>';
+            }
+            
+            const mapaUrl = `${sector.mapa}.jpg`;
+            const svgMapaUrl = `${sector.mapa}.svg`;
             
             let mapaHtml = `<div class="croquis-container" id="mapaContainer" style="cursor: pointer;">`;
             mapaHtml += `<img src="${mapaUrl}" class="croquis-img" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
             mapaHtml += `</div>`;
             
-            if (svgMapaUrl && sector.info && sector.info.parking) {
-                fetch(svgMapaUrl).then(res => res.text()).then(svgText => {
-                    const parser = new DOMParser();
-                    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                    const svgElement = svgDoc.documentElement;
-                    svgElement.classList.add('croquis-svg-overlay');
-                    
-                    // Añadir eventos a los elementos con IDs P1, P2, P3...
+            // Intentar cargar SVG interactivo
+            fetch(svgMapaUrl).then(res => res.text()).then(svgText => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+                svgElement.classList.add('croquis-svg-overlay');
+                
+                // Añadir eventos a los elementos con IDs P1, P2, P3...
+                if (sector.info && sector.info.parking) {
                     const parkings = sector.info.parking;
                     for (let i = 0; i < parkings.length; i++) {
                         const parkingId = `P${i+1}`;
@@ -369,14 +374,14 @@
                             });
                         }
                     }
-                    
-                    const container = document.getElementById('mapaContainer');
-                    if (container) {
-                        container.style.position = 'relative';
-                        container.appendChild(svgElement);
-                    }
-                }).catch(err => console.log('Error cargando SVG mapa:', err));
-            }
+                }
+                
+                const container = document.getElementById('mapaContainer');
+                if (container) {
+                    container.style.position = 'relative';
+                    container.appendChild(svgElement);
+                }
+            }).catch(err => console.log('Error cargando SVG mapa:', err));
             
             return mapaHtml;
         }
@@ -397,7 +402,6 @@
             });
             html += '</div>';
             
-            // Añadir eventos después de insertar el HTML
             setTimeout(() => {
                 sector.croquis_list.forEach((croq, idx) => {
                     const thumb = document.querySelector(`.croquis-thumbnail[data-croquis-idx="${idx}"]`);
@@ -420,7 +424,6 @@
                 </div>
             `;
             
-            // Cargar SVG interactivo si existe
             const svgUrl = `${croquis.svg}.svg`;
             fetch(svgUrl).then(res => res.text()).then(svgText => {
                 const parser = new DOMParser();
@@ -428,7 +431,6 @@
                 const svgElement = svgDoc.documentElement;
                 svgElement.classList.add('croquis-svg-overlay');
                 
-                // Añadir eventos para los bloques (B1, B2, etc.)
                 const elementos = svgElement.querySelectorAll('[id]');
                 elementos.forEach(el => {
                     const bloqueId = el.id;
@@ -436,7 +438,6 @@
                         el.style.cursor = 'pointer';
                         el.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            // Buscar el bloque correspondiente en el sector
                             const bloqueEncontrado = currentSector.bloques.find(b => b.id === `${bloqueId}.0` || b.id === `${bloqueId}.1`);
                             if (bloqueEncontrado) {
                                 const indice = currentSector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
@@ -503,8 +504,8 @@
             datosApp.sectores.forEach(sector => {
                 const card = document.createElement('div');
                 card.className = 'sector-card';
-                const croquisUrl = sector.croquis ? `${sector.croquis}.jpg` : '';
-                card.innerHTML = `<img src="${croquisUrl}" onerror="this.src='https://picsum.photos/id/20/400/200'"><div class="sector-info"><h3>${sector.nombre}</h3><p>${sector.bloques.length} bloques</p></div>`;
+                const portadaUrl = sector.portada ? `${sector.portada}.jpg` : '';
+                card.innerHTML = `<img src="${portadaUrl}" onerror="this.src='https://picsum.photos/id/20/400/200'"><div class="sector-info"><h3>${sector.nombre}</h3><p>${sector.bloques.length} bloques</p></div>`;
                 card.onclick = () => openSector(sector.nombre);
                 container.appendChild(card);
             });
@@ -516,10 +517,7 @@
             
             const container = document.getElementById('sector-detalle-content');
             
-            // Preparar contenido de pestaña Info
             const mapaHtml = cargarMapaInteractivo(currentSector);
-            
-            // Preparar contenido de pestaña Croquis
             const croquisHtml = cargarListaCroquis(currentSector);
             
             container.innerHTML = `
@@ -535,7 +533,7 @@
                         <canvas id="grafica-sector" style="width:100%; height:auto;"></canvas>
                     </div>
                     <div class="info-sector">
-                        <h4>📍 Cómo llegar</h4>
+                        <h4>📍 Mapa de accesos</h4>
                         <div id="mapaInfo">${mapaHtml}</div>
                         <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">💡 Toca los puntos P1, P2... en el mapa para abrir Google Maps</p>
                     </div>
@@ -558,7 +556,6 @@
                 };
             });
             
-            // Mostrar lista de bloques
             const bloquesContainer = document.getElementById('bloques-list');
             bloquesContainer.innerHTML = '';
             const grupos = {};
