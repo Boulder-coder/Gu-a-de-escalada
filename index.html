@@ -57,15 +57,7 @@
         .ficha-bloque { background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 0; }
         .media-container { position: relative; background: #d4d4d4; min-height: 200px; }
         .media-container img { width: 100%; height: auto; display: block; }
-        .media-container svg { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            pointer-events: none;
-            background: transparent;
-        }
+        .svg-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: transparent; }
         .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
         .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
         .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; letter-spacing: 0.5px; }
@@ -159,6 +151,118 @@
             if (s.includes('top-out')) return '▲';
             if (s.includes('top')) return '■';
             return '●';
+        }
+
+        // ====================== GEOMETRÍAS DE BLOQUES (para generar SVG dinámicamente) ======================
+        const geometriasBloques = {
+            "8.1": {
+                viewBox: "0 0 692 768",
+                elementos: {
+                    "A": {
+                        path: "M 43.977704,470.42816 C 58.867572,376.1141 54.896702,273.08794 85.290092,181.90777 100.83977,135.25875 131.88969,92.217659 151.25665,48.642006",
+                        entrada: { cx: 44.153152, cy: 466.93884, r: 17.5 },
+                        salida: { cx: 149.76373, cy: 54.145576, r: 12.5 },
+                        variantes: {}
+                    },
+                    "B": {
+                        path: "M 81.292119,467.76285 C 80.295673,369.3398 280.64801,356.30058 316.5062,302.5133 c 27.01032,-40.51548 5.99696,-169.32625 5.99696,-221.221181",
+                        entrada: { cx: 80.153, cy: 466.93884, r: 17.5 },
+                        salida: { cx: 324.34189, cy: 87.462013, r: 12.5 },
+                        variantes: {
+                            "B.2": { cx: 79.850845, cy: 492.92056, r: 7.5 }
+                        }
+                    },
+                    "C": {
+                        path: "M 114.60856,467.76285 C 131.24746,418.8428 216.97783,386.86146 269.19685,364.48188 359.0425,325.9766 447.26282,264.53255 546.38965,264.53255",
+                        entrada: { cx: 115.81966, cy: 466.93884, r: 17.5 },
+                        salida: { cx: 547.56207, cy: 265.37183, r: 12.5 },
+                        variantes: {}
+                    },
+                    "D": {
+                        path: "m 483.08841,377.80845 c -2.16631,-13.03142 -8.44764,-49.16095 -10.66126,-71.29718 -3.26387,-32.63876 -2.3346,-105.69948 -23.32151,-131.93311 -6.32943,-7.91179 -23.29715,-12.43408 -32.65011,-13.99291 -7.90553,-1.31759 -57.76735,-14.91904 -60.63593,-20.65619 -6.67687,-13.35375 -6.66329,-26.65966 -6.66329,-41.312391",
+                        entrada: { cx: 482.93054, cy: 378.31711, r: 17.5 },
+                        salida: { cx: 350.32874, cy: 99.622528, r: 12.5 },
+                        variantes: {
+                            "D.2": { cx: 483.1662, cy: 404.3414, r: 7.5 },
+                            "D.3": { cx: 483.1662, cy: 420.25, r: 7.5 }
+                        }
+                    },
+                    "E": {
+                        path: "M 598.38037,441.01104 C 587.31583,417.12936 587.27284,390.05145 581.41841,364.68221 575.76437,340.18139 564.87931,319.55307 556.44663,296.36319 541.29154,254.6867 540.98606,193.23065 498.49325,167.73497 474.15382,153.13131 388.93106,144.94039 378.81718,131.45521 c -5.29006,-7.05341 -3.35367,-20.12201 -4.71166,-28.26993",
+                        entrada: { cx: 592.73688, cy: 439.84799, r: 17.5 },
+                        salida: { cx: 377.13071, cy: 109.51461, r: 12.5 },
+                        variantes: {}
+                    }
+                }
+            }
+        };
+
+        // ====================== GENERAR SVG DINÁMICAMENTE PARA BLOQUES ======================
+        function generarSVG(bloque, vias) {
+            const bloqueId = bloque.id;
+            const geometria = geometriasBloques[bloqueId];
+            
+            if (!geometria) {
+                console.warn(`No hay geometría definida para el bloque ${bloqueId}`);
+                return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692 768" style="background:transparent;"></svg>`;
+            }
+            
+            let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometria.viewBox}" style="background:transparent;">`;
+            
+            // PRIMERO: todas las líneas (para que queden por debajo)
+            vias.forEach(via => {
+                const letraCompleta = via.linea_id;
+                const letraBase = letraCompleta.split('.')[0];
+                const color = getColorByGrado(via.grado);
+                const esPrimeraVariante = !letraCompleta.includes('.') || (letraCompleta.includes('.') && letraCompleta.split('.')[1] === '1');
+                const datosElemento = geometria.elementos[letraBase];
+                if (!datosElemento) return;
+                if (esPrimeraVariante) {
+                    svgContent += `<path d="${datosElemento.path}" stroke="${color}" stroke-width="5" fill="none"/>`;
+                }
+            });
+            
+            // SEGUNDO: círculos y textos (para que queden encima)
+            vias.forEach(via => {
+                const letraCompleta = via.linea_id;
+                const letraBase = letraCompleta.split('.')[0];
+                const color = getColorByGrado(via.grado);
+                const simbolo = getSimboloSalida(via.salida);
+                const esPrimeraVariante = !letraCompleta.includes('.') || (letraCompleta.includes('.') && letraCompleta.split('.')[1] === '1');
+                const datosElemento = geometria.elementos[letraBase];
+                if (!datosElemento) return;
+                
+                if (esPrimeraVariante) {
+                    // Círculo de entrada
+                    svgContent += `<circle cx="${datosElemento.entrada.cx}" cy="${datosElemento.entrada.cy}" r="${datosElemento.entrada.r}" fill="${color}" stroke="${color}"/>`;
+                    svgContent += `<text x="${datosElemento.entrada.cx}" y="${datosElemento.entrada.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.entrada.r * 1.8}px" font-weight="bold">${letraBase}</text>`;
+                    
+                    // Círculo de salida
+                    svgContent += `<circle cx="${datosElemento.salida.cx}" cy="${datosElemento.salida.cy}" r="${datosElemento.salida.r}" fill="${color}" stroke="${color}"/>`;
+                    
+                    // Ajustar tamaño según el símbolo
+                    let fontSizeMultiplier = 1.8;
+                    let dyOffset = -2;
+                    if (simbolo === '▶' || simbolo === '◀') {
+                        fontSizeMultiplier = 1.2;
+                        dyOffset = -1;
+                    }
+                    if (simbolo === '■') {
+                        fontSizeMultiplier = 1.6;
+                        dyOffset = -2;
+                    }
+                    
+                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" dy="${dyOffset}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * fontSizeMultiplier}px" font-weight="bold">${simbolo}</text>`;
+                }
+                
+                const variante = datosElemento.variantes[letraCompleta];
+                if (variante) {
+                    svgContent += `<circle cx="${variante.cx}" cy="${variante.cy}" r="${variante.r}" fill="${color}" stroke="${color}"/>`;
+                }
+            });
+            
+            svgContent += `</svg>`;
+            return svgContent;
         }
 
         // ====================== FUNCIÓN PARA ENCONTRAR ELEMENTOS POR inkscape:label ======================
@@ -519,38 +623,7 @@
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
-        // ====================== CARGAR SVG DEL BLOQUE (con anti-caché) ======================
-        function cargarSVGBloque(bloque, slideIndex) {
-            const svgUrl = `${bloque.foto_base}.svg?v=${Date.now()}`;
-            const mediaContainer = document.getElementById(`mediaContainer-${slideIndex}`);
-            if (!mediaContainer) return;
-            
-            fetch(svgUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return res.text();
-                })
-                .then(svgText => {
-                    const parser = new DOMParser();
-                    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                    const svgElement = svgDoc.documentElement;
-                    if (!svgElement) return;
-                    
-                    svgElement.setAttribute('preserveAspectRatio', 'none');
-                    svgElement.style.width = '100%';
-                    svgElement.style.height = '100%';
-                    svgElement.style.pointerEvents = 'none';
-                    
-                    // Opcional: hacer transparentes ciertos elementos si quieres
-                    // Pero por ahora no modificamos nada, solo mostramos el SVG tal cual
-                    
-                    mediaContainer.appendChild(svgElement);
-                    console.log(`✅ SVG cargado para bloque ${bloque.id}`);
-                })
-                .catch(err => console.log(`⚠️ No se pudo cargar SVG para bloque ${bloque.id}:`, err));
-        }
-
-        // ====================== FICHA DE BLOQUE (CON SVG SUPERPUESTO) ======================
+        // ====================== FICHA DE BLOQUE (CON GENERACIÓN DINÁMICA DE SVG) ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -563,7 +636,8 @@
                 slide.innerHTML = `
                     <div class="ficha-bloque">
                         <div class="media-container" id="mediaContainer-${idx}" style="position: relative;">
-                            <img src="${b.foto_base}.jpg" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
+                            <img src="${b.foto_base}.jpg" class="foto-bloque" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
+                            <div id="svgContainer-${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
                         </div>
                         <div class="ficha-footer"><span>Bloque ${parseInt(b.id, 10)}</span><span>${currentSector.nombre}</span></div>
                         <div class="ficha-vias" id="vias-${idx}"></div>
@@ -592,8 +666,13 @@
                     viasDiv.appendChild(viaDiv);
                 });
                 
-                // Cargar SVG superpuesto del bloque
-                cargarSVGBloque(b, idx);
+                // Generar SVG dinámicamente usando las geometrías
+                const svgString = generarSVG(b, b.vias);
+                const svgContainer = document.getElementById(`svgContainer-${idx}`);
+                if (svgContainer) {
+                    svgContainer.innerHTML = svgString;
+                    console.log(`✅ SVG generado para bloque ${b.id}`);
+                }
             });
             
             if (swiperBloques) swiperBloques.destroy();
