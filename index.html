@@ -173,11 +173,11 @@
             return resultados;
         }
 
-        // ====================== CARGAR MAPA ======================
+        // ====================== CARGAR MAPA (con anti-caché) ======================
         function cargarMapaInteractivo(sector) {
             if (!sector.mapa) return '<div class="info-sector"><p>No hay mapa disponible</p></div>';
             const mapaUrl = `${sector.mapa}.jpg`;
-            const svgMapaUrl = `${sector.mapa}.svg`;
+            const svgMapaUrl = `${sector.mapa}.svg?v=${Date.now()}`;
             const containerId = `mapaContainer_${Date.now()}`;
             
             let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
@@ -224,7 +224,7 @@
             return html;
         }
 
-        // ====================== CARGAR CROQUIS ======================
+        // ====================== CARGAR CROQUIS (con anti-caché) ======================
         function cargarCroquisInteractivo(sector, croquisIndex) {
             const croquis = sector.croquis_list[croquisIndex];
             if (!croquis) return '<div class="info-sector"><p>Croquis no disponible</p></div>';
@@ -232,7 +232,7 @@
             
             let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
             html += `<img src="${croquis.imagen}.jpg" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
-            html += `<object id="croquisObject_${containerId}" data="${croquis.svg}.svg" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object>`;
+            html += `<object id="croquisObject_${containerId}" data="${croquis.svg}.svg?v=${Date.now()}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object>`;
             html += `</div>`;
             
             setTimeout(() => {
@@ -510,7 +510,7 @@
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
-        // ====================== FICHA DE BLOQUE (SIN SVG, SOLO FOTO Y TEXTOS) ======================
+        // ====================== FICHA DE BLOQUE (SIN SVG) ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
