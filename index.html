@@ -35,12 +35,12 @@
         .info-sector, .condiciones-content { background: #ffffff; border-radius: 12px; padding: 20px; margin-bottom: 60px; }
         .croquis-list { margin-bottom: 20px; }
         .croquis-list-title { margin: 15px 0 10px; font-weight: 600; color: #6674FF; }
-        .croquis-thumbnails { display: flex; flex-wrap: wrap; gap: 12px; }
+        .croquis-thumbnails { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         .croquis-thumb { flex: 1; min-width: 100px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
         .croquis-thumb:active { transform: scale(0.98); }
         .croquis-thumb img { width: 100%; height: auto; display: block; }
         .croquis-thumb.active { border: 3px solid #6674FF; }
-        .croquis-viewer { position: relative; background: #ffffff; border-radius: 12px; overflow: hidden; margin-top: 15px; }
+        .croquis-viewer { position: relative; background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 60px; }
         .croquis-viewer img { width: 100%; height: auto; display: block; }
         .croquis-viewer object { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
         .bloque-group { background: #ffffff; border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -262,7 +262,7 @@
             const mapaUrl = `${sector.mapa}.jpg`;
             const svgMapaUrl = `${sector.mapa}.svg`;
             const containerId = `mapaContainer_${Date.now()}`;
-            let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
+            let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative; margin-bottom: 0;">`;
             html += `<img src="${mapaUrl}" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
             html += `</div>`;
             setTimeout(() => {
@@ -278,7 +278,6 @@
                     svgElement.style.width = '100%';
                     svgElement.style.height = '100%';
                     svgElement.style.pointerEvents = 'auto';
-                    // Hacer transparentes todos los elementos
                     const allEl = svgElement.querySelectorAll('*');
                     allEl.forEach(el => {
                         el.setAttribute('fill', 'transparent');
@@ -295,8 +294,10 @@
                                 el.style.cursor = 'pointer';
                                 el.addEventListener('click', (e) => {
                                     e.stopPropagation();
+                                    e.preventDefault();
                                     window.open(parkings[i], '_blank');
                                 });
+                                console.log(`✅ Evento asignado a parking_${i+1}`);
                             }
                         }
                     }
@@ -307,7 +308,7 @@
             return html;
         }
 
-        // ====================== CARGAR CROQUIS INTERACTIVO (transparente y clickable) ======================
+        // ====================== CARGAR CROQUIS INTERACTIVO ======================
         function cargarCroquisInteractivo(sector, croquisIndex) {
             const croquis = sector.croquis_list[croquisIndex];
             if (!croquis) return '<div class="info-sector"><p>Croquis no disponible</p></div>';
@@ -344,6 +345,7 @@
                             el.style.cursor = 'pointer';
                             el.addEventListener('click', (e) => {
                                 e.stopPropagation();
+                                e.preventDefault();
                                 const bloqueEncontrado = sector.bloques.find(b => {
                                     if (b.id.startsWith(`${bloqueBase}_`)) return true;
                                     if (b.id === bloqueBase) return true;
@@ -351,9 +353,15 @@
                                 });
                                 if (bloqueEncontrado) {
                                     const indice = sector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
-                                    if (indice !== -1) openFichaBloque(indice);
+                                    if (indice !== -1) {
+                                        console.log(`Navegando al bloque: ${bloqueEncontrado.id}`);
+                                        openFichaBloque(indice);
+                                    }
+                                } else {
+                                    console.log(`Bloque no encontrado para ID: ${bloqueBase}`);
                                 }
                             });
+                            console.log(`✅ Evento asignado a elemento con id: ${bloqueBase}`);
                         }
                     });
                     container.style.position = 'relative';
@@ -419,7 +427,6 @@
             if (!currentSector) return;
             const container = document.getElementById('sector-detalle-content');
             const mapaHtml = cargarMapaInteractivo(currentSector);
-            // Generar lista de croquis
             let croquisListHtml = '';
             if (currentSector.croquis_list && currentSector.croquis_list.length > 0) {
                 croquisListHtml = '<div class="croquis-list">';
@@ -429,7 +436,7 @@
                     croquisListHtml += `<div class="croquis-thumb" data-croquis-idx="${idx}"><img src="${croq.imagen}.jpg" onerror="this.src='https://picsum.photos/id/20/800/600'"></div>`;
                 });
                 croquisListHtml += '</div></div>';
-                croquisListHtml += '<div id="croquisViewerArea"></div>';
+                croquisListHtml += '<div id="croquisViewerArea" style="margin-bottom: 60px;"></div>';
             } else {
                 croquisListHtml = '<div class="info-sector"><p>No hay croquis disponibles</p></div>';
             }
@@ -457,20 +464,21 @@
                     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
                     if (btn.dataset.tab === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
                     if (btn.dataset.tab === 'croquis' && currentSector.croquis_list?.length > 0) {
-                        // Cargar el primer croquis al entrar a la pestaña
                         setTimeout(() => cargarCroquisEnArea(0), 100);
                     }
                 };
             });
             // Eventos de miniaturas
-            document.querySelectorAll('.croquis-thumb').forEach(thumb => {
-                thumb.onclick = () => {
-                    const idx = parseInt(thumb.dataset.croquisIdx);
-                    cargarCroquisEnArea(idx);
-                    document.querySelectorAll('.croquis-thumb').forEach(t => t.classList.remove('active'));
-                    thumb.classList.add('active');
-                };
-            });
+            setTimeout(() => {
+                document.querySelectorAll('.croquis-thumb').forEach(thumb => {
+                    thumb.onclick = () => {
+                        const idx = parseInt(thumb.dataset.croquisIdx);
+                        cargarCroquisEnArea(idx);
+                        document.querySelectorAll('.croquis-thumb').forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                    };
+                });
+            }, 100);
             // Lista de bloques
             const bloquesContainer = document.getElementById('bloques-list');
             bloquesContainer.innerHTML = '';
