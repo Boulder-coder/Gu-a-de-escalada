@@ -207,7 +207,7 @@
             
             let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometria.viewBox}" style="background:transparent;">`;
             
-            // Líneas primero
+            // PRIMERO: todas las líneas
             vias.forEach(via => {
                 const letraCompleta = via.linea_id;
                 const letraBase = letraCompleta.split('.')[0];
@@ -220,7 +220,7 @@
                 }
             });
             
-            // Círculos y textos después
+            // SEGUNDO: círculos y textos
             vias.forEach(via => {
                 const letraCompleta = via.linea_id;
                 const letraBase = letraCompleta.split('.')[0];
@@ -231,12 +231,26 @@
                 if (!datosElemento) return;
                 
                 if (esPrimeraVariante) {
+                    // Círculo de entrada
                     svgContent += `<circle cx="${datosElemento.entrada.cx}" cy="${datosElemento.entrada.cy}" r="${datosElemento.entrada.r}" fill="${color}" stroke="${color}"/>`;
                     svgContent += `<text x="${datosElemento.entrada.cx}" y="${datosElemento.entrada.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.entrada.r * 1.8}px" font-weight="bold">${letraBase}</text>`;
                     
+                    // Círculo de salida
                     svgContent += `<circle cx="${datosElemento.salida.cx}" cy="${datosElemento.salida.cy}" r="${datosElemento.salida.r}" fill="${color}" stroke="${color}"/>`;
-                    // dy="-2" para centrar mejor el símbolo verticalmente
-                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" dy="-2" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * 1.8}px" font-weight="bold">${simbolo}</text>`;
+                    
+                    // Ajustar tamaño según el símbolo
+                    let fontSizeMultiplier = 1.8;
+                    let dyOffset = -2;
+                    if (simbolo === '▶' || simbolo === '◀') {
+                        fontSizeMultiplier = 1.2;
+                        dyOffset = -1;
+                    }
+                    if (simbolo === '■') {
+                        fontSizeMultiplier = 1.6;
+                        dyOffset = -2;
+                    }
+                    
+                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" dy="${dyOffset}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * fontSizeMultiplier}px" font-weight="bold">${simbolo}</text>`;
                 }
                 
                 const variante = datosElemento.variantes[letraCompleta];
