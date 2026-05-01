@@ -153,15 +153,54 @@
             return '●';
         }
 
+        // ====================== GENERAR SVG DE LÍNEAS PARA BLOQUES ======================
         function generarSVGLineas(bloque, vias) {
-            // Esta función genera el SVG de líneas para el bloque
-            // Por ahora devuelve un SVG vacío, ya que las geometrías se definirán después
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:transparent;">
-                <text x="400" y="300" text-anchor="middle" fill="#6674FF" font-size="20">SVG de líneas no configurado</text>
-            </svg>`;
+            // Esta función genera dinámicamente el SVG con las líneas y círculos
+            // Por ahora es un ejemplo simple. Tú puedes personalizarla después.
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" style="background:transparent;">`;
+            
+            vias.forEach((via, idx) => {
+                const color = getColorByGrado(via.grado);
+                const simbolo = getSimboloSalida(via.salida);
+                const yOffset = 100 + idx * 80;
+                // Línea de ejemplo
+                svg += `<path d="M 100,${yOffset} L 600,${yOffset}" stroke="${color}" stroke-width="4" fill="none"/>`;
+                // Círculo entrada
+                svg += `<circle cx="100" cy="${yOffset}" r="16" fill="${color}" stroke="${color}"/>`;
+                svg += `<text x="100" y="${yOffset}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="18" font-weight="bold">${via.linea_id}</text>`;
+                // Círculo salida
+                svg += `<circle cx="600" cy="${yOffset}" r="14" fill="${color}" stroke="${color}"/>`;
+                svg += `<text x="600" y="${yOffset}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="16" font-weight="bold">${simbolo}</text>`;
+            });
+            
+            svg += `</svg>`;
+            return svg;
         }
 
-        // ====================== CARGAR MAPA CON OBJECT TAG ======================
+        // ====================== FUNCIÓN PARA ENCONTRAR ELEMENTOS POR inkscape:label ======================
+        function encontrarElementosPorLabel(svgDoc, label) {
+            const resultados = [];
+            // Recorrer todos los elementos del SVG
+            const todos = svgDoc.querySelectorAll('*');
+            for (let el of todos) {
+                // Intentar obtener inkscape:label de diferentes formas
+                let labelValue = el.getAttribute('inkscape:label');
+                if (!labelValue && el.attributes) {
+                    for (let attr of el.attributes) {
+                        if (attr.name === 'inkscape:label' || attr.name.endsWith(':label')) {
+                            labelValue = attr.value;
+                            break;
+                        }
+                    }
+                }
+                if (labelValue === label) {
+                    resultados.push(el);
+                }
+            }
+            return resultados;
+        }
+
+        // ====================== CARGAR MAPA ======================
         function cargarMapaInteractivo(sector) {
             if (!sector.mapa) return '<div class="info-sector"><p>No hay mapa disponible</p></div>';
             const mapaUrl = `${sector.mapa}.jpg`;
@@ -196,8 +235,8 @@
                             const parkings = sector.info.parking;
                             for (let i = 0; i < parkings.length; i++) {
                                 const parkingLabel = `parking_${i+1}`;
-                                const elementosConLabel = svgDoc.querySelectorAll(`[inkscape\\:label="${parkingLabel}"]`);
-                                elementosConLabel.forEach(el => {
+                                const elementos = encontrarElementosPorLabel(svgDoc, parkingLabel);
+                                elementos.forEach(el => {
                                     el.style.cursor = 'pointer';
                                     el.addEventListener('click', (e) => {
                                         e.stopPropagation();
@@ -244,9 +283,19 @@
                         });
                         
                         // Buscar elementos con inkscape:label que sean números
-                        const elementosConLabel = svgDoc.querySelectorAll('[inkscape\\:label]');
+                        const elementosConLabel = svgDoc.querySelectorAll('*');
                         elementosConLabel.forEach(el => {
-                            const label = el.getAttribute('inkscape:label');
+                            let label = null;
+                            // Obtener inkscape:label de diferentes formas
+                            label = el.getAttribute('inkscape:label');
+                            if (!label && el.attributes) {
+                                for (let attr of el.attributes) {
+                                    if (attr.name === 'inkscape:label' || attr.name.endsWith(':label')) {
+                                        label = attr.value;
+                                        break;
+                                    }
+                                }
+                            }
                             if (label && !isNaN(parseInt(label))) {
                                 el.style.cursor = 'pointer';
                                 el.addEventListener('click', (e) => {
@@ -263,6 +312,8 @@
                                             console.log(`✅ Croquis: navegando a bloque ${bloqueEncontrado.id}`);
                                             openFichaBloque(indice);
                                         }
+                                    } else {
+                                        console.log(`⚠️ Croquis: bloque no encontrado para label "${label}"`);
                                     }
                                 });
                                 console.log(`✅ Croquis: asignado evento a inkscape:label="${label}"`);
@@ -530,7 +581,7 @@
                     `;
                     viasDiv.appendChild(viaDiv);
                 });
-                // SVG de líneas (se puede editar dinámicamente después)
+                // Generar SVG de líneas dinámicamente
                 const svgString = generarSVGLineas(b, b.vias);
                 document.getElementById(`svgContainer-${idx}`).innerHTML = svgString;
             });
@@ -559,6 +610,14 @@
                     history.pushState({ menu: screen }, '');
                 };
             });
+        }
+        
+        // Función para cerrar modal si existe (por compatibilidad)
+        if (document.getElementById('modalClose')) {
+            document.getElementById('modalClose').onclick = () => {
+                const modal = document.getElementById('modalCroquis');
+                if (modal) modal.classList.remove('active');
+            };
         }
         
         function init() {
