@@ -153,7 +153,6 @@
             return '●';
         }
 
-        // ====================== GEOMETRÍAS DE CADA BLOQUE ======================
         const geometriasBloques = {
             "8.1": {
                 viewBox: "0 0 692 768",
@@ -197,7 +196,6 @@
             }
         };
 
-        // ====================== GENERAR SVG CON TAMAÑOS DE TEXTO MEJORADOS ======================
         function generarSVG(bloque, vias) {
             const bloqueId = bloque.id;
             const geometria = geometriasBloques[bloqueId];
@@ -209,7 +207,7 @@
             
             let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometria.viewBox}" style="background:transparent;">`;
             
-            // PRIMERO: todas las líneas (para que queden por debajo)
+            // Líneas primero
             vias.forEach(via => {
                 const letraCompleta = via.linea_id;
                 const letraBase = letraCompleta.split('.')[0];
@@ -222,7 +220,7 @@
                 }
             });
             
-            // SEGUNDO: todos los círculos y textos (para que queden encima)
+            // Círculos y textos después
             vias.forEach(via => {
                 const letraCompleta = via.linea_id;
                 const letraBase = letraCompleta.split('.')[0];
@@ -233,18 +231,14 @@
                 if (!datosElemento) return;
                 
                 if (esPrimeraVariante) {
-                    // Círculo de entrada
                     svgContent += `<circle cx="${datosElemento.entrada.cx}" cy="${datosElemento.entrada.cy}" r="${datosElemento.entrada.r}" fill="${color}" stroke="${color}"/>`;
-                    // Texto del círculo de entrada (mucho más grande: 1.8 * radio ≈ 90% del diámetro)
                     svgContent += `<text x="${datosElemento.entrada.cx}" y="${datosElemento.entrada.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.entrada.r * 1.8}px" font-weight="bold">${letraBase}</text>`;
                     
-                    // Círculo de salida
                     svgContent += `<circle cx="${datosElemento.salida.cx}" cy="${datosElemento.salida.cy}" r="${datosElemento.salida.r}" fill="${color}" stroke="${color}"/>`;
-                    // Símbolo del círculo de salida (también más grande)
-                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * 1.8}px" font-weight="bold">${simbolo}</text>`;
+                    // dy="-2" para centrar mejor el símbolo verticalmente
+                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" dy="-2" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * 1.8}px" font-weight="bold">${simbolo}</text>`;
                 }
                 
-                // Variantes (círculos pequeños sin texto)
                 const variante = datosElemento.variantes[letraCompleta];
                 if (variante) {
                     svgContent += `<circle cx="${variante.cx}" cy="${variante.cy}" r="${variante.r}" fill="${color}" stroke="${color}"/>`;
@@ -255,7 +249,6 @@
             return svgContent;
         }
 
-        // ====================== RESTO DE FUNCIONES ======================
         function dibujarGrafica(sector) {
             const conteo = {};
             sector.bloques.forEach(bloque => {
@@ -481,7 +474,6 @@
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
-        // ====================== FICHA DE BLOQUE ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
