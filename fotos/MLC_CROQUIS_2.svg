@@ -9,13 +9,12 @@
    viewBox="0 0 4428 4428"
    sodipodi:docname="MLC_CROQUIS_2.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xml:space="preserve"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <sodipodi:namedview
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1" /><sodipodi:namedview
      id="namedview1"
      pagecolor="#ffffff"
      bordercolor="#000000"
@@ -24,26 +23,22 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.18405601"
-     inkscape:cx="2224.8662"
-     inkscape:cy="2214"
+     inkscape:zoom="0.13014725"
+     inkscape:cx="1340.789"
+     inkscape:cy="2185.9855"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g1" />
-  <g
+     inkscape:current-layer="g1" /><g
      inkscape:groupmode="layer"
      inkscape:label="Image"
-     id="g1">
-    <ellipse
-       style="display:inline;opacity:1;fill:#000000;stroke:#000000;stroke-width:5.31108;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+     id="g1"><ellipse
+       style="display:inline;opacity:0.5;fill:#ffffff;stroke:#ffffff;stroke-width:5.31108;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
        id="path1"
-       cx="2999.0872"
-       cy="749.77167"
+       cx="2215.3984"
+       cy="2172.8652"
        rx="651.81995"
        ry="380.16345"
-       inkscape:label="10" />
-  </g>
-</svg>
+       inkscape:label="10" /></g></svg>
