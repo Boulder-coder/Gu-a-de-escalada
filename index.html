@@ -166,7 +166,7 @@
             // Buscar por inkscape:label
             let elemento = svgDoc.querySelector(`[inkscape\\:label="${label}"]`);
             if (elemento) return elemento;
-            // Buscar en todos los elementos
+            // Buscar por atributo (sin namespace)
             const todos = svgDoc.querySelectorAll('*');
             for (let el of todos) {
                 let labelValue = el.getAttribute('inkscape:label');
@@ -183,38 +183,42 @@
             return null;
         }
 
-        // ====================== APLICAR COLORES AL SVG DEL BLOQUE (VERSIÓN FORZADA) ======================
+        // ====================== APLICAR COLORES AL SVG DEL BLOQUE (con linea_id completo) ======================
         function aplicarColoresSVG(svgDoc, bloque, vias) {
             if (!svgDoc) return;
             
             console.log(`🎨 Aplicando colores a SVG del bloque ${bloque.id}`);
             
             vias.forEach(via => {
-                const letra = via.linea_id;
-                const letraBase = letra.split('.')[0];
+                const lineaId = via.linea_id;  // "A", "B.1", "B.2", "C", "D.1", "D.2", "D.3", "E"
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 
-                // 1. Línea - forzar stroke y eliminar fill
-                const linea = encontrarElementoPorLabel(svgDoc, `${letraBase}_linea`);
+                console.log(`  Procesando: ${lineaId}, color: ${color}`);
+                
+                // 1. Línea (buscar por inkscape:label = lineaId)
+                const linea = encontrarElementoPorLabel(svgDoc, `${lineaId}_linea`);
                 if (linea) {
                     linea.removeAttribute('style');
                     linea.setAttribute('stroke', color);
                     linea.setAttribute('fill', 'none');
                     linea.setAttribute('stroke-width', '5');
-                    console.log(`  ✅ Línea ${letraBase}_linea coloreada a ${color}`);
+                    console.log(`    ✅ Línea ${lineaId}_linea coloreada`);
+                } else {
+                    console.log(`    ⚠️ No se encontró línea para ${lineaId}_linea`);
                 }
                 
-                // 2. Círculo de entrada
-                const circuloEntrada = encontrarElementoPorLabel(svgDoc, `${letraBase}_entrada`);
+                // 2. Círculo de entrada (buscar por inkscape:label = lineaId)
+                const circuloEntrada = encontrarElementoPorLabel(svgDoc, `${lineaId}_entrada`);
                 if (circuloEntrada) {
                     circuloEntrada.removeAttribute('style');
                     circuloEntrada.setAttribute('fill', color);
                     circuloEntrada.setAttribute('stroke', color);
-                    console.log(`  ✅ Círculo entrada ${letraBase}_entrada coloreado`);
+                    console.log(`    ✅ Círculo entrada ${lineaId}_entrada coloreado`);
                     
-                    // Añadir o actualizar texto dentro del círculo
+                    // Añadir o actualizar texto dentro del círculo (solo la letra base, sin el .1 .2)
                     let texto = circuloEntrada.querySelector('text');
+                    const letraBase = lineaId.split('.')[0];
                     if (!texto) {
                         const cx = circuloEntrada.getAttribute('cx');
                         const cy = circuloEntrada.getAttribute('cy');
@@ -230,15 +234,17 @@
                         circuloEntrada.appendChild(texto);
                     }
                     texto.textContent = letraBase;
+                } else {
+                    console.log(`    ⚠️ No se encontró círculo entrada para ${lineaId}_entrada`);
                 }
                 
                 // 3. Círculo de salida
-                const circuloSalida = encontrarElementoPorLabel(svgDoc, `${letraBase}_salida`);
+                const circuloSalida = encontrarElementoPorLabel(svgDoc, `${lineaId}_salida`);
                 if (circuloSalida) {
                     circuloSalida.removeAttribute('style');
                     circuloSalida.setAttribute('fill', color);
                     circuloSalida.setAttribute('stroke', color);
-                    console.log(`  ✅ Círculo salida ${letraBase}_salida coloreado`);
+                    console.log(`    ✅ Círculo salida ${lineaId}_salida coloreado`);
                     
                     let texto = circuloSalida.querySelector('text');
                     if (!texto) {
@@ -256,15 +262,8 @@
                         circuloSalida.appendChild(texto);
                     }
                     texto.textContent = simbolo;
-                }
-                
-                // 4. Variantes (círculos pequeños para B.2, D.2, etc.)
-                const variante = encontrarElementoPorLabel(svgDoc, `${letra}_entrada`);
-                if (variante && letra.includes('.') && letra.split('.')[1] !== '1') {
-                    variante.removeAttribute('style');
-                    variante.setAttribute('fill', color);
-                    variante.setAttribute('stroke', color);
-                    console.log(`  ✅ Variante ${letra}_entrada coloreada`);
+                } else {
+                    console.log(`    ⚠️ No se encontró círculo salida para ${lineaId}_salida`);
                 }
             });
         }
