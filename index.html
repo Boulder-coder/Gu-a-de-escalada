@@ -104,6 +104,7 @@
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
 
+        // ====================== PALETA DE COLORES ======================
         function getColorByGrado(grado) {
             if (!grado) return '#FF93DB';
             const g = grado.toUpperCase().trim();
@@ -153,10 +154,11 @@
             return '●';
         }
 
-        // ====================== NUEVA FUNCIÓN: CLONAR Y MODIFICAR EL SVG ======================
-        function crearSVGConColores(svgDoc, vias) {
-            // Clonar el SVG para no modificar el original
-            const clon = svgDoc.documentElement.cloneNode(true);
+        // ====================== GENERAR SVG MANUALMENTE ======================
+        function generarSVG(bloque, vias) {
+            // Este es el SVG base con las coordenadas exactas de tu MLC_ESTE_B8_1.svg
+            // Pero con los colores asignados según el grado de cada vía
+            let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692 768" style="background:transparent;">`;
             
             vias.forEach(via => {
                 const letra = via.linea_id;
@@ -164,63 +166,68 @@
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 
-                // Línea
-                const linea = clon.querySelector(`[inkscape\\:label="${letraBase}_linea"]`);
-                if (linea) {
-                    linea.setAttribute('stroke', color);
-                    linea.setAttribute('fill', 'none');
-                    linea.removeAttribute('style');
+                // Cada vía tiene sus coordenadas fijas (las que extrajimos de tu SVG)
+                if (letraBase === 'A') {
+                    svgContent += `
+                        <path d="M 43.977704,470.42816 C 58.867572,376.1141 54.896702,273.08794 85.290092,181.90777 100.83977,135.25875 131.88969,92.217659 151.25665,48.642006" stroke="${color}" stroke-width="5" fill="none"/>
+                        <circle cx="44.153152" cy="466.93884" r="17.5" fill="${color}" stroke="${color}"/>
+                        <circle cx="149.76373" cy="54.145576" r="12.5" fill="${color}" stroke="${color}"/>
+                    `;
+                    // Añadir texto para entrada principal
+                    svgContent += `<text x="44.153152" y="466.93884" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14px" font-weight="bold">${letraBase}</text>`;
+                    svgContent += `<text x="149.76373" y="54.145576" text-anchor="middle" dominant-baseline="central" fill="white" font-size="10px" font-weight="bold">${simbolo}</text>`;
                 }
-                
-                // Círculo entrada
-                const circuloEntrada = clon.querySelector(`[inkscape\\:label="${letraBase}_entrada"]`);
-                if (circuloEntrada) {
-                    circuloEntrada.setAttribute('fill', color);
-                    circuloEntrada.setAttribute('stroke', color);
-                    circuloEntrada.removeAttribute('style');
-                    
-                    // Añadir texto si es entrada principal
-                    if (!letra.includes('.') || (letra.includes('.') && letra.split('.')[1] === '1')) {
-                        const cx = circuloEntrada.getAttribute('cx');
-                        const cy = circuloEntrada.getAttribute('cy');
-                        const r = parseFloat(circuloEntrada.getAttribute('r')) || 16;
-                        const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        texto.setAttribute('x', cx);
-                        texto.setAttribute('y', cy);
-                        texto.setAttribute('text-anchor', 'middle');
-                        texto.setAttribute('dominant-baseline', 'central');
-                        texto.setAttribute('fill', 'white');
-                        texto.setAttribute('font-size', `${r * 0.8}px`);
-                        texto.setAttribute('font-weight', 'bold');
-                        texto.textContent = letraBase;
-                        circuloEntrada.appendChild(texto);
+                else if (letraBase === 'B') {
+                    svgContent += `
+                        <path d="M 81.292119,467.76285 C 80.295673,369.3398 280.64801,356.30058 316.5062,302.5133 c 27.01032,-40.51548 5.99696,-169.32625 5.99696,-221.221181" stroke="${color}" stroke-width="5" fill="none"/>
+                        <circle cx="80.153" cy="466.93884" r="17.5" fill="${color}" stroke="${color}"/>
+                        <circle cx="324.34189" cy="87.462013" r="12.5" fill="${color}" stroke="${color}"/>
+                    `;
+                    svgContent += `<text x="80.153" y="466.93884" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14px" font-weight="bold">${letraBase}</text>`;
+                    svgContent += `<text x="324.34189" y="87.462013" text-anchor="middle" dominant-baseline="central" fill="white" font-size="10px" font-weight="bold">${simbolo}</text>`;
+                    // Variante B.2
+                    if (letra === 'B.2') {
+                        svgContent += `<circle cx="79.850845" cy="492.92056" r="7.5" fill="${color}" stroke="${color}"/>`;
                     }
                 }
-                
-                // Círculo salida
-                const circuloSalida = clon.querySelector(`[inkscape\\:label="${letraBase}_salida"]`);
-                if (circuloSalida) {
-                    circuloSalida.setAttribute('fill', color);
-                    circuloSalida.setAttribute('stroke', color);
-                    circuloSalida.removeAttribute('style');
-                    
-                    const cx = circuloSalida.getAttribute('cx');
-                    const cy = circuloSalida.getAttribute('cy');
-                    const r = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
-                    const texto = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    texto.setAttribute('x', cx);
-                    texto.setAttribute('y', cy);
-                    texto.setAttribute('text-anchor', 'middle');
-                    texto.setAttribute('dominant-baseline', 'central');
-                    texto.setAttribute('fill', 'white');
-                    texto.setAttribute('font-size', `${r * 0.7}px`);
-                    texto.setAttribute('font-weight', 'bold');
-                    texto.textContent = simbolo;
-                    circuloSalida.appendChild(texto);
+                else if (letraBase === 'C') {
+                    svgContent += `
+                        <path d="M 114.60856,467.76285 C 131.24746,418.8428 216.97783,386.86146 269.19685,364.48188 359.0425,325.9766 447.26282,264.53255 546.38965,264.53255" stroke="${color}" stroke-width="5" fill="none"/>
+                        <circle cx="115.81966" cy="466.93884" r="17.5" fill="${color}" stroke="${color}"/>
+                        <circle cx="547.56207" cy="265.37183" r="12.5" fill="${color}" stroke="${color}"/>
+                    `;
+                    svgContent += `<text x="115.81966" y="466.93884" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14px" font-weight="bold">${letraBase}</text>`;
+                    svgContent += `<text x="547.56207" y="265.37183" text-anchor="middle" dominant-baseline="central" fill="white" font-size="10px" font-weight="bold">${simbolo}</text>`;
+                }
+                else if (letraBase === 'D') {
+                    svgContent += `
+                        <path d="m 483.08841,377.80845 c -2.16631,-13.03142 -8.44764,-49.16095 -10.66126,-71.29718 -3.26387,-32.63876 -2.3346,-105.69948 -23.32151,-131.93311 -6.32943,-7.91179 -23.29715,-12.43408 -32.65011,-13.99291 -7.90553,-1.31759 -57.76735,-14.91904 -60.63593,-20.65619 -6.67687,-13.35375 -6.66329,-26.65966 -6.66329,-41.312391" stroke="${color}" stroke-width="5" fill="none"/>
+                        <circle cx="482.93054" cy="378.31711" r="17.5" fill="${color}" stroke="${color}"/>
+                        <circle cx="350.32874" cy="99.622528" r="12.5" fill="${color}" stroke="${color}"/>
+                    `;
+                    svgContent += `<text x="482.93054" y="378.31711" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14px" font-weight="bold">${letraBase}</text>`;
+                    svgContent += `<text x="350.32874" y="99.622528" text-anchor="middle" dominant-baseline="central" fill="white" font-size="10px" font-weight="bold">${simbolo}</text>`;
+                    // Variantes D.2 y D.3
+                    if (letra === 'D.2') {
+                        svgContent += `<circle cx="483.1662" cy="404.3414" r="7.5" fill="${color}" stroke="${color}"/>`;
+                    }
+                    if (letra === 'D.3') {
+                        svgContent += `<circle cx="483.1662" cy="420.25" r="7.5" fill="${color}" stroke="${color}"/>`;
+                    }
+                }
+                else if (letraBase === 'E') {
+                    svgContent += `
+                        <path d="M 598.38037,441.01104 C 587.31583,417.12936 587.27284,390.05145 581.41841,364.68221 575.76437,340.18139 564.87931,319.55307 556.44663,296.36319 541.29154,254.6867 540.98606,193.23065 498.49325,167.73497 474.15382,153.13131 388.93106,144.94039 378.81718,131.45521 c -5.29006,-7.05341 -3.35367,-20.12201 -4.71166,-28.26993" stroke="${color}" stroke-width="5" fill="none"/>
+                        <circle cx="592.73688" cy="439.84799" r="17.5" fill="${color}" stroke="${color}"/>
+                        <circle cx="377.13071" cy="109.51461" r="12.5" fill="${color}" stroke="${color}"/>
+                    `;
+                    svgContent += `<text x="592.73688" y="439.84799" text-anchor="middle" dominant-baseline="central" fill="white" font-size="14px" font-weight="bold">${letraBase}</text>`;
+                    svgContent += `<text x="377.13071" y="109.51461" text-anchor="middle" dominant-baseline="central" fill="white" font-size="10px" font-weight="bold">${simbolo}</text>`;
                 }
             });
             
-            return clon;
+            svgContent += `</svg>`;
+            return svgContent;
         }
 
         function dibujarGrafica(sector) {
@@ -448,7 +455,7 @@
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
-        // ====================== FICHA DE BLOQUE CON CLONADO DEL SVG ======================
+        // ====================== FICHA DE BLOQUE ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -467,9 +474,9 @@
                 slide.className = 'swiper-slide';
                 slide.innerHTML = `
                     <div class="ficha-bloque">
-                        <div class="media-container" style="position: relative;">
+                        <div class="media-container" id="mediaContainer-${idx}" style="position: relative;">
                             <img src="${b.foto_base}.jpg" class="foto-bloque" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
-                            <div id="svgClon-${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                            <div id="svgContainer-${idx}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
                         </div>
                         <div class="ficha-footer" style="font-family: 'Cocogoose', sans-serif;">
                             <span>Bloque ${parseInt(b.id, 10)}</span>
@@ -501,35 +508,13 @@
                     viasContainer.appendChild(viaDiv);
                 });
                 
-                const svgUrl = `${b.foto_base}.svg`;
-                console.log(`📂 Cargando SVG: ${svgUrl}`);
-                fetch(svgUrl)
-                    .then(res => res.text())
-                    .then(svgText => {
-                        console.log(`✅ SVG cargado: ${svgUrl}`);
-                        const parser = new DOMParser();
-                        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                        
-                        // Crear un clon modificado con los colores
-                        const svgModificado = crearSVGConColores(svgDoc, b.vias);
-                        svgModificado.classList.add('svg-overlay');
-                        
-                        const img = slide.querySelector('.foto-bloque');
-                        if (img.complete && img.naturalWidth) {
-                            svgModificado.setAttribute('viewBox', `0 0 ${img.naturalWidth} ${img.naturalHeight}`);
-                        }
-                        svgModificado.setAttribute('preserveAspectRatio', 'none');
-                        svgModificado.style.width = '100%';
-                        svgModificado.style.height = 'auto';
-                        
-                        const svgContainer = document.getElementById(`svgClon-${idx}`);
-                        if (svgContainer) {
-                            svgContainer.innerHTML = '';
-                            svgContainer.appendChild(svgModificado);
-                            console.log(`🎨 SVG modificado insertado para bloque ${b.id}`);
-                        }
-                    })
-                    .catch(err => console.log(`❌ Error cargando SVG: ${err}`));
+                // Generar SVG directamente desde el código (sin leer archivo externo)
+                const svgString = generarSVG(b, b.vias);
+                const svgContainer = document.getElementById(`svgContainer-${idx}`);
+                if (svgContainer) {
+                    svgContainer.innerHTML = svgString;
+                    console.log(`✅ SVG generado para bloque ${b.id}`);
+                }
             });
             
             if (swiperBloques) swiperBloques.destroy();
