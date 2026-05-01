@@ -57,6 +57,15 @@
         .ficha-bloque { background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 0; }
         .media-container { position: relative; background: #d4d4d4; min-height: 200px; }
         .media-container img { width: 100%; height: auto; display: block; }
+        .media-container svg { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none;
+            background: transparent;
+        }
         .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
         .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
         .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; letter-spacing: 0.5px; }
@@ -510,7 +519,38 @@
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
-        // ====================== FICHA DE BLOQUE (SIN SVG) ======================
+        // ====================== CARGAR SVG DEL BLOQUE (con anti-caché) ======================
+        function cargarSVGBloque(bloque, slideIndex) {
+            const svgUrl = `${bloque.foto_base}.svg?v=${Date.now()}`;
+            const mediaContainer = document.getElementById(`mediaContainer-${slideIndex}`);
+            if (!mediaContainer) return;
+            
+            fetch(svgUrl)
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res.text();
+                })
+                .then(svgText => {
+                    const parser = new DOMParser();
+                    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                    const svgElement = svgDoc.documentElement;
+                    if (!svgElement) return;
+                    
+                    svgElement.setAttribute('preserveAspectRatio', 'none');
+                    svgElement.style.width = '100%';
+                    svgElement.style.height = '100%';
+                    svgElement.style.pointerEvents = 'none';
+                    
+                    // Opcional: hacer transparentes ciertos elementos si quieres
+                    // Pero por ahora no modificamos nada, solo mostramos el SVG tal cual
+                    
+                    mediaContainer.appendChild(svgElement);
+                    console.log(`✅ SVG cargado para bloque ${bloque.id}`);
+                })
+                .catch(err => console.log(`⚠️ No se pudo cargar SVG para bloque ${bloque.id}:`, err));
+        }
+
+        // ====================== FICHA DE BLOQUE (CON SVG SUPERPUESTO) ======================
         function openFichaBloque(bloqueIndex) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
@@ -522,7 +562,7 @@
                 slide.className = 'swiper-slide';
                 slide.innerHTML = `
                     <div class="ficha-bloque">
-                        <div class="media-container" style="position: relative;">
+                        <div class="media-container" id="mediaContainer-${idx}" style="position: relative;">
                             <img src="${b.foto_base}.jpg" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">
                         </div>
                         <div class="ficha-footer"><span>Bloque ${parseInt(b.id, 10)}</span><span>${currentSector.nombre}</span></div>
@@ -551,6 +591,9 @@
                     `;
                     viasDiv.appendChild(viaDiv);
                 });
+                
+                // Cargar SVG superpuesto del bloque
+                cargarSVGBloque(b, idx);
             });
             
             if (swiperBloques) swiperBloques.destroy();
