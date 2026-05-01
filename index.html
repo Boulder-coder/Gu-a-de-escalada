@@ -195,9 +195,9 @@
                     }
                 }
             }
-            // Puedes añadir aquí más bloques en el futuro
         };
 
+        // ====================== GENERAR SVG CON TAMAÑOS DE TEXTO MEJORADOS ======================
         function generarSVG(bloque, vias) {
             const bloqueId = bloque.id;
             const geometria = geometriasBloques[bloqueId];
@@ -209,25 +209,42 @@
             
             let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometria.viewBox}" style="background:transparent;">`;
             
+            // PRIMERO: todas las líneas (para que queden por debajo)
+            vias.forEach(via => {
+                const letraCompleta = via.linea_id;
+                const letraBase = letraCompleta.split('.')[0];
+                const color = getColorByGrado(via.grado);
+                const esPrimeraVariante = !letraCompleta.includes('.') || (letraCompleta.includes('.') && letraCompleta.split('.')[1] === '1');
+                const datosElemento = geometria.elementos[letraBase];
+                if (!datosElemento) return;
+                if (esPrimeraVariante) {
+                    svgContent += `<path d="${datosElemento.path}" stroke="${color}" stroke-width="5" fill="none"/>`;
+                }
+            });
+            
+            // SEGUNDO: todos los círculos y textos (para que queden encima)
             vias.forEach(via => {
                 const letraCompleta = via.linea_id;
                 const letraBase = letraCompleta.split('.')[0];
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
-                
                 const esPrimeraVariante = !letraCompleta.includes('.') || (letraCompleta.includes('.') && letraCompleta.split('.')[1] === '1');
                 const datosElemento = geometria.elementos[letraBase];
-                
                 if (!datosElemento) return;
                 
                 if (esPrimeraVariante) {
-                    svgContent += `<path d="${datosElemento.path}" stroke="${color}" stroke-width="5" fill="none"/>`;
+                    // Círculo de entrada
                     svgContent += `<circle cx="${datosElemento.entrada.cx}" cy="${datosElemento.entrada.cy}" r="${datosElemento.entrada.r}" fill="${color}" stroke="${color}"/>`;
+                    // Texto del círculo de entrada (mucho más grande: 1.8 * radio ≈ 90% del diámetro)
+                    svgContent += `<text x="${datosElemento.entrada.cx}" y="${datosElemento.entrada.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.entrada.r * 1.8}px" font-weight="bold">${letraBase}</text>`;
+                    
+                    // Círculo de salida
                     svgContent += `<circle cx="${datosElemento.salida.cx}" cy="${datosElemento.salida.cy}" r="${datosElemento.salida.r}" fill="${color}" stroke="${color}"/>`;
-                    svgContent += `<text x="${datosElemento.entrada.cx}" y="${datosElemento.entrada.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.entrada.r * 0.8}px" font-weight="bold">${letraBase}</text>`;
-                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * 0.7}px" font-weight="bold">${simbolo}</text>`;
+                    // Símbolo del círculo de salida (también más grande)
+                    svgContent += `<text x="${datosElemento.salida.cx}" y="${datosElemento.salida.cy}" text-anchor="middle" dominant-baseline="central" fill="white" font-size="${datosElemento.salida.r * 1.8}px" font-weight="bold">${simbolo}</text>`;
                 }
                 
+                // Variantes (círculos pequeños sin texto)
                 const variante = datosElemento.variantes[letraCompleta];
                 if (variante) {
                     svgContent += `<circle cx="${variante.cx}" cy="${variante.cy}" r="${variante.r}" fill="${color}" stroke="${color}"/>`;
@@ -238,7 +255,7 @@
             return svgContent;
         }
 
-        // ====================== RESTO DE FUNCIONES (dibujarGrafica, getTextoManos, navegación, etc.) ======================
+        // ====================== RESTO DE FUNCIONES ======================
         function dibujarGrafica(sector) {
             const conteo = {};
             sector.bloques.forEach(bloque => {
@@ -517,7 +534,6 @@
                     viasContainer.appendChild(viaDiv);
                 });
                 
-                // Generar SVG usando la geometría específica del bloque
                 const svgString = generarSVG(b, b.vias);
                 const svgContainer = document.getElementById(`svgContainer-${idx}`);
                 if (svgContainer) {
