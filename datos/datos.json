@@ -1,36 +1,36 @@
 {
   "sectores": [
     {
-      "nombre": "Monte La Cruz - Norte",
-      "croquis": "fotos/MLC_NORTE_CROQUIS",
-      "bloques": [
+      "nombre": "Monte La Cruz",
+      "info": {
+        "parking": [
+          "https://maps.app.goo.gl/e1SB96eGaXCvjFn47",
+          "https://maps.app.goo.gl/hAAkZtQq8DXNwnDH8",
+          "https://maps.app.goo.gl/jpi1YvNEa7J1evzz8"
+        ]
+      },
+      "croquis_list": [
         {
-          "id": "1.0",
-          "foto_base": "fotos/MLC_NORTE_B1",
-          "vias": [
-            {
-              "linea_id": "A",
-              "nombre": "Sin abrir",
-              "grado": "",
-              "entrada": "",
-              "mano_izq": "",
-              "mano_der": "",
-              "manos_juntas": "",
-              "definicion": "",
-              "salida": "Top-out",
-              "expuesta": ""
-            }
-          ]
+          "imagen": "fotos/MLC_CROQUIS_1",
+          "svg": "fotos/MLC_CROQUIS_1",
+          "bloques_ids": ["1.0", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "4.0", "5.1", "5.2", "6.0", "7.1", "7.2", "7.3", "8.1", "8.2", "9.0"]
+        },
+        {
+          "imagen": "fotos/MLC_CROQUIS_2",
+          "svg": "fotos/MLC_CROQUIS_2",
+          "bloques_ids": ["10.0"]
+        },
+        {
+          "imagen": "fotos/MLC_CROQUIS_3",
+          "svg": "fotos/MLC_CROQUIS_3",
+          "bloques_ids": ["11.1", "11.2"]
         }
-      ]
-    },
-    {
-      "nombre": "Monte La Cruz - Este",
-      "croquis": "fotos/MLC_ESTE_CROQUIS",
+      ],
       "bloques": [
         {
           "id": "1.0",
-          "foto_base": "fotos/MLC_ESTE_B1",
+          "foto_base": "fotos/MLC_B1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -48,7 +48,8 @@
         },
         {
           "id": "2.1",
-          "foto_base": "fotos/MLC_ESTE_B2_1",
+          "foto_base": "fotos/MLC_B2_1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -90,7 +91,8 @@
         },
         {
           "id": "2.2",
-          "foto_base": "fotos/MLC_ESTE_B2_2",
+          "foto_base": "fotos/MLC_B2_2",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "D",
@@ -132,7 +134,8 @@
         },
         {
           "id": "2.3",
-          "foto_base": "fotos/MLC_ESTE_B2_3",
+          "foto_base": "fotos/MLC_B2_3",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "G.1",
@@ -162,7 +165,8 @@
         },
         {
           "id": "3.1",
-          "foto_base": "fotos/MLC_ESTE_B3_1",
+          "foto_base": "fotos/MLC_B3_1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -216,7 +220,8 @@
         },
         {
           "id": "3.2",
-          "foto_base": "fotos/MLC_ESTE_B3_2",
+          "foto_base": "fotos/MLC_B3_2",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "E",
@@ -234,7 +239,8 @@
         },
         {
           "id": "3.3",
-          "foto_base": "fotos/MLC_ESTE_B3_3",
+          "foto_base": "fotos/MLC_B3_3",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "F",
@@ -264,7 +270,8 @@
         },
         {
           "id": "4.0",
-          "foto_base": "fotos/MLC_ESTE_B4",
+          "foto_base": "fotos/MLC_B4",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -306,7 +313,8 @@
         },
         {
           "id": "5.1",
-          "foto_base": "fotos/MLC_ESTE_B5_1",
+          "foto_base": "fotos/MLC_B5_1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -360,7 +368,8 @@
         },
         {
           "id": "5.2",
-          "foto_base": "fotos/MLC_ESTE_B5_2",
+          "foto_base": "fotos/MLC_B5_2",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "D",
@@ -402,7 +411,8 @@
         },
         {
           "id": "6.0",
-          "foto_base": "fotos/MLC_ESTE_B6",
+          "foto_base": "fotos/MLC_B6",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -420,7 +430,8 @@
         },
         {
           "id": "7.1",
-          "foto_base": "fotos/MLC_ESTE_B7_1",
+          "foto_base": "fotos/MLC_B7_1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -438,7 +449,8 @@
         },
         {
           "id": "7.2",
-          "foto_base": "fotos/MLC_ESTE_B7_2",
+          "foto_base": "fotos/MLC_B7_2",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "B",
@@ -456,7 +468,8 @@
         },
         {
           "id": "7.3",
-          "foto_base": "fotos/MLC_ESTE_B7_3",
+          "foto_base": "fotos/MLC_B7_3",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "C.1",
@@ -486,7 +499,8 @@
         },
         {
           "id": "8.1",
-          "foto_base": "fotos/MLC_ESTE_B8_1",
+          "foto_base": "fotos/MLC_B8_1",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "A",
@@ -588,7 +602,8 @@
         },
         {
           "id": "8.2",
-          "foto_base": "fotos/MLC_ESTE_B8_2",
+          "foto_base": "fotos/MLC_B8_2",
+          "croquis_ref": 0,
           "vias": [
             {
               "linea_id": "F",
@@ -601,6 +616,118 @@
               "definicion": "",
               "salida": "Top-out",
               "expuesta": "Caída sin porteo"
+            }
+          ]
+        },
+        {
+          "id": "9.0",
+          "foto_base": "fotos/MLC_B9",
+          "croquis_ref": 0,
+          "vias": [
+            {
+              "linea_id": "A",
+              "nombre": "Sin abrir",
+              "grado": "",
+              "entrada": "",
+              "mano_izq": "",
+              "mano_der": "",
+              "manos_juntas": "",
+              "definicion": "",
+              "salida": "Top-out",
+              "expuesta": ""
+            }
+          ]
+        },
+        {
+          "id": "10.0",
+          "foto_base": "fotos/MLC_B10",
+          "croquis_ref": 1,
+          "vias": [
+            {
+              "linea_id": "A",
+              "nombre": "Sin abrir",
+              "grado": "",
+              "entrada": "",
+              "mano_izq": "",
+              "mano_der": "",
+              "manos_juntas": "",
+              "definicion": "",
+              "salida": "Top-out",
+              "expuesta": ""
+            }
+          ]
+        },
+        {
+          "id": "11.1",
+          "foto_base": "fotos/MLC_B11_1",
+          "croquis_ref": 2,
+          "vias": [
+            {
+              "linea_id": "A",
+              "nombre": "Tupper de plátano",
+              "grado": "5",
+              "entrada": "Sit",
+              "mano_izq": "Presa lateral",
+              "mano_der": "Presa buena lateral",
+              "manos_juntas": "",
+              "definicion": "Salida directa",
+              "salida": "Top-out",
+              "expuesta": ""
+            },
+            {
+              "linea_id": "B",
+              "nombre": "Robocat",
+              "grado": "5+",
+              "entrada": "Sit",
+              "mano_izq": "Presa lateral",
+              "mano_der": "Presa buena lateral",
+              "manos_juntas": "",
+              "definicion": "Recorre la arista, sale por la parte alta",
+              "salida": "Top-out",
+              "expuesta": ""
+            },
+            {
+              "linea_id": "C.1",
+              "nombre": "Los cuchillos de Buñol",
+              "grado": "7A",
+              "entrada": "Sit",
+              "mano_izq": "Regleta rugosa",
+              "mano_der": "Regleta baja",
+              "manos_juntas": "",
+              "definicion": "Sale recto",
+              "salida": "Top-out",
+              "expuesta": ""
+            },
+            {
+              "linea_id": "C.2",
+              "nombre": "El afilador",
+              "grado": "6B",
+              "entrada": "De Pie",
+              "mano_izq": "Bidedo invertido",
+              "mano_der": "Tridedo positivo",
+              "manos_juntas": "",
+              "definicion": "Sale recto",
+              "salida": "Top-out",
+              "expuesta": ""
+            }
+          ]
+        },
+        {
+          "id": "11.2",
+          "foto_base": "fotos/MLC_B11_2",
+          "croquis_ref": 2,
+          "vias": [
+            {
+              "linea_id": "D",
+              "nombre": "Sin abrir",
+              "grado": "",
+              "entrada": "",
+              "mano_izq": "",
+              "mano_der": "",
+              "manos_juntas": "",
+              "definicion": "",
+              "salida": "Top-out",
+              "expuesta": ""
             }
           ]
         }
