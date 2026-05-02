@@ -64,6 +64,7 @@
             width: 100%; 
             height: 100%; 
             background: transparent;
+            z-index: 10;
         }
         .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
         .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
@@ -196,7 +197,6 @@
             return null;
         }
 
-        // Versión mejorada de aplicarColoresSVG con mejor manejo de coordenadas
         function aplicarColoresSVG(svgDoc, bloque, vias) {
             if (!svgDoc) return;
             
@@ -216,7 +216,7 @@
                     linea.removeAttribute('style');
                     linea.setAttribute('stroke', color);
                     linea.setAttribute('fill', 'none');
-                    linea.setAttribute('stroke-width', '5');
+                    linea.setAttribute('stroke-width', '6');
                     console.log(`    ✅ Línea ${lineaId}_linea coloreada`);
                 }
                 
@@ -225,15 +225,14 @@
                 if (circuloEntrada) {
                     circuloEntrada.removeAttribute('style');
                     circuloEntrada.setAttribute('fill', color);
-                    circuloEntrada.setAttribute('stroke', color);
+                    circuloEntrada.setAttribute('stroke', '#ffffff');
+                    circuloEntrada.setAttribute('stroke-width', '2');
                     
                     if (textoCirculo) {
-                        // Obtener coordenadas del círculo
                         let cx = circuloEntrada.getAttribute('cx');
                         let cy = circuloEntrada.getAttribute('cy');
-                        let radio = parseFloat(circuloEntrada.getAttribute('r')) || 16;
+                        let radio = parseFloat(circuloEntrada.getAttribute('r')) || 17.5;
                         
-                        // Si no tiene cx/cy, buscar en transform
                         if ((!cx || !cy) && circuloEntrada.hasAttribute('transform')) {
                             const transform = circuloEntrada.getAttribute('transform');
                             const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
@@ -243,20 +242,40 @@
                             }
                         }
                         
-                        // Usar coordenadas por defecto si no se encontraron
                         cx = cx ? parseFloat(cx) : 0;
                         cy = cy ? parseFloat(cy) : 0;
                         
-                        // Crear texto dentro del círculo
+                        // Texto principal
                         const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         textElement.setAttribute('x', cx);
                         textElement.setAttribute('y', cy);
                         textElement.setAttribute('text-anchor', 'middle');
                         textElement.setAttribute('dominant-baseline', 'central');
                         textElement.setAttribute('fill', 'white');
-                        textElement.setAttribute('font-size', `${radio * 1.4}px`);
+                        textElement.setAttribute('font-size', `${radio * 1.2}px`);
                         textElement.setAttribute('font-weight', 'bold');
+                        textElement.setAttribute('font-family', 'Arial, sans-serif');
                         textElement.textContent = textoCirculo;
+                        
+                        // Sombra/borde para mejor legibilidad
+                        const shadowElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        shadowElement.setAttribute('x', cx);
+                        shadowElement.setAttribute('y', cy);
+                        shadowElement.setAttribute('text-anchor', 'middle');
+                        shadowElement.setAttribute('dominant-baseline', 'central');
+                        shadowElement.setAttribute('fill', 'black');
+                        shadowElement.setAttribute('font-size', `${radio * 1.2}px`);
+                        shadowElement.setAttribute('font-weight', 'bold');
+                        shadowElement.setAttribute('font-family', 'Arial, sans-serif');
+                        shadowElement.setAttribute('stroke', 'black');
+                        shadowElement.setAttribute('stroke-width', '2');
+                        shadowElement.textContent = textoCirculo;
+                        
+                        // Eliminar textos anteriores si existen
+                        const oldTexts = circuloEntrada.querySelectorAll('text');
+                        oldTexts.forEach(t => t.remove());
+                        
+                        circuloEntrada.appendChild(shadowElement);
                         circuloEntrada.appendChild(textElement);
                         console.log(`      ✅ Texto "${textoCirculo}" añadido en (${cx},${cy}) con radio ${radio}`);
                     }
@@ -267,12 +286,12 @@
                 if (circuloSalida) {
                     circuloSalida.removeAttribute('style');
                     circuloSalida.setAttribute('fill', color);
-                    circuloSalida.setAttribute('stroke', color);
+                    circuloSalida.setAttribute('stroke', '#ffffff');
+                    circuloSalida.setAttribute('stroke-width', '2');
                     
-                    // Obtener coordenadas del círculo
                     let cx = circuloSalida.getAttribute('cx');
                     let cy = circuloSalida.getAttribute('cy');
-                    let radio = parseFloat(circuloSalida.getAttribute('r')) || 12;
+                    let radio = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
                     
                     if ((!cx || !cy) && circuloSalida.hasAttribute('transform')) {
                         const transform = circuloSalida.getAttribute('transform');
@@ -286,15 +305,36 @@
                     cx = cx ? parseFloat(cx) : 0;
                     cy = cy ? parseFloat(cy) : 0;
                     
+                    // Texto principal
                     const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     textElement.setAttribute('x', cx);
                     textElement.setAttribute('y', cy);
                     textElement.setAttribute('text-anchor', 'middle');
                     textElement.setAttribute('dominant-baseline', 'central');
                     textElement.setAttribute('fill', 'white');
-                    textElement.setAttribute('font-size', `${radio * 1.2}px`);
+                    textElement.setAttribute('font-size', `${radio * 1.0}px`);
                     textElement.setAttribute('font-weight', 'bold');
+                    textElement.setAttribute('font-family', 'Arial, sans-serif');
                     textElement.textContent = simbolo;
+                    
+                    // Sombra/borde para mejor legibilidad
+                    const shadowElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    shadowElement.setAttribute('x', cx);
+                    shadowElement.setAttribute('y', cy);
+                    shadowElement.setAttribute('text-anchor', 'middle');
+                    shadowElement.setAttribute('dominant-baseline', 'central');
+                    shadowElement.setAttribute('fill', 'black');
+                    shadowElement.setAttribute('font-size', `${radio * 1.0}px`);
+                    shadowElement.setAttribute('font-weight', 'bold');
+                    shadowElement.setAttribute('font-family', 'Arial, sans-serif');
+                    shadowElement.setAttribute('stroke', 'black');
+                    shadowElement.setAttribute('stroke-width', '2');
+                    shadowElement.textContent = simbolo;
+                    
+                    const oldTexts = circuloSalida.querySelectorAll('text');
+                    oldTexts.forEach(t => t.remove());
+                    
+                    circuloSalida.appendChild(shadowElement);
                     circuloSalida.appendChild(textElement);
                     console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy}) con radio ${radio}`);
                 }
@@ -676,6 +716,7 @@
                     svgElement.style.top = '0';
                     svgElement.style.left = '0';
                     svgElement.style.pointerEvents = 'none';
+                    svgElement.style.zIndex = '20';
                     
                     const oldSvg = mediaContainer.querySelector('svg');
                     if (oldSvg) oldSvg.remove();
