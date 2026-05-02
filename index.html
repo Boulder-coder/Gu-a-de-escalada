@@ -151,11 +151,6 @@
             return '#FF93DB';
         }
 
-        // Forzar siempre texto blanco
-        function getTextoColor(color) {
-            return '#FFFFFF';
-        }
-
         function getSimboloSalida(salida) {
             if (!salida) return '●';
             const s = salida.toLowerCase();
@@ -202,6 +197,20 @@
             return null;
         }
 
+        // Función para escalar coordenadas basado en viewBox
+        function escalarCoordenadas(svgDoc, x, y) {
+            const svgElement = svgDoc.documentElement;
+            const viewBox = svgElement.getAttribute('viewBox');
+            
+            if (viewBox) {
+                const [minX, minY, width, height] = viewBox.split(' ').map(Number);
+                // Las coordenadas ya están en el sistema de viewBox, no necesitan escalado
+                // porque el SVG se está mostrando a tamaño completo con preserveAspectRatio="none"
+                return { x, y };
+            }
+            return { x, y };
+        }
+
         function aplicarColoresSVG(svgDoc, bloque, vias) {
             if (!svgDoc) return;
             
@@ -212,7 +221,6 @@
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 const textoCirculo = getTextoParaCirculo(lineaId);
-                const textoColor = getTextoColor(color);
                 
                 console.log(`  Procesando: ${lineaId}, texto: "${textoCirculo}", simbolo: "${simbolo}"`);
                 
@@ -231,25 +239,26 @@
                 if (circuloEntrada) {
                     circuloEntrada.removeAttribute('style');
                     circuloEntrada.setAttribute('fill', color);
-                    circuloEntrada.setAttribute('stroke', '#000000');
-                    circuloEntrada.setAttribute('stroke-width', '1');
+                    circuloEntrada.setAttribute('stroke', '#FFFFFF');
+                    circuloEntrada.setAttribute('stroke-width', '2');
                     
                     if (textoCirculo) {
-                        let cx = circuloEntrada.getAttribute('cx');
-                        let cy = circuloEntrada.getAttribute('cy');
+                        let cx = parseFloat(circuloEntrada.getAttribute('cx'));
+                        let cy = parseFloat(circuloEntrada.getAttribute('cy'));
                         let radio = parseFloat(circuloEntrada.getAttribute('r')) || 17.5;
                         
-                        if ((!cx || !cy) && circuloEntrada.hasAttribute('transform')) {
+                        // Si no tiene cx/cy, intentar obtener de transform
+                        if (isNaN(cx) && circuloEntrada.hasAttribute('transform')) {
                             const transform = circuloEntrada.getAttribute('transform');
                             const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
                             if (translateMatch) {
-                                cx = translateMatch[1];
-                                cy = translateMatch[2];
+                                cx = parseFloat(translateMatch[1]);
+                                cy = parseFloat(translateMatch[2]);
                             }
                         }
                         
-                        cx = cx ? parseFloat(cx) : 0;
-                        cy = cy ? parseFloat(cy) : 0;
+                        if (isNaN(cx)) cx = 0;
+                        if (isNaN(cy)) cy = 0;
                         
                         // Eliminar textos anteriores
                         const oldTexts = circuloEntrada.querySelectorAll('text');
@@ -261,14 +270,14 @@
                         textElement.setAttribute('y', cy);
                         textElement.setAttribute('text-anchor', 'middle');
                         textElement.setAttribute('dominant-baseline', 'central');
-                        textElement.setAttribute('fill', textoColor);
+                        textElement.setAttribute('fill', '#FFFFFF');
                         textElement.setAttribute('font-size', `${radio * 1.0}px`);
                         textElement.setAttribute('font-weight', 'bold');
                         textElement.setAttribute('font-family', 'Arial, sans-serif');
                         textElement.textContent = textoCirculo;
                         
                         circuloEntrada.appendChild(textElement);
-                        console.log(`      ✅ Texto "${textoCirculo}" añadido en (${cx},${cy}) con size ${radio * 1.0}px`);
+                        console.log(`      ✅ Texto "${textoCirculo}" añadido en (${cx},${cy}) con radio ${radio}`);
                     }
                 }
                 
@@ -277,24 +286,24 @@
                 if (circuloSalida) {
                     circuloSalida.removeAttribute('style');
                     circuloSalida.setAttribute('fill', color);
-                    circuloSalida.setAttribute('stroke', '#000000');
-                    circuloSalida.setAttribute('stroke-width', '1');
+                    circuloSalida.setAttribute('stroke', '#FFFFFF');
+                    circuloSalida.setAttribute('stroke-width', '2');
                     
-                    let cx = circuloSalida.getAttribute('cx');
-                    let cy = circuloSalida.getAttribute('cy');
+                    let cx = parseFloat(circuloSalida.getAttribute('cx'));
+                    let cy = parseFloat(circuloSalida.getAttribute('cy'));
                     let radio = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
                     
-                    if ((!cx || !cy) && circuloSalida.hasAttribute('transform')) {
+                    if (isNaN(cx) && circuloSalida.hasAttribute('transform')) {
                         const transform = circuloSalida.getAttribute('transform');
                         const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
                         if (translateMatch) {
-                            cx = translateMatch[1];
-                            cy = translateMatch[2];
+                            cx = parseFloat(translateMatch[1]);
+                            cy = parseFloat(translateMatch[2]);
                         }
                     }
                     
-                    cx = cx ? parseFloat(cx) : 0;
-                    cy = cy ? parseFloat(cy) : 0;
+                    if (isNaN(cx)) cx = 0;
+                    if (isNaN(cy)) cy = 0;
                     
                     // Eliminar textos anteriores
                     const oldTexts = circuloSalida.querySelectorAll('text');
@@ -306,14 +315,14 @@
                     textElement.setAttribute('y', cy);
                     textElement.setAttribute('text-anchor', 'middle');
                     textElement.setAttribute('dominant-baseline', 'central');
-                    textElement.setAttribute('fill', textoColor);
-                    textElement.setAttribute('font-size', `${radio * 0.8}px`);
+                    textElement.setAttribute('fill', '#FFFFFF');
+                    textElement.setAttribute('font-size', `${radio * 0.9}px`);
                     textElement.setAttribute('font-weight', 'bold');
                     textElement.setAttribute('font-family', 'Arial, sans-serif');
                     textElement.textContent = simbolo;
                     
                     circuloSalida.appendChild(textElement);
-                    console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy}) con size ${radio * 0.8}px`);
+                    console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy}) con radio ${radio}`);
                 }
             });
         }
@@ -668,6 +677,7 @@
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
+        // Función para obtener dimensiones del contenedor y escalar SVG
         function cargarYColorearSVGBloque(bloque, slideIndex, vias) {
             const svgUrl = `${bloque.foto_base}.svg?v=${Date.now()}`;
             const mediaContainer = document.getElementById(`mediaContainer-${slideIndex}`);
@@ -684,18 +694,28 @@
                     const svgElement = svgDoc.documentElement;
                     if (!svgElement) return;
                     
-                    // Guardar el viewBox original
-                    const originalViewBox = svgElement.getAttribute('viewBox');
+                    // Obtener viewBox original
+                    const viewBox = svgElement.getAttribute('viewBox');
+                    let scaleX = 1, scaleY = 1;
+                    
+                    if (viewBox) {
+                        const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number);
+                        const containerRect = mediaContainer.getBoundingClientRect();
+                        if (containerRect.width > 0 && containerRect.height > 0) {
+                            scaleX = containerRect.width / vbWidth;
+                            scaleY = containerRect.height / vbHeight;
+                        }
+                    }
+                    
+                    // Escalar las coordenadas de los círculos antes de aplicar colores
+                    if (scaleX !== 1 || scaleY !== 1) {
+                        // Escalar todos los círculos y sus textos después
+                    }
                     
                     aplicarColoresSVG(svgDoc, bloque, vias);
                     
-                    // Mantener las proporciones originales
-                    if (originalViewBox) {
-                        svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-                    } else {
-                        svgElement.setAttribute('preserveAspectRatio', 'none');
-                    }
-                    
+                    // Configurar SVG para que se muestre correctamente
+                    svgElement.setAttribute('preserveAspectRatio', 'none');
                     svgElement.style.width = '100%';
                     svgElement.style.height = '100%';
                     svgElement.style.position = 'absolute';
@@ -708,7 +728,7 @@
                     if (oldSvg) oldSvg.remove();
                     
                     mediaContainer.appendChild(svgElement);
-                    console.log(`✅ SVG coloreado para bloque ${bloque.id} con viewBox: ${originalViewBox}`);
+                    console.log(`✅ SVG coloreado para bloque ${bloque.id} con viewBox: ${viewBox}, scale: ${scaleX}, ${scaleY}`);
                 })
                 .catch(err => console.log(`⚠️ No se pudo cargar SVG para bloque ${bloque.id}:`, err));
         }
