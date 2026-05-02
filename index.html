@@ -71,6 +71,7 @@
             text-anchor: middle;
             font-weight: bold;
             font-family: Arial, sans-serif;
+            z-index: 30;
         }
         .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
         .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
@@ -226,74 +227,90 @@
                     console.log(`    ✅ Línea ${lineaId}_linea coloreada`);
                 }
                 
-                // 2. Círculo de entrada con texto
+                // 2. Círculo de entrada
                 const circuloEntrada = encontrarElementoPorLabel(svgDoc, `${lineaId}_entrada`);
                 if (circuloEntrada) {
                     circuloEntrada.removeAttribute('style');
                     circuloEntrada.setAttribute('fill', color);
                     circuloEntrada.setAttribute('stroke', '#FFFFFF');
                     circuloEntrada.setAttribute('stroke-width', '2');
-                    
-                    if (textoCirculo) {
-                        let cx = parseFloat(circuloEntrada.getAttribute('cx'));
-                        let cy = parseFloat(circuloEntrada.getAttribute('cy'));
-                        let radio = parseFloat(circuloEntrada.getAttribute('r')) || 17.5;
-                        
-                        if (isNaN(cx) && circuloEntrada.hasAttribute('transform')) {
-                            const transform = circuloEntrada.getAttribute('transform');
-                            const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-                            if (translateMatch) {
-                                cx = parseFloat(translateMatch[1]);
-                                cy = parseFloat(translateMatch[2]);
-                            }
-                        }
-                        
-                        if (isNaN(cx)) cx = 0;
-                        if (isNaN(cy)) cy = 0;
-                        
-                        // Eliminar textos anteriores
-                        const oldTexts = circuloEntrada.querySelectorAll('text');
-                        oldTexts.forEach(t => t.remove());
-                        
-                        // Crear texto CON BORDE NEGRO para que sea visible siempre
-                        const textStroke = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        textStroke.setAttribute('x', cx);
-                        textStroke.setAttribute('y', cy);
-                        textStroke.setAttribute('text-anchor', 'middle');
-                        textStroke.setAttribute('dominant-baseline', 'central');
-                        textStroke.setAttribute('fill', 'none');
-                        textStroke.setAttribute('stroke', '#000000');
-                        textStroke.setAttribute('stroke-width', '3');
-                        textStroke.setAttribute('font-size', `${radio * 1.2}px`);
-                        textStroke.setAttribute('font-weight', 'bold');
-                        textStroke.setAttribute('font-family', 'Arial, sans-serif');
-                        textStroke.textContent = textoCirculo;
-                        
-                        const textFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        textFill.setAttribute('x', cx);
-                        textFill.setAttribute('y', cy);
-                        textFill.setAttribute('text-anchor', 'middle');
-                        textFill.setAttribute('dominant-baseline', 'central');
-                        textFill.setAttribute('fill', '#FFFFFF');
-                        textFill.setAttribute('font-size', `${radio * 1.2}px`);
-                        textFill.setAttribute('font-weight', 'bold');
-                        textFill.setAttribute('font-family', 'Arial, sans-serif');
-                        textFill.textContent = textoCirculo;
-                        
-                        circuloEntrada.appendChild(textStroke);
-                        circuloEntrada.appendChild(textFill);
-                        console.log(`      ✅ Texto "${textoCirculo}" añadido en (${cx},${cy}) con radio ${radio}, fontSize: ${radio * 1.2}px`);
-                    }
+                    console.log(`    ✅ Círculo entrada ${lineaId}_entrada coloreado`);
                 }
                 
-                // 3. Círculo de salida con símbolo
+                // 3. Círculo de salida
                 const circuloSalida = encontrarElementoPorLabel(svgDoc, `${lineaId}_salida`);
                 if (circuloSalida) {
                     circuloSalida.removeAttribute('style');
                     circuloSalida.setAttribute('fill', color);
                     circuloSalida.setAttribute('stroke', '#FFFFFF');
                     circuloSalida.setAttribute('stroke-width', '2');
+                    console.log(`    ✅ Círculo salida ${lineaId}_salida coloreado`);
+                }
+                
+                // CREAR TEXTO POR SEPARADO (fuera de los círculos) para que esté encima
+                const svgRoot = svgDoc.documentElement;
+                
+                // Texto de entrada
+                if (textoCirculo && circuloEntrada) {
+                    let cx = parseFloat(circuloEntrada.getAttribute('cx'));
+                    let cy = parseFloat(circuloEntrada.getAttribute('cy'));
+                    let radio = parseFloat(circuloEntrada.getAttribute('r')) || 17.5;
                     
+                    if (isNaN(cx) && circuloEntrada.hasAttribute('transform')) {
+                        const transform = circuloEntrada.getAttribute('transform');
+                        const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
+                        if (translateMatch) {
+                            cx = parseFloat(translateMatch[1]);
+                            cy = parseFloat(translateMatch[2]);
+                        }
+                    }
+                    
+                    if (isNaN(cx)) cx = 0;
+                    if (isNaN(cy)) cy = 0;
+                    
+                    // Eliminar textos anteriores si existen
+                    const oldText = svgRoot.querySelector(`text[data-for="${lineaId}_entrada"]`);
+                    if (oldText) oldText.remove();
+                    
+                    // Crear grupo para el texto con borde
+                    const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    textGroup.setAttribute('data-for', `${lineaId}_entrada`);
+                    
+                    // Trazo negro (borde)
+                    const textStroke = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    textStroke.setAttribute('x', cx);
+                    textStroke.setAttribute('y', cy);
+                    textStroke.setAttribute('text-anchor', 'middle');
+                    textStroke.setAttribute('dominant-baseline', 'central');
+                    textStroke.setAttribute('fill', 'none');
+                    textStroke.setAttribute('stroke', '#000000');
+                    textStroke.setAttribute('stroke-width', '4');
+                    textStroke.setAttribute('stroke-linejoin', 'round');
+                    textStroke.setAttribute('font-size', `${radio * 1.3}px`);
+                    textStroke.setAttribute('font-weight', 'bold');
+                    textStroke.setAttribute('font-family', 'Arial, sans-serif');
+                    textStroke.textContent = textoCirculo;
+                    
+                    // Relleno blanco
+                    const textFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    textFill.setAttribute('x', cx);
+                    textFill.setAttribute('y', cy);
+                    textFill.setAttribute('text-anchor', 'middle');
+                    textFill.setAttribute('dominant-baseline', 'central');
+                    textFill.setAttribute('fill', '#FFFFFF');
+                    textFill.setAttribute('font-size', `${radio * 1.3}px`);
+                    textFill.setAttribute('font-weight', 'bold');
+                    textFill.setAttribute('font-family', 'Arial, sans-serif');
+                    textFill.textContent = textoCirculo;
+                    
+                    textGroup.appendChild(textStroke);
+                    textGroup.appendChild(textFill);
+                    svgRoot.appendChild(textGroup);
+                    console.log(`      ✅ Texto "${textoCirculo}" añadido como elemento independiente en (${cx},${cy})`);
+                }
+                
+                // Símbolo de salida
+                if (simbolo && circuloSalida) {
                     let cx = parseFloat(circuloSalida.getAttribute('cx'));
                     let cy = parseFloat(circuloSalida.getAttribute('cy'));
                     let radio = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
@@ -310,38 +327,45 @@
                     if (isNaN(cx)) cx = 0;
                     if (isNaN(cy)) cy = 0;
                     
-                    // Eliminar textos anteriores
-                    const oldTexts = circuloSalida.querySelectorAll('text');
-                    oldTexts.forEach(t => t.remove());
+                    // Eliminar símbolos anteriores si existen
+                    const oldSymbol = svgRoot.querySelector(`text[data-for="${lineaId}_salida"]`);
+                    if (oldSymbol) oldSymbol.remove();
                     
-                    // Crear símbolo CON BORDE NEGRO
-                    const textStroke = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    textStroke.setAttribute('x', cx);
-                    textStroke.setAttribute('y', cy);
-                    textStroke.setAttribute('text-anchor', 'middle');
-                    textStroke.setAttribute('dominant-baseline', 'central');
-                    textStroke.setAttribute('fill', 'none');
-                    textStroke.setAttribute('stroke', '#000000');
-                    textStroke.setAttribute('stroke-width', '3');
-                    textStroke.setAttribute('font-size', `${radio * 1.1}px`);
-                    textStroke.setAttribute('font-weight', 'bold');
-                    textStroke.setAttribute('font-family', 'Arial, sans-serif');
-                    textStroke.textContent = simbolo;
+                    // Crear grupo para el símbolo con borde
+                    const symbolGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    symbolGroup.setAttribute('data-for', `${lineaId}_salida`);
                     
-                    const textFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    textFill.setAttribute('x', cx);
-                    textFill.setAttribute('y', cy);
-                    textFill.setAttribute('text-anchor', 'middle');
-                    textFill.setAttribute('dominant-baseline', 'central');
-                    textFill.setAttribute('fill', '#FFFFFF');
-                    textFill.setAttribute('font-size', `${radio * 1.1}px`);
-                    textFill.setAttribute('font-weight', 'bold');
-                    textFill.setAttribute('font-family', 'Arial, sans-serif');
-                    textFill.textContent = simbolo;
+                    // Trazo negro (borde)
+                    const symbolStroke = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    symbolStroke.setAttribute('x', cx);
+                    symbolStroke.setAttribute('y', cy);
+                    symbolStroke.setAttribute('text-anchor', 'middle');
+                    symbolStroke.setAttribute('dominant-baseline', 'central');
+                    symbolStroke.setAttribute('fill', 'none');
+                    symbolStroke.setAttribute('stroke', '#000000');
+                    symbolStroke.setAttribute('stroke-width', '3');
+                    symbolStroke.setAttribute('stroke-linejoin', 'round');
+                    symbolStroke.setAttribute('font-size', `${radio * 1.2}px`);
+                    symbolStroke.setAttribute('font-weight', 'bold');
+                    symbolStroke.setAttribute('font-family', 'Arial, sans-serif');
+                    symbolStroke.textContent = simbolo;
                     
-                    circuloSalida.appendChild(textStroke);
-                    circuloSalida.appendChild(textFill);
-                    console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy}) con radio ${radio}, fontSize: ${radio * 1.1}px`);
+                    // Relleno blanco
+                    const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    symbolFill.setAttribute('x', cx);
+                    symbolFill.setAttribute('y', cy);
+                    symbolFill.setAttribute('text-anchor', 'middle');
+                    symbolFill.setAttribute('dominant-baseline', 'central');
+                    symbolFill.setAttribute('fill', '#FFFFFF');
+                    symbolFill.setAttribute('font-size', `${radio * 1.2}px`);
+                    symbolFill.setAttribute('font-weight', 'bold');
+                    symbolFill.setAttribute('font-family', 'Arial, sans-serif');
+                    symbolFill.textContent = simbolo;
+                    
+                    symbolGroup.appendChild(symbolStroke);
+                    symbolGroup.appendChild(symbolFill);
+                    svgRoot.appendChild(symbolGroup);
+                    console.log(`      ✅ Símbolo "${simbolo}" añadido como elemento independiente en (${cx},${cy})`);
                 }
             });
         }
