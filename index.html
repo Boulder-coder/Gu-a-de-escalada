@@ -322,8 +322,8 @@
                         console.log(`      ✅ Círculo blanco añadido en (${cx},${cy}) con radio ${circleRadius}`);
                     } else if (simbolo === '▲') {
                         const fontSize = radio * 1.75;
-                        // Ajuste de centrado vertical para el triángulo
-                        const yOffset = radio * 0.05;
+                        // Ajuste de centrado vertical para el triángulo (subir más)
+                        const yOffset = -radio * 0.15;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
                         symbolFill.setAttribute('x', cx);
