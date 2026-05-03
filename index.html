@@ -309,8 +309,8 @@
                     if (oldSymbol) oldSymbol.remove();
                     
                     if (simbolo === 'circle') {
-                        // Dibujar un círculo SVG real que ocupe el 90% del círculo de salida
-                        const circleRadius = radio * 0.9; // 90% del radio del círculo padre
+                        // Dibujar un círculo SVG real que ocupe el 75% del círculo de salida
+                        const circleRadius = radio * 0.75;
                         const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         innerCircle.setAttribute('data-for', `${lineaId}_salida`);
                         innerCircle.setAttribute('cx', cx);
@@ -321,8 +321,7 @@
                         svgRoot.appendChild(innerCircle);
                         console.log(`      ✅ Círculo blanco añadido en (${cx},${cy}) con radio ${circleRadius}`);
                     } else if (simbolo === '▲') {
-                        // Triángulo usando texto
-                        const fontSize = radio * 1.5;
+                        const fontSize = radio * 1.75;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
                         symbolFill.setAttribute('x', cx);
