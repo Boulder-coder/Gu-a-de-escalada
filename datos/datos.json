@@ -717,8 +717,8 @@
     {
       "nombre": "Barranco Grande",
       "municipio": "Chiva",
-      "portada": "",
-      "mapa": "",
+      "portada": "BG_PORTADA",
+      "mapa": "BG_MAPA",
       "descripcion": "",
       "info": {
         "parking": []
