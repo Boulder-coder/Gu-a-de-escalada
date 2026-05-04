@@ -118,7 +118,6 @@
             color: white; 
             border: 1px solid #2c2c2c; 
         }
-        /* Modal para seleccionar estado */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
             display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s;
@@ -162,7 +161,6 @@
         <div id="screen-ficha-bloque" class="screen"><div id="ficha-bloque-content"></div><div class="back-hint">← Botón atrás del móvil para volver</div></div>
     </div>
 
-    <!-- Modal para elegir estado de la línea -->
     <div id="statusModal" class="modal-overlay">
         <div class="modal-container">
             <h4>¿Cómo escalaste esta línea?</h4>
@@ -180,9 +178,8 @@
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
         let currentLineaKey = null;
-        let currentSlideIndex = 0; // Para recordar el slide actual
+        let currentSwiperIndex = 0; // Para recordar el slide actual
 
-        // ----- Funciones de localStorage para el estado de las líneas -----
         function getStatusStorageKey(sectorNombre, bloqueId, lineaId) {
             return `${sectorNombre}_${bloqueId}_${lineaId}_status`;
         }
@@ -199,19 +196,34 @@
             } else {
                 localStorage.setItem(key, status);
             }
-            // Refrescar la ficha actual manteniendo el mismo slide
-            refreshCurrentFicha();
+            // Refrescar SOLO el indicador visual sin recargar todo el bloque
+            updateSingleLineIndicator(sectorNombre, bloqueId, lineaId);
         }
 
-        function refreshCurrentFicha() {
+        function updateSingleLineIndicator(sectorNombre, bloqueId, lineaId) {
+            // Buscar en el DOM actual el indicador de esta línea y actualizarlo
             const activeScreen = document.querySelector('.screen:not([style*="display: none"])');
-            if (activeScreen && activeScreen.id === 'screen-ficha-bloque' && swiperBloques) {
-                const currentIndex = swiperBloques.activeIndex;
-                openFichaBloque(currentIndex, true);
+            if (activeScreen && activeScreen.id === 'screen-ficha-bloque') {
+                // Buscar la línea específica en el DOM
+                const viasDivs = document.querySelectorAll('.ficha-via-item');
+                for (let viaDiv of viasDivs) {
+                    // Buscar si esta línea contiene el texto del lineaId en el via-nombre
+                    const viaNombreSpan = viaDiv.querySelector('.via-nombre');
+                    if (viaNombreSpan && viaNombreSpan.textContent.startsWith(lineaId + ' ·')) {
+                        const newStatus = getLineStatus(sectorNombre, bloqueId, lineaId);
+                        const newIndicator = getStatusIndicator(newStatus);
+                        const oldIndicator = viaDiv.querySelector('.status-indicator');
+                        if (oldIndicator) {
+                            oldIndicator.outerHTML = newIndicator;
+                        } else if (newIndicator) {
+                            viaDiv.insertAdjacentHTML('beforeend', newIndicator);
+                        }
+                        break;
+                    }
+                }
             }
         }
 
-        // ----- Funciones auxiliares -----
         function getColorByGrado(grado) {
             if (!grado) return '#FF93DB';
             const g = grado.toUpperCase().trim();
@@ -820,6 +832,7 @@
             const container = document.getElementById('ficha-bloque-content');
             container.innerHTML = `<div class="bloque-swiper swiper"><div class="swiper-wrapper" id="bloquesSwiperWrapper"></div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>`;
             const wrapper = document.getElementById('bloquesSwiperWrapper');
+            
             currentSector.bloques.forEach((b, idx) => {
                 const slide = document.createElement('div');
                 slide.className = 'swiper-slide';
@@ -859,7 +872,6 @@
                     `;
                     viasDiv.appendChild(viaDiv);
                     
-                    // Hacer clickable toda la casilla de la línea
                     viaDiv.addEventListener('click', (e) => {
                         if (e.target.closest('.status-indicator')) return;
                         const currentStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
@@ -877,9 +889,22 @@
                 });
                 cargarYColorearSVGBloque(b, idx, b.vias);
             });
+            
             if (swiperBloques) swiperBloques.destroy();
-            const initialSlide = keepSlide && swiperBloques ? swiperBloques.activeIndex : bloqueIndex;
-            swiperBloques = new Swiper('.bloque-swiper', { initialSlide: initialSlide, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, pagination: { el: '.swiper-pagination', clickable: true }, spaceBetween: 20, autoHeight: true });
+            const initialSlide = (keepSlide && currentSwiperIndex !== undefined) ? currentSwiperIndex : bloqueIndex;
+            swiperBloques = new Swiper('.bloque-swiper', { 
+                initialSlide: initialSlide, 
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, 
+                pagination: { el: '.swiper-pagination', clickable: true }, 
+                spaceBetween: 20, 
+                autoHeight: true,
+                on: {
+                    slideChange: function() {
+                        currentSwiperIndex = this.activeIndex;
+                    }
+                }
+            });
+            currentSwiperIndex = initialSlide;
             navigateToScreen('screen-ficha-bloque');
             history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex }, '');
         }
