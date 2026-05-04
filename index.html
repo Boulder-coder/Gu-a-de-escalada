@@ -257,15 +257,14 @@
         </div>
     </div>
     <div class="app-content">
-        <div id="screen-portada" class="screen"><h2>🏔️ Sectores</h2><div id="sectores-list"><div class="loader">Cargando...</div></div></div>
+        <div id="screen-portada" class="screen active"><h2>🏔️ Sectores</h2><div id="sectores-list"><div class="loader">Cargando...</div></div></div>
         <div id="screen-condiciones" class="screen"><div class="condiciones-content"><h3>📋 Condiciones</h3><p>Uso exclusivo para miembros del club. La información es orientativa. Cada escalador es responsable de su seguridad.</p><p style="margin-top:15px">📅 Mayo 2025</p></div></div>
-        <!-- CORREGIDO: El ID ahora es 'screen-sector-detalle' (sin la 'e' extra) -->
         <div id="screen-sector-detalle" class="screen">
             <div id="sector-detalle-content"></div>
         </div>
         <div id="screen-ficha-bloque" class="screen">
             <div id="ficha-bloque-content"></div>
-            <div class="back-hint">← Botón atrás del móvil para volver</div>
+            <div class="back-hint">← Usa el menú para volver a Sectores</div>
         </div>
     </div>
 
@@ -292,7 +291,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         const DATA_URL = 'datos/datos.json';
-        let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
+        let datosApp = null, currentSector = null, swiperBloques = null;
         let currentLineaKey = null;
         let currentSwiperIndex = 0;
         let currentTab = 'info';
@@ -403,8 +402,11 @@
                             }
                         });
                         cargarFichaBloque(bloqueIndex);
-                        navigateToScreen('screen-ficha-bloque');
-                        history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex }, '');
+                        document.getElementById('screen-sector-detalle').style.display = 'none';
+                        document.getElementById('screen-ficha-bloque').style.display = 'block';
+                        document.querySelector('.app-content').scrollTop = 0;
+                        const bottomTabs = document.getElementById('globalBottomTabs');
+                        bottomTabs.style.display = 'flex';
                     }
                 });
             });
@@ -826,8 +828,11 @@
                                                 }
                                             });
                                             cargarFichaBloque(indice);
-                                            navigateToScreen('screen-ficha-bloque');
-                                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: indice }, '');
+                                            document.getElementById('screen-sector-detalle').style.display = 'none';
+                                            document.getElementById('screen-ficha-bloque').style.display = 'block';
+                                            document.querySelector('.app-content').scrollTop = 0;
+                                            const bottomTabs = document.getElementById('globalBottomTabs');
+                                            bottomTabs.style.display = 'flex';
                                         }
                                     }
                                 });
@@ -838,54 +843,6 @@
             }, 500);
             return html;
         }
-
-        function navigateToScreen(screenId, stateData = null) {
-            const currentVisible = document.querySelector('.screen:not([style*="display: none"])');
-            if (currentVisible && currentVisible.id !== screenId) navigationStack.push({ screen: currentVisible.id, state: stateData });
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.getElementById(screenId).style.display = 'block';
-            document.querySelector('.app-content').scrollTop = 0;
-            
-            const bottomTabs = document.getElementById('globalBottomTabs');
-            if (screenId === 'screen-sector-detalle' || screenId === 'screen-ficha-bloque') {
-                bottomTabs.style.display = 'flex';
-            } else {
-                bottomTabs.style.display = 'none';
-            }
-        }
-
-        function goBack() {
-            if (navigationStack.length > 0) {
-                const prev = navigationStack.pop();
-                navigateToScreen(prev.screen);
-                if (prev.state?.sectorNombre) currentSector = datosApp.sectores.find(s => s.nombre === prev.state.sectorNombre);
-                if (prev.screen === 'screen-sector-detalle') {
-                    isInFichaBloque = false;
-                    const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
-                    btns.forEach(btn => {
-                        if (btn.dataset.tab === currentTab) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                    if (document.getElementById('tab-info')) {
-                        document.getElementById('tab-info').style.display = 'none';
-                        document.getElementById('tab-croquis').style.display = 'none';
-                        document.getElementById('tab-resumen').style.display = 'none';
-                        document.getElementById('tab-bloques').style.display = 'none';
-                        const tabToShow = document.getElementById(`tab-${currentTab}`);
-                        if (tabToShow) tabToShow.style.display = 'block';
-                    }
-                }
-            } else {
-                navigateToScreen('screen-portada');
-                if (datosApp) renderSectoresList(); else cargarDatos();
-                currentSector = null;
-                isInFichaBloque = false;
-            }
-        }
-        window.addEventListener('popstate', () => goBack());
 
         async function cargarDatos() {
             const container = document.getElementById('sectores-list');
@@ -997,18 +954,17 @@
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    if (isInFichaBloque) {
-                        if (tabName === 'bloques') {
-                            resetToFirstBlock();
-                        } else {
-                            navigateToScreen('screen-sector-detalle');
-                            openSector(currentSector.nombre);
-                        }
+                    if (tabName === 'bloques') {
+                        cargarFichaBloque(0);
+                        currentSwiperIndex = 0;
+                        document.getElementById('screen-sector-detalle').style.display = 'none';
+                        document.getElementById('screen-ficha-bloque').style.display = 'block';
+                        document.querySelector('.app-content').scrollTop = 0;
+                        bottomTabs.style.display = 'flex';
                     } else {
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
                         document.getElementById('tab-resumen').style.display = 'none';
-                        document.getElementById('tab-bloques').style.display = 'none';
                         const tabElement = document.getElementById(`tab-${tabName}`);
                         if (tabElement) {
                             tabElement.style.display = 'block';
@@ -1016,12 +972,6 @@
                         if (tabName === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
                         if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
                             setTimeout(() => cargarCroquisEnArea(0), 100);
-                        }
-                        if (tabName === 'bloques') {
-                            cargarFichaBloque(0);
-                            currentSwiperIndex = 0;
-                            navigateToScreen('screen-ficha-bloque');
-                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: 0 }, '');
                         }
                     }
                 };
@@ -1052,8 +1002,11 @@
                                 }
                             });
                             cargarFichaBloque(bloqueIndex);
-                            navigateToScreen('screen-ficha-bloque');
-                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex }, '');
+                            document.getElementById('screen-sector-detalle').style.display = 'none';
+                            document.getElementById('screen-ficha-bloque').style.display = 'block';
+                            document.querySelector('.app-content').scrollTop = 0;
+                            const bottomTabs = document.getElementById('globalBottomTabs');
+                            bottomTabs.style.display = 'flex';
                         }
                     });
                 });
@@ -1071,8 +1024,10 @@
                 setTimeout(() => cargarCroquisEnArea(0), 100);
             }
             
-            navigateToScreen('screen-sector-detalle');
-            history.pushState({ sectorNombre: sectorNombre }, '');
+            document.getElementById('screen-portada').style.display = 'none';
+            document.getElementById('screen-sector-detalle').style.display = 'block';
+            document.querySelector('.app-content').scrollTop = 0;
+            bottomTabs.style.display = 'flex';
             setTimeout(() => dibujarGrafica(currentSector), 100);
         }
 
@@ -1219,13 +1174,26 @@
                     dropdown.classList.remove('show');
                     const screen = btn.dataset.screen;
                     if (screen === 'portada') {
-                        navigateToScreen('screen-portada');
+                        document.getElementById('screen-ficha-bloque').style.display = 'none';
+                        document.getElementById('screen-sector-detalle').style.display = 'none';
+                        document.getElementById('screen-condiciones').style.display = 'none';
+                        document.getElementById('screen-portada').style.display = 'block';
+                        document.querySelector('.app-content').scrollTop = 0;
+                        const bottomTabs = document.getElementById('globalBottomTabs');
+                        bottomTabs.style.display = 'none';
                         if (datosApp) renderSectoresList(); else cargarDatos();
                         currentSector = null;
                         isInFichaBloque = false;
                     }
-                    if (screen === 'condiciones') navigateToScreen('screen-condiciones');
-                    history.pushState({ menu: screen }, '');
+                    if (screen === 'condiciones') {
+                        document.getElementById('screen-ficha-bloque').style.display = 'none';
+                        document.getElementById('screen-sector-detalle').style.display = 'none';
+                        document.getElementById('screen-portada').style.display = 'none';
+                        document.getElementById('screen-condiciones').style.display = 'block';
+                        document.querySelector('.app-content').scrollTop = 0;
+                        const bottomTabs = document.getElementById('globalBottomTabs');
+                        bottomTabs.style.display = 'none';
+                    }
                 };
             });
         }
@@ -1233,8 +1201,7 @@
         function init() {
             initMenu();
             cargarDatos();
-            navigateToScreen('screen-portada');
-            history.pushState({}, '');
+            document.getElementById('screen-portada').style.display = 'block';
         }
         init();
     </script>
