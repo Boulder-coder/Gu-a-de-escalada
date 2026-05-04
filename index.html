@@ -122,7 +122,7 @@
             background: #ffffff;
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
+            padding: 10px 0;
             z-index: 100;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             border-top: 1px solid #e0e0e0;
@@ -131,12 +131,13 @@
             background: none;
             border: none;
             color: #2c2c2c;
-            font-size: 1rem;
-            padding: 8px 20px;
+            font-size: 0.75rem;
+            padding: 6px 12px;
             cursor: pointer;
             transition: all 0.2s;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             border-radius: 30px;
+            white-space: nowrap;
         }
         .bottom-tab-btn.active {
             color: #6674FF;
@@ -220,6 +221,7 @@
         let currentLineaKey = null;
         let currentSwiperIndex = 0;
         let currentTab = 'info';
+        let isInFichaBloque = false;
 
         function getStatusStorageKey(sectorNombre, bloqueId, lineaId) {
             return `${sectorNombre}_${bloqueId}_${lineaId}_status`;
@@ -272,6 +274,7 @@
 
         function cargarFichaBloque(bloqueIndex, keepSlide = false) {
             if (!currentSector) return;
+            isInFichaBloque = true;
             const container = document.getElementById('ficha-bloque-content');
             container.innerHTML = `<div class="bloque-swiper swiper"><div class="swiper-wrapper" id="bloquesSwiperWrapper"></div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>`;
             const wrapper = document.getElementById('bloquesSwiperWrapper');
@@ -659,7 +662,7 @@
                                         const indice = sector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
                                         if (indice !== -1) {
                                             currentTab = 'escalada';
-                                            // Actualizar el botón activo del faldón
+                                            isInFichaBloque = true;
                                             const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                                             btns.forEach(btn => {
                                                 if (btn.dataset.tab === 'escalada') {
@@ -702,8 +705,9 @@
                 const prev = navigationStack.pop();
                 navigateToScreen(prev.screen);
                 if (prev.state?.sectorNombre) currentSector = datosApp.sectores.find(s => s.nombre === prev.state.sectorNombre);
-                if (prev.screen === 'screen-sector-detalle' && currentSector) {
-                    // Al volver al sector, mostrar la pestaña de escalada si veníamos de allí
+                if (prev.screen === 'screen-sector-detalle') {
+                    isInFichaBloque = false;
+                    // Al volver al sector, restaurar la pestaña activa
                     const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                     btns.forEach(btn => {
                         if (btn.dataset.tab === currentTab) {
@@ -712,22 +716,21 @@
                             btn.classList.remove('active');
                         }
                     });
-                    // Mostrar la pestaña correcta
-                    document.getElementById('tab-info').style.display = 'none';
-                    document.getElementById('tab-croquis').style.display = 'none';
-                    document.getElementById('tab-resumen').style.display = 'none';
-                    document.getElementById('tab-escalada').style.display = 'none';
-                    const tabToShow = document.getElementById(`tab-${currentTab}`);
-                    if (tabToShow) tabToShow.style.display = 'block';
-                    if (currentTab === 'escalada') {
-                        cargarFichaBloque(currentSwiperIndex);
-                        navigateToScreen('screen-ficha-bloque');
+                    // Mostrar la pestaña correcta en el sector
+                    if (document.getElementById('tab-info')) {
+                        document.getElementById('tab-info').style.display = 'none';
+                        document.getElementById('tab-croquis').style.display = 'none';
+                        document.getElementById('tab-resumen').style.display = 'none';
+                        document.getElementById('tab-escalada').style.display = 'none';
+                        const tabToShow = document.getElementById(`tab-${currentTab}`);
+                        if (tabToShow) tabToShow.style.display = 'block';
                     }
                 }
             } else {
                 navigateToScreen('screen-portada');
                 if (datosApp) renderSectoresList(); else cargarDatos();
                 currentSector = null;
+                isInFichaBloque = false;
             }
         }
         window.addEventListener('popstate', () => goBack());
@@ -771,6 +774,7 @@
         function openSector(sectorNombre) {
             currentSector = datosApp.sectores.find(s => s.nombre === sectorNombre);
             if (!currentSector) return;
+            isInFichaBloque = false;
             const container = document.getElementById('sector-detalle-content');
             const mapaHtml = cargarMapaInteractivo(currentSector);
             let croquisListHtml = '';
@@ -830,23 +834,41 @@
             const btns = bottomTabs.querySelectorAll('.bottom-tab-btn');
             btns.forEach(btn => {
                 btn.onclick = () => {
-                    btns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
                     const tabName = btn.dataset.tab;
                     currentTab = tabName;
-                    document.getElementById('tab-info').style.display = 'none';
-                    document.getElementById('tab-croquis').style.display = 'none';
-                    document.getElementById('tab-resumen').style.display = 'none';
-                    document.getElementById('tab-escalada').style.display = 'none';
-                    document.getElementById(`tab-${tabName}`).style.display = 'block';
-                    if (tabName === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
-                    if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
-                        setTimeout(() => cargarCroquisEnArea(0), 100);
-                    }
-                    if (tabName === 'escalada') {
-                        cargarFichaBloque(currentSwiperIndex);
-                        navigateToScreen('screen-ficha-bloque');
-                        history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: currentSwiperIndex }, '');
+                    
+                    // Actualizar clases de los botones
+                    btns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    if (isInFichaBloque) {
+                        // Si estamos en la pantalla de fichas, navegar de vuelta al sector con la pestaña seleccionada
+                        const sectorContent = document.getElementById('sector-detalle-content');
+                        if (sectorContent) {
+                            // Volver al sector y mostrar la pestaña correspondiente
+                            navigateToScreen('screen-sector-detalle');
+                            // Restaurar el contenido del sector
+                            openSector(currentSector.nombre);
+                        }
+                    } else {
+                        // Ya estamos en el sector, solo cambiar la pestaña visible
+                        document.getElementById('tab-info').style.display = 'none';
+                        document.getElementById('tab-croquis').style.display = 'none';
+                        document.getElementById('tab-resumen').style.display = 'none';
+                        document.getElementById('tab-escalada').style.display = 'none';
+                        const tabElement = document.getElementById(`tab-${tabName}`);
+                        if (tabElement) {
+                            tabElement.style.display = 'block';
+                        }
+                        if (tabName === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
+                        if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
+                            setTimeout(() => cargarCroquisEnArea(0), 100);
+                        }
+                        if (tabName === 'escalada') {
+                            cargarFichaBloque(currentSwiperIndex);
+                            navigateToScreen('screen-ficha-bloque');
+                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: currentSwiperIndex }, '');
+                        }
                     }
                 };
             });
@@ -868,6 +890,7 @@
                         const bloqueIndex = currentSector.bloques.findIndex(b => b.id === bloqueId);
                         if (bloqueIndex !== -1) {
                             currentTab = 'escalada';
+                            isInFichaBloque = true;
                             // Actualizar el botón activo del faldón
                             const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                             btns.forEach(btn => {
@@ -1047,6 +1070,7 @@
                         navigateToScreen('screen-portada');
                         if (datosApp) renderSectoresList(); else cargarDatos();
                         currentSector = null;
+                        isInFichaBloque = false;
                     }
                     if (screen === 'condiciones') navigateToScreen('screen-condiciones');
                     history.pushState({ menu: screen }, '');
