@@ -15,6 +15,7 @@
         body { font-family: 'Roboto', sans-serif; background: #e8e8e8; height: 100vh; overflow: hidden; }
         .app-header { position: fixed; top: 0; left: 0; right: 0; background: #2c2c2c; color: #ffffff; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .header-top { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .app-header h1 { color: #FFDE66; }
         .menu-toggle { background: none; border: none; color: #FFDE66; font-size: 1.5rem; cursor: pointer; font-family: 'Roboto', sans-serif; }
         .dropdown-menu { display: none; flex-direction: column; background: #3a3a3a; }
         .dropdown-menu.show { display: flex; }
@@ -214,7 +215,6 @@
         .sector-content-wrapper {
             padding-bottom: 30px;
         }
-        /* Espaciado uniforme entre cajas de Info */
         .info-section-spacing {
             margin-bottom: 25px;
         }
@@ -243,13 +243,12 @@
         .loader { text-align: center; padding: 40px; color: #666; }
         .back-hint { text-align: center; padding: 8px; font-size: 0.65rem; color: #888; border-top: 1px solid #ddd; margin-top: 8px; }
         h2, h3, h4 { color: #6674FF; letter-spacing: 0.5px; }
-        h1 { font-weight: 300 !important; letter-spacing: 1px; }
     </style>
 </head>
 <body>
     <div class="app-header">
         <div class="header-top">
-            <h1>GUÍA DE BOULDER</h1>
+            <h1 style="color: #FFDE66;">GUÍA DE BOULDER</h1>
             <button class="menu-toggle" id="menuToggle">☰</button>
         </div>
         <div class="dropdown-menu" id="dropdownMenu">
@@ -260,7 +259,7 @@
     <div class="app-content">
         <div id="screen-portada" class="screen"><h2>🏔️ Sectores</h2><div id="sectores-list"><div class="loader">Cargando...</div></div></div>
         <div id="screen-condiciones" class="screen"><div class="condiciones-content"><h3>📋 Condiciones</h3><p>Uso exclusivo para miembros del club. La información es orientativa. Cada escalador es responsable de su seguridad.</p><p style="margin-top:15px">📅 Mayo 2025</p></div></div>
-        <div id="screen-sector-detalle" class="screen">
+        <div id="screen-sector-detaille" class="screen">
             <div id="sector-detalle-content"></div>
         </div>
         <div id="screen-ficha-bloque" class="screen">
@@ -997,15 +996,17 @@
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    if (tabName === 'bloques' && isInFichaBloque) {
-                        resetToFirstBlock();
-                    } else if (isInFichaBloque) {
-                        const sectorContent = document.getElementById('sector-detalle-content');
-                        if (sectorContent) {
+                    if (isInFichaBloque) {
+                        if (tabName === 'bloques') {
+                            // Si estamos en bloques y clicamos en bloques, reseteamos al bloque 1
+                            resetToFirstBlock();
+                        } else {
+                            // Desde cualquier otra pestaña, volvemos al sector con esa pestaña activa
                             navigateToScreen('screen-sector-detalle');
                             openSector(currentSector.nombre);
                         }
                     } else {
+                        // Ya estamos en el sector, solo cambiar la pestaña visible
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
                         document.getElementById('tab-resumen').style.display = 'none';
@@ -1094,7 +1095,6 @@
                     }
                 });
             });
-            // Orden: Pr al final
             const ordenGrados = ["3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+", "Pr"];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
