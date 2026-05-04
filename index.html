@@ -212,7 +212,14 @@
             background: #FFDE66;
         }
         .sector-content-wrapper {
-            padding-bottom: 20px;
+            padding-bottom: 30px;
+        }
+        /* Espaciado uniforme entre cajas de Info */
+        .info-section-spacing {
+            margin-bottom: 25px;
+        }
+        .info-section-spacing:last-child {
+            margin-bottom: 0;
         }
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
@@ -267,7 +274,7 @@
         <button class="bottom-tab-btn" data-tab="info">ℹ️ Info</button>
         <button class="bottom-tab-btn" data-tab="croquis">🗺️ Croquis</button>
         <button class="bottom-tab-btn" data-tab="resumen">📋 Resumen</button>
-        <button class="bottom-tab-btn" data-tab="escalada">🧗 Escalada</button>
+        <button class="bottom-tab-btn" data-tab="bloques">🧗 Bloques</button>
     </div>
 
     <div id="statusModal" class="modal-overlay">
@@ -385,11 +392,11 @@
                     const bloqueId = item.dataset.bloqueId;
                     const bloqueIndex = currentSector.bloques.findIndex(b => b.id === bloqueId);
                     if (bloqueIndex !== -1) {
-                        currentTab = 'escalada';
+                        currentTab = 'bloques';
                         isInFichaBloque = true;
                         const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                         btns.forEach(btn => {
-                            if (btn.dataset.tab === 'escalada') {
+                            if (btn.dataset.tab === 'bloques') {
                                 btn.classList.add('active');
                             } else {
                                 btn.classList.remove('active');
@@ -808,11 +815,11 @@
                                     if (bloqueEncontrado) {
                                         const indice = sector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
                                         if (indice !== -1) {
-                                            currentTab = 'escalada';
+                                            currentTab = 'bloques';
                                             isInFichaBloque = true;
                                             const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                                             btns.forEach(btn => {
-                                                if (btn.dataset.tab === 'escalada') {
+                                                if (btn.dataset.tab === 'bloques') {
                                                     btn.classList.add('active');
                                                 } else {
                                                     btn.classList.remove('active');
@@ -866,7 +873,7 @@
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
                         document.getElementById('tab-resumen').style.display = 'none';
-                        document.getElementById('tab-escalada').style.display = 'none';
+                        document.getElementById('tab-bloques').style.display = 'none';
                         const tabToShow = document.getElementById(`tab-${currentTab}`);
                         if (tabToShow) tabToShow.style.display = 'block';
                     }
@@ -934,13 +941,9 @@
             }
             let descripcionHtml = '';
             if (currentSector.descripcion) {
-                // Procesar negritas (texto entre ** o <b>) y saltos de párrafo con //
                 let texto = currentSector.descripcion;
-                // Convertir // a saltos de párrafo
                 const parrafos = texto.split('//');
                 descripcionHtml = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
-                // Las negritas se mantienen porque el HTML las renderiza si vienen con <b> o <strong>
-                // Si en Excel vienen con **texto**, podemos convertirlo
                 descripcionHtml = descripcionHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             }
             
@@ -974,13 +977,13 @@
                 <div class="sector-content-wrapper">
                     <h2>${currentSector.nombre}</h2>
                     <div id="tab-info" class="tab-pane" style="display: ${currentTab === 'info' ? 'block' : 'none'}">
-                        <div class="info-sector">${descripcionHtml || '<p>Sin descripción disponible.</p>'}</div>
-                        <div class="grafica-container"><div class="grafica-titulo">📊 Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
-                        <div class="info-sector"><h4>📍 Mapa de accesos</h4><div id="mapaInfo">${mapaHtml}</div></div>
+                        <div class="info-sector info-section-spacing">${descripcionHtml || '<p>Sin descripción disponible.</p>'}</div>
+                        <div class="grafica-container info-section-spacing"><div class="grafica-titulo">📊 Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
+                        <div class="info-sector info-section-spacing"><h4>📍 Mapa de accesos</h4><div id="mapaInfo">${mapaHtml}</div></div>
                     </div>
                     <div id="tab-croquis" class="tab-pane" style="display: ${currentTab === 'croquis' ? 'block' : 'none'}">${croquisListHtml}</div>
                     <div id="tab-resumen" class="tab-pane" style="display: ${currentTab === 'resumen' ? 'block' : 'none'}">${resumenHtml}</div>
-                    <div id="tab-escalada" class="tab-pane" style="display: ${currentTab === 'escalada' ? 'block' : 'none'}"></div>
+                    <div id="tab-bloques" class="tab-pane" style="display: ${currentTab === 'bloques' ? 'block' : 'none'}"></div>
                 </div>
             `;
             
@@ -994,8 +997,7 @@
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    if (tabName === 'escalada' && isInFichaBloque) {
-                        // Si ya estamos en escalada y hacemos clic de nuevo, volver al bloque 1
+                    if (tabName === 'bloques' && isInFichaBloque) {
                         resetToFirstBlock();
                     } else if (isInFichaBloque) {
                         const sectorContent = document.getElementById('sector-detalle-content');
@@ -1007,7 +1009,7 @@
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
                         document.getElementById('tab-resumen').style.display = 'none';
-                        document.getElementById('tab-escalada').style.display = 'none';
+                        document.getElementById('tab-bloques').style.display = 'none';
                         const tabElement = document.getElementById(`tab-${tabName}`);
                         if (tabElement) {
                             tabElement.style.display = 'block';
@@ -1016,7 +1018,7 @@
                         if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
                             setTimeout(() => cargarCroquisEnArea(0), 100);
                         }
-                        if (tabName === 'escalada') {
+                        if (tabName === 'bloques') {
                             cargarFichaBloque(0);
                             currentSwiperIndex = 0;
                             navigateToScreen('screen-ficha-bloque');
@@ -1040,11 +1042,11 @@
                         const bloqueId = item.dataset.bloqueId;
                         const bloqueIndex = currentSector.bloques.findIndex(b => b.id === bloqueId);
                         if (bloqueIndex !== -1) {
-                            currentTab = 'escalada';
+                            currentTab = 'bloques';
                             isInFichaBloque = true;
                             const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                             btns.forEach(btn => {
-                                if (btn.dataset.tab === 'escalada') {
+                                if (btn.dataset.tab === 'bloques') {
                                     btn.classList.add('active');
                                 } else {
                                     btn.classList.remove('active');
@@ -1087,14 +1089,13 @@
                 bloque.vias.forEach(via => {
                     if (via.grado && via.grado.trim() !== "") {
                         let gradoNorm = via.grado.trim();
-                        // Normalizar Pr
                         if (gradoNorm === 'Pr') gradoNorm = 'Pr';
                         conteo[gradoNorm] = (conteo[gradoNorm] || 0) + 1;
                     }
                 });
             });
-            // Incluir Pr en el orden
-            const ordenGrados = ["Pr", "3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"];
+            // Orden: Pr al final
+            const ordenGrados = ["3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+", "Pr"];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
             const maxValor = Math.max(...valores, 1);
