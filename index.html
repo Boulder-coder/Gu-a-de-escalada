@@ -51,6 +51,29 @@
         .linea-item:active { background: #f0f0f0; }
         .linea-nombre { font-weight: 500; font-size: 0.9rem; flex: 1; text-align: left; }
         .linea-grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; margin-left: 10px; }
+        .linea-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.65rem;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .linea-status-flash {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .linea-status-redpoint {
+            background-color: #e74c3c;
+        }
+        .linea-status-proyecto {
+            background-color: #2c2c2c;
+            color: white;
+        }
         .ficha-bloque { background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 0; }
         .media-container { position: relative; background: #d4d4d4; min-height: 200px; }
         .media-container img { width: 100%; height: auto; display: block; }
@@ -100,18 +123,13 @@
         .status-flash { 
             background-color: #e74c3c; 
             color: white; 
-            border: 1px solid white; 
-            box-shadow: 0 0 0 1px #e74c3c; 
         }
         .status-redpoint { 
             background-color: #e74c3c; 
-            border: 1px solid white; 
-            box-shadow: 0 0 0 1px #e74c3c; 
         }
         .status-proyecto { 
             background-color: #2c2c2c; 
             color: white; 
-            border: 1px solid #2c2c2c; 
         }
         /* Faldón inferior de pestañas */
         .sector-bottom-tabs {
@@ -241,6 +259,7 @@
             }
             updateSingleLineIndicator(sectorNombre, bloqueId, lineaId);
             refreshFichaBloqueContent();
+            refreshResumenContent();
         }
 
         function updateSingleLineIndicator(sectorNombre, bloqueId, lineaId) {
@@ -270,6 +289,74 @@
                 const currentIndex = swiperBloques ? swiperBloques.activeIndex : 0;
                 cargarFichaBloque(currentIndex, true);
             }
+        }
+
+        function refreshResumenContent() {
+            // Actualizar el resumen si está visible
+            const resumenPane = document.getElementById('tab-resumen');
+            if (resumenPane && resumenPane.style.display !== 'none' && currentSector) {
+                generarResumenContent();
+            }
+        }
+
+        function generarResumenContent() {
+            const resumenContainer = document.getElementById('tab-resumen');
+            if (!resumenContainer) return;
+            
+            let resumenHtml = '';
+            const grupos = {};
+            currentSector.bloques.forEach((bloque, idx) => {
+                const numBase = parseInt(bloque.id, 10);
+                if (!grupos[numBase]) grupos[numBase] = { numBase, bloques: [] };
+                grupos[numBase].bloques.push({ ...bloque, idx });
+            });
+            
+            Object.values(grupos).sort((a,b) => a.numBase - b.numBase).forEach(grupo => {
+                resumenHtml += `<div class="bloque-group"><h3>Bloque ${grupo.numBase}</h3><div>`;
+                grupo.bloques.forEach(bloqueInfo => {
+                    bloqueInfo.vias.forEach(via => {
+                        const gradoColor = getColorByGrado(via.grado);
+                        const status = getLineStatus(currentSector.nombre, bloqueInfo.id, via.linea_id);
+                        const statusIndicator = getLineaStatusIndicator(status);
+                        resumenHtml += `<div class="linea-item" data-bloque-id="${bloqueInfo.id}" data-bloque-index="${bloqueInfo.idx}">
+                            <span class="linea-nombre">${statusIndicator}${via.linea_id} · ${via.nombre}</span>
+                            ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
+                        </div>`;
+                    });
+                });
+                resumenHtml += `</div></div>`;
+            });
+            resumenContainer.innerHTML = resumenHtml;
+            
+            // Reasignar eventos
+            document.querySelectorAll('#tab-resumen .linea-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const bloqueId = item.dataset.bloqueId;
+                    const bloqueIndex = currentSector.bloques.findIndex(b => b.id === bloqueId);
+                    if (bloqueIndex !== -1) {
+                        currentTab = 'escalada';
+                        isInFichaBloque = true;
+                        const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
+                        btns.forEach(btn => {
+                            if (btn.dataset.tab === 'escalada') {
+                                btn.classList.add('active');
+                            } else {
+                                btn.classList.remove('active');
+                            }
+                        });
+                        cargarFichaBloque(bloqueIndex);
+                        navigateToScreen('screen-ficha-bloque');
+                        history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex }, '');
+                    }
+                });
+            });
+        }
+
+        function getLineaStatusIndicator(status) {
+            if (status === 'flash') return '<span class="linea-status-indicator linea-status-flash">⚡</span>';
+            if (status === 'redpoint') return '<span class="linea-status-indicator linea-status-redpoint"></span>';
+            if (status === 'proyecto') return '<span class="linea-status-indicator linea-status-proyecto">P</span>';
+            return '';
         }
 
         function cargarFichaBloque(bloqueIndex, keepSlide = false) {
@@ -707,7 +794,6 @@
                 if (prev.state?.sectorNombre) currentSector = datosApp.sectores.find(s => s.nombre === prev.state.sectorNombre);
                 if (prev.screen === 'screen-sector-detalle') {
                     isInFichaBloque = false;
-                    // Al volver al sector, restaurar la pestaña activa
                     const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                     btns.forEach(btn => {
                         if (btn.dataset.tab === currentTab) {
@@ -716,7 +802,6 @@
                             btn.classList.remove('active');
                         }
                     });
-                    // Mostrar la pestaña correcta en el sector
                     if (document.getElementById('tab-info')) {
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
@@ -793,7 +878,7 @@
                 descripcionHtml = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
             }
             
-            // Generar contenido del resumen
+            // Generar contenido del resumen (con indicadores)
             let resumenHtml = '';
             const grupos = {};
             currentSector.bloques.forEach((bloque, idx) => {
@@ -806,8 +891,10 @@
                 grupo.bloques.forEach(bloqueInfo => {
                     bloqueInfo.vias.forEach(via => {
                         const gradoColor = getColorByGrado(via.grado);
+                        const status = getLineStatus(currentSector.nombre, bloqueInfo.id, via.linea_id);
+                        const statusIndicator = getLineaStatusIndicator(status);
                         resumenHtml += `<div class="linea-item" data-bloque-id="${bloqueInfo.id}" data-bloque-index="${bloqueInfo.idx}">
-                            <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            <span class="linea-nombre">${statusIndicator}${via.linea_id} · ${via.nombre}</span>
                             ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                         </div>`;
                     });
@@ -837,21 +924,16 @@
                     const tabName = btn.dataset.tab;
                     currentTab = tabName;
                     
-                    // Actualizar clases de los botones
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
                     if (isInFichaBloque) {
-                        // Si estamos en la pantalla de fichas, navegar de vuelta al sector con la pestaña seleccionada
                         const sectorContent = document.getElementById('sector-detalle-content');
                         if (sectorContent) {
-                            // Volver al sector y mostrar la pestaña correspondiente
                             navigateToScreen('screen-sector-detalle');
-                            // Restaurar el contenido del sector
                             openSector(currentSector.nombre);
                         }
                     } else {
-                        // Ya estamos en el sector, solo cambiar la pestaña visible
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
                         document.getElementById('tab-resumen').style.display = 'none';
@@ -873,7 +955,6 @@
                 };
             });
             
-            // Activar el botón correspondiente
             btns.forEach(btn => {
                 if (btn.dataset.tab === currentTab) {
                     btn.classList.add('active');
@@ -891,7 +972,6 @@
                         if (bloqueIndex !== -1) {
                             currentTab = 'escalada';
                             isInFichaBloque = true;
-                            // Actualizar el botón activo del faldón
                             const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                             btns.forEach(btn => {
                                 if (btn.dataset.tab === 'escalada') {
