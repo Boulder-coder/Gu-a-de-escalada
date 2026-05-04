@@ -57,21 +57,15 @@
         }
         .linea-item:last-child { border-bottom: none; }
         .linea-item:active { background: #f0f0f0; }
-        .linea-nombre-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-        }
-        .linea-status-placeholder {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-        }
         .linea-nombre { 
             font-weight: 500; 
             font-size: 0.9rem; 
+            text-align: left;
+        }
+        .linea-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .linea-grado-badge { 
             display: inline-flex;
@@ -85,7 +79,6 @@
             font-size: 0.7rem; 
             font-weight: 500; 
             white-space: nowrap; 
-            margin-left: 10px;
             text-align: center;
         }
         .linea-status-indicator {
@@ -365,13 +358,12 @@
                         const gradoColor = getColorByGrado(via.grado);
                         const status = getLineStatus(currentSector.nombre, bloqueInfo.id, via.linea_id);
                         const statusIndicator = getLineaStatusIndicator(status);
-                        const placeholder = !statusIndicator ? '<span class="linea-status-placeholder"></span>' : '';
                         resumenHtml += `<div class="linea-item" data-bloque-id="${bloqueInfo.id}" data-bloque-index="${bloqueInfo.idx}">
-                            <div class="linea-nombre-wrapper">
-                                ${statusIndicator || placeholder}
-                                <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            <div class="linea-right">
+                                ${statusIndicator ? `<span class="linea-status-indicator ${statusIndicator.class}">${statusIndicator.text}</span>` : ''}
+                                ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                             </div>
-                            ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                         </div>`;
                     });
                 });
@@ -403,9 +395,9 @@
         }
 
         function getLineaStatusIndicator(status) {
-            if (status === 'flash') return '<span class="linea-status-indicator linea-status-flash">⚡</span>';
-            if (status === 'redpoint') return '<span class="linea-status-indicator linea-status-redpoint"></span>';
-            if (status === 'proyecto') return '<span class="linea-status-indicator linea-status-proyecto">P</span>';
+            if (status === 'flash') return { class: 'linea-status-flash', text: '⚡' };
+            if (status === 'redpoint') return { class: 'linea-status-redpoint', text: '' };
+            if (status === 'proyecto') return { class: 'linea-status-proyecto', text: 'P' };
             return null;
         }
 
@@ -942,13 +934,12 @@
                         const gradoColor = getColorByGrado(via.grado);
                         const status = getLineStatus(currentSector.nombre, bloqueInfo.id, via.linea_id);
                         const statusIndicator = getLineaStatusIndicator(status);
-                        const placeholder = !statusIndicator ? '<span class="linea-status-placeholder"></span>' : '';
                         resumenHtml += `<div class="linea-item" data-bloque-id="${bloqueInfo.id}" data-bloque-index="${bloqueInfo.idx}">
-                            <div class="linea-nombre-wrapper">
-                                ${statusIndicator || placeholder}
-                                <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            <span class="linea-nombre">${via.linea_id} · ${via.nombre}</span>
+                            <div class="linea-right">
+                                ${statusIndicator ? `<span class="linea-status-indicator ${statusIndicator.class}">${statusIndicator.text}</span>` : ''}
+                                ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                             </div>
-                            ${via.grado ? `<span class="linea-grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                         </div>`;
                     });
                 });
