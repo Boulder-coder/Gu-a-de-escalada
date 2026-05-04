@@ -65,19 +65,58 @@
         .media-container svg text { dominant-baseline: central; text-anchor: middle; font-weight: bold; font-family: Arial, sans-serif; z-index: 30; }
         .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; }
         .ficha-vias { padding: 5px 16px 20px; }
-        .ficha-via-item { border-bottom: 1px solid #eee; padding: 8px 0; }
+        .ficha-via-item { 
+            border-bottom: 1px solid #eee; 
+            padding: 12px 0; 
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .ficha-via-item:active { background: #f5f5f5; }
         .ficha-via-item:last-child { border-bottom: none; }
         .via-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-bottom: 4px; }
         .via-nombre { font-weight: 600; font-size: 0.95rem; }
         .grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; }
         .entrada-texto { font-size: 0.8rem; color: #444; }
-        .detalles-texto { font-size: 0.75rem; color: #555; margin-top: 3px; line-height: 1.3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .detalles-texto div { margin-top: 2px; flex: 1; }
-        .status-indicator { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: transform 0.1s; }
-        .status-indicator:active { transform: scale(0.95); }
-        .status-flash { background-color: #e74c3c; color: white; border: 1px solid white; box-shadow: 0 0 0 1px #e74c3c; }
-        .status-redpoint { background-color: #e74c3c; border: 1px solid white; box-shadow: 0 0 0 1px #e74c3c; }
-        .status-proyecto { background-color: white; color: #2c2c2c; border: 1px solid #aaa; box-shadow: none; }
+        .detalles-texto { 
+            font-size: 0.75rem; 
+            color: #555; 
+            margin-top: 3px; 
+            line-height: 1.3; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 8px;
+        }
+        .detalles-texto .info-text {
+            flex: 1;
+        }
+        .status-indicator { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 28px; 
+            height: 28px; 
+            border-radius: 50%; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+        }
+        .status-flash { 
+            background-color: #e74c3c; 
+            color: white; 
+            border: 1px solid white; 
+            box-shadow: 0 0 0 1px #e74c3c; 
+        }
+        .status-redpoint { 
+            background-color: #e74c3c; 
+            border: 1px solid white; 
+            box-shadow: 0 0 0 1px #e74c3c; 
+        }
+        .status-proyecto { 
+            background-color: #2c2c2c; 
+            color: white; 
+            border: 1px solid #2c2c2c; 
+        }
         /* Modal para seleccionar estado */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
@@ -93,7 +132,7 @@
         .modal-btn:active { transform: scale(0.97); }
         .btn-flash { background-color: #e74c3c; color: white; }
         .btn-redpoint { background-color: #e74c3c; color: white; }
-        .btn-proyecto { background-color: #ecf0f1; color: #2c2c2c; border: 1px solid #bdc3c7; }
+        .btn-proyecto { background-color: #2c2c2c; color: white; }
         .btn-clear { background-color: #7f8c8d; color: white; margin-top: 8px; }
         .swiper-button-next, .swiper-button-prev { color: #6674FF !important; background: rgba(255,255,255,0.8); border-radius: 50%; width: 32px; height: 32px; }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px; }
@@ -102,7 +141,6 @@
         .back-hint { text-align: center; padding: 8px; font-size: 0.65rem; color: #888; border-top: 1px solid #ddd; margin-top: 8px; }
         h2, h3, h4 { color: #6674FF; letter-spacing: 0.5px; }
         h1 { font-weight: 300 !important; letter-spacing: 1px; }
-        .clickable-info { cursor: pointer; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 2px; }
     </style>
 </head>
 <body>
@@ -164,15 +202,14 @@
         }
 
         function refreshCurrentFicha() {
-            // Si estamos en la pantalla de ficha de bloque, la re-renderizamos (sin perder el slide actual)
             const activeScreen = document.querySelector('.screen:not([style*="display: none"])');
             if (activeScreen && activeScreen.id === 'screen-ficha-bloque') {
                 const currentIndex = swiperBloques ? swiperBloques.activeIndex : 0;
-                openFichaBloque(currentIndex, true); // true = mantener mismo slide
+                openFichaBloque(currentIndex, true);
             }
         }
 
-        // ----- Funciones auxiliares (getColorByGrado, getSimboloSalida, etc.) -----
+        // ----- Funciones auxiliares -----
         function getColorByGrado(grado) {
             if (!grado) return '#FF93DB';
             const g = grado.toUpperCase().trim();
@@ -708,10 +745,10 @@
         }
 
         function getTextoManos(via) {
-            if (via.manos_juntas && via.manos_juntas.trim() !== "") return `Manos juntas: ${via.manos_juntas}`;
+            if (via.manos_juntas && via.manos_juntas.trim() !== "") return `🤲 Manos juntas: ${via.manos_juntas}`;
             let partes = [];
-            if (via.mano_izq && via.mano_izq.trim() !== "") partes.push(`Izq: ${via.mano_izq}`);
-            if (via.mano_der && via.mano_der.trim() !== "") partes.push(`Der: ${via.mano_der}`);
+            if (via.mano_izq && via.mano_izq.trim() !== "") partes.push(`🫲 Izq: ${via.mano_izq}`);
+            if (via.mano_der && via.mano_der.trim() !== "") partes.push(`🫱 Der: ${via.mano_der}`);
             return partes.length > 0 ? partes.join(" · ") : "";
         }
 
@@ -739,19 +776,17 @@
             }).catch(err => console.log(`Error SVG ${bloque.id}:`, err));
         }
 
-        // Función para generar el indicador visual según estado
+        // Función para generar el indicador visual según estado (nuevos símbolos)
         function getStatusIndicator(status) {
-            if (status === 'flash') return '<span class="status-indicator status-flash">F</span>';
-            if (status === 'redpoint') return '<span class="status-indicator status-redpoint" style="background-color:#e74c3c;"></span>';
+            if (status === 'flash') return '<span class="status-indicator status-flash">⚡</span>';
+            if (status === 'redpoint') return '<span class="status-indicator status-redpoint"></span>';
             if (status === 'proyecto') return '<span class="status-indicator status-proyecto">P</span>';
             return '';
         }
 
-        // Función que abre el modal para una línea concreta
         function showStatusModal(sectorNombre, bloqueId, lineaId, currentStatus, callback) {
             currentLineaKey = { sectorNombre, bloqueId, lineaId, callback };
-            const modal = document.getElementById('statusModal');
-            modal.classList.add('active');
+            document.getElementById('statusModal').classList.add('active');
         }
 
         function closeModal() {
@@ -759,7 +794,6 @@
             currentLineaKey = null;
         }
 
-        // Manejar selección en el modal
         document.querySelectorAll('.modal-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const value = btn.dataset.value;
@@ -775,7 +809,7 @@
                 closeModal();
             });
         });
-        // Cerrar modal al hacer clic fuera
+
         document.getElementById('statusModal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('statusModal')) closeModal();
         });
@@ -801,13 +835,14 @@
                 const viasDiv = document.getElementById(`vias-${idx}`);
                 b.vias.forEach(via => {
                     const textoManos = getTextoManos(via);
-                    let detalles = "";
-                    if (textoManos) detalles += `<div>${textoManos}</div>`;
-                    if (via.definicion) detalles += `<div class="clickable-info" data-info="${via.linea_id}">📝 ${via.definicion}</div>`;
-                    if (via.expuesta) detalles += `<div>⚠️ ${via.expuesta}</div>`;
+                    let detallesTexto = "";
+                    if (textoManos) detallesTexto += `<div>${textoManos}</div>`;
+                    if (via.definicion) detallesTexto += `<div>📝 ${via.definicion}</div>`;
+                    if (via.expuesta) detallesTexto += `<div>⚠️ ${via.expuesta}</div>`;
                     const gradoColor = getColorByGrado(via.grado);
                     const status = getLineStatus(currentSector.nombre, b.id, via.linea_id);
                     const indicator = getStatusIndicator(status);
+                    
                     const viaDiv = document.createElement('div');
                     viaDiv.className = 'ficha-via-item';
                     viaDiv.innerHTML = `
@@ -817,34 +852,32 @@
                             ${via.entrada ? `<span class="entrada-texto">${via.entrada}</span>` : ''}
                         </div>
                         <div class="detalles-texto">
-                            <div>${detalles}</div>
+                            <div class="info-text">${detallesTexto}</div>
                             ${indicator ? `<div class="status-container">${indicator}</div>` : ''}
                         </div>
                     `;
                     viasDiv.appendChild(viaDiv);
-                    // Añadir evento click a los elementos con clase clickable-info
-                    const infoDiv = viaDiv.querySelector('.clickable-info');
-                    if (infoDiv) {
-                        infoDiv.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const currentStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
-                            showStatusModal(currentSector.nombre, b.id, via.linea_id, currentStatus, () => {
-                                // Callback para refrescar la línea sin recargar todo el bloque
-                                const newStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
-                                const newIndicator = getStatusIndicator(newStatus);
-                                const statusContainer = viaDiv.querySelector('.status-container');
-                                if (statusContainer) {
-                                    statusContainer.innerHTML = newIndicator;
-                                } else if (newIndicator) {
-                                    const detallesDiv = viaDiv.querySelector('.detalles-texto');
-                                    const newDiv = document.createElement('div');
-                                    newDiv.className = 'status-container';
-                                    newDiv.innerHTML = newIndicator;
-                                    detallesDiv.appendChild(newDiv);
-                                }
-                            });
+                    
+                    // Hacer clickable toda la casilla de la línea
+                    viaDiv.addEventListener('click', (e) => {
+                        // Evitar que el clic en el indicador también dispare el modal dos veces
+                        if (e.target.closest('.status-container')) return;
+                        const currentStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
+                        showStatusModal(currentSector.nombre, b.id, via.linea_id, currentStatus, () => {
+                            const newStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
+                            const newIndicator = getStatusIndicator(newStatus);
+                            const statusContainer = viaDiv.querySelector('.status-container');
+                            if (statusContainer) {
+                                statusContainer.innerHTML = newIndicator;
+                            } else if (newIndicator) {
+                                const detallesDiv = viaDiv.querySelector('.detalles-texto');
+                                const newDiv = document.createElement('div');
+                                newDiv.className = 'status-container';
+                                newDiv.innerHTML = newIndicator;
+                                detallesDiv.appendChild(newDiv);
+                            }
                         });
-                    }
+                    });
                 });
                 cargarYColorearSVGBloque(b, idx, b.vias);
             });
