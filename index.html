@@ -9,7 +9,7 @@
     <link href="https://fonts.cdnfonts.com/css/cocogoose" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn, .sector-nombre, .bottom-tab-btn {
+        .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn, .sector-nombre, .bottom-tab-btn, .grafica-titulo {
             font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
         }
         body { font-family: 'Roboto', sans-serif; background: #e8e8e8; height: 100vh; overflow: hidden; }
@@ -33,6 +33,15 @@
         .grafica-titulo { text-align: left; margin-bottom: 15px; color: #6674FF; font-size: 1.1rem; }
         canvas { width: 100%; max-width: 100%; height: auto; background: transparent; display: block; }
         .info-sector, .condiciones-content { background: #ffffff; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .info-sector p {
+            text-align: justify;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .info-sector strong, .info-sector b {
+            font-weight: 700;
+            color: #2c2c2c;
+        }
         .croquis-list { margin-bottom: 20px; }
         .croquis-list-title { margin: 15px 0 10px; font-weight: 600; color: #6674FF; }
         .croquis-thumbnails { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
@@ -73,9 +82,9 @@
             justify-content: center;
             color: white; 
             border-radius: 20px; 
-            padding: 2px 8px; 
-            min-width: 60px;
-            height: 24px;
+            padding: 2px 6px; 
+            min-width: 42px;
+            height: 22px;
             font-size: 0.7rem; 
             font-weight: 500; 
             white-space: nowrap; 
@@ -134,9 +143,9 @@
             justify-content: center;
             color: white; 
             border-radius: 20px; 
-            padding: 2px 8px; 
-            min-width: 60px;
-            height: 24px;
+            padding: 2px 6px; 
+            min-width: 42px;
+            height: 22px;
             font-size: 0.7rem; 
             font-weight: 500;
             text-align: center;
@@ -399,6 +408,15 @@
             if (status === 'redpoint') return { class: 'linea-status-redpoint', text: '' };
             if (status === 'proyecto') return { class: 'linea-status-proyecto', text: 'P' };
             return null;
+        }
+
+        function resetToFirstBlock() {
+            if (swiperBloques) {
+                swiperBloques.slideTo(0);
+                currentSwiperIndex = 0;
+            } else if (currentSector) {
+                cargarFichaBloque(0);
+            }
         }
 
         function cargarFichaBloque(bloqueIndex, keepSlide = false) {
@@ -916,8 +934,14 @@
             }
             let descripcionHtml = '';
             if (currentSector.descripcion) {
-                const parrafos = currentSector.descripcion.split('//');
+                // Procesar negritas (texto entre ** o <b>) y saltos de párrafo con //
+                let texto = currentSector.descripcion;
+                // Convertir // a saltos de párrafo
+                const parrafos = texto.split('//');
                 descripcionHtml = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
+                // Las negritas se mantienen porque el HTML las renderiza si vienen con <b> o <strong>
+                // Si en Excel vienen con **texto**, podemos convertirlo
+                descripcionHtml = descripcionHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             }
             
             let resumenHtml = '';
@@ -951,7 +975,7 @@
                     <h2>${currentSector.nombre}</h2>
                     <div id="tab-info" class="tab-pane" style="display: ${currentTab === 'info' ? 'block' : 'none'}">
                         <div class="info-sector">${descripcionHtml || '<p>Sin descripción disponible.</p>'}</div>
-                        <div class="grafica-container"><div class="grafica-titulo">Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
+                        <div class="grafica-container"><div class="grafica-titulo">📊 Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
                         <div class="info-sector"><h4>📍 Mapa de accesos</h4><div id="mapaInfo">${mapaHtml}</div></div>
                     </div>
                     <div id="tab-croquis" class="tab-pane" style="display: ${currentTab === 'croquis' ? 'block' : 'none'}">${croquisListHtml}</div>
@@ -970,7 +994,10 @@
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
-                    if (isInFichaBloque) {
+                    if (tabName === 'escalada' && isInFichaBloque) {
+                        // Si ya estamos en escalada y hacemos clic de nuevo, volver al bloque 1
+                        resetToFirstBlock();
+                    } else if (isInFichaBloque) {
                         const sectorContent = document.getElementById('sector-detalle-content');
                         if (sectorContent) {
                             navigateToScreen('screen-sector-detalle');
@@ -990,9 +1017,10 @@
                             setTimeout(() => cargarCroquisEnArea(0), 100);
                         }
                         if (tabName === 'escalada') {
-                            cargarFichaBloque(currentSwiperIndex);
+                            cargarFichaBloque(0);
+                            currentSwiperIndex = 0;
                             navigateToScreen('screen-ficha-bloque');
-                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: currentSwiperIndex }, '');
+                            history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: 0 }, '');
                         }
                     }
                 };
@@ -1058,12 +1086,15 @@
             sector.bloques.forEach(bloque => {
                 bloque.vias.forEach(via => {
                     if (via.grado && via.grado.trim() !== "") {
-                        const gradoNorm = via.grado.trim();
+                        let gradoNorm = via.grado.trim();
+                        // Normalizar Pr
+                        if (gradoNorm === 'Pr') gradoNorm = 'Pr';
                         conteo[gradoNorm] = (conteo[gradoNorm] || 0) + 1;
                     }
                 });
             });
-            const ordenGrados = ["3","4","5","5+","6A","6A+","6B","6B+","6C","6C+","7A","7A+","7B","7B+","7C","7C+","8A","8A+","8B","8B+","8C","8C+"];
+            // Incluir Pr en el orden
+            const ordenGrados = ["Pr", "3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
             const maxValor = Math.max(...valores, 1);
