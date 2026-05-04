@@ -26,21 +26,9 @@
         .sector-card { background: #ffffff; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
         .sector-card img { width: 100%; height: 160px; object-fit: cover; }
         .sector-info { padding: 12px; background: #d4d4d4; }
-        .sector-header {
-            margin-bottom: 8px;
-        }
-        .sector-nombre {
-            font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
-            font-size: 1.1rem;
-            color: #2c2c2c;
-            text-align: left;
-        }
-        .sector-stats {
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.85rem;
-            color: #555;
-            text-align: left;
-        }
+        .sector-header { margin-bottom: 8px; }
+        .sector-nombre { font-size: 1.1rem; color: #2c2c2c; text-align: left; }
+        .sector-stats { font-size: 0.85rem; color: #555; text-align: left; }
         .tabs { display: flex; gap: 5px; background: #ffffff; border-radius: 12px; margin-bottom: 15px; padding: 5px; }
         .tab-btn { flex: 1; padding: 10px; background: none; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: normal; color: #2c2c2c; transition: all 0.2s; }
         .tab-btn.active { background: #FFDE66; color: #2c2c2c; }
@@ -66,39 +54,47 @@
         .linea-nombre { font-weight: 500; font-size: 0.9rem; flex: 1; text-align: left; }
         .linea-grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; margin-left: 10px; }
         .grafica-container { background: #ffffff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .grafica-titulo { text-align: left; margin-bottom: 15px; font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif; color: #6674FF; font-size: 1.1rem; }
+        .grafica-titulo { text-align: left; margin-bottom: 15px; color: #6674FF; font-size: 1.1rem; }
         canvas { width: 100%; max-width: 100%; height: auto; background: transparent; display: block; }
         .ficha-bloque { background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 0; }
         .media-container { position: relative; background: #d4d4d4; min-height: 200px; }
         .media-container img { width: 100%; height: auto; display: block; }
         .media-container svg { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: transparent;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 10;
         }
-        .media-container svg text {
-            dominant-baseline: central;
-            text-anchor: middle;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
-            z-index: 30;
-        }
-        .bloque-id { font-size: 1.3rem; font-weight: 600; color: #6674FF; padding: 10px 16px 5px; font-family: 'Roboto', sans-serif; }
-        .bloque-id-small { font-size: 0.85rem; font-weight: normal; color: #888; }
-        .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; letter-spacing: 0.5px; }
-        .ficha-vias { padding: 5px 16px 12px; }
+        .media-container svg text { dominant-baseline: central; text-anchor: middle; font-weight: bold; font-family: Arial, sans-serif; z-index: 30; }
+        .ficha-footer { background: #d4d4d4; padding: 14px 16px; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: #2c2c2c; }
+        .ficha-vias { padding: 5px 16px 20px; }
         .ficha-via-item { border-bottom: 1px solid #eee; padding: 8px 0; }
         .ficha-via-item:last-child { border-bottom: none; }
         .via-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-bottom: 4px; }
         .via-nombre { font-weight: 600; font-size: 0.95rem; }
         .grado-badge { display: inline-block; color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; }
         .entrada-texto { font-size: 0.8rem; color: #444; }
-        .detalles-texto { font-size: 0.75rem; color: #555; margin-top: 3px; line-height: 1.3; }
-        .detalles-texto div { margin-top: 2px; }
+        .detalles-texto { font-size: 0.75rem; color: #555; margin-top: 3px; line-height: 1.3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .detalles-texto div { margin-top: 2px; flex: 1; }
+        .status-indicator { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: transform 0.1s; }
+        .status-indicator:active { transform: scale(0.95); }
+        .status-flash { background-color: #e74c3c; color: white; border: 1px solid white; box-shadow: 0 0 0 1px #e74c3c; }
+        .status-redpoint { background-color: #e74c3c; border: 1px solid white; box-shadow: 0 0 0 1px #e74c3c; }
+        .status-proyecto { background-color: white; color: #2c2c2c; border: 1px solid #aaa; box-shadow: none; }
+        /* Modal para seleccionar estado */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-container {
+            background: white; border-radius: 24px; width: 280px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-container h4 { margin-bottom: 20px; color: #2c2c2c; font-size: 1.2rem; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .modal-btn { padding: 12px; border-radius: 40px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.1s; }
+        .modal-btn:active { transform: scale(0.97); }
+        .btn-flash { background-color: #e74c3c; color: white; }
+        .btn-redpoint { background-color: #e74c3c; color: white; }
+        .btn-proyecto { background-color: #ecf0f1; color: #2c2c2c; border: 1px solid #bdc3c7; }
+        .btn-clear { background-color: #7f8c8d; color: white; margin-top: 8px; }
         .swiper-button-next, .swiper-button-prev { color: #6674FF !important; background: rgba(255,255,255,0.8); border-radius: 50%; width: 32px; height: 32px; }
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px; }
         .swiper-pagination-bullet-active { background: #6674FF !important; }
@@ -106,31 +102,77 @@
         .back-hint { text-align: center; padding: 8px; font-size: 0.65rem; color: #888; border-top: 1px solid #ddd; margin-top: 8px; }
         h2, h3, h4 { color: #6674FF; letter-spacing: 0.5px; }
         h1 { font-weight: 300 !important; letter-spacing: 1px; }
+        .clickable-info { cursor: pointer; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 2px; }
     </style>
 </head>
 <body>
     <div class="app-header">
         <div class="header-top">
-            <h1 style="font-family: 'Cocogoose', sans-serif; font-weight: 300; letter-spacing: 1px; color: #FFDE66;">GUÍA DE BOULDER</h1>
+            <h1>GUÍA DE BOULDER</h1>
             <button class="menu-toggle" id="menuToggle">☰</button>
         </div>
         <div class="dropdown-menu" id="dropdownMenu">
-            <button data-screen="portada" style="font-family: 'Cocogoose', sans-serif; font-weight: 300;">⛰️ Sectores</button>
-            <button data-screen="condiciones" style="font-family: 'Cocogoose', sans-serif; font-weight: 300;">📋 Condiciones</button>
+            <button data-screen="portada">⛰️ Sectores</button>
+            <button data-screen="condiciones">📋 Condiciones</button>
         </div>
     </div>
     <div class="app-content">
-        <div id="screen-portada" class="screen"><h2 style="font-family: 'Cocogoose', sans-serif;">🏔️ Sectores</h2><div id="sectores-list"><div class="loader">Cargando...</div></div></div>
-        <div id="screen-condiciones" class="screen"><div class="condiciones-content"><h3 style="font-family: 'Cocogoose', sans-serif;">📋 Condiciones</h3><p>Uso exclusivo para miembros del club. La información es orientativa. Cada escalador es responsable de su seguridad.</p><p style="margin-top:15px">📅 Abril 2025</p></div></div>
+        <div id="screen-portada" class="screen"><h2>🏔️ Sectores</h2><div id="sectores-list"><div class="loader">Cargando...</div></div></div>
+        <div id="screen-condiciones" class="screen"><div class="condiciones-content"><h3>📋 Condiciones</h3><p>Uso exclusivo para miembros del club. La información es orientativa. Cada escalador es responsable de su seguridad.</p><p style="margin-top:15px">📅 Mayo 2025</p></div></div>
         <div id="screen-sector-detalle" class="screen"><div id="sector-detalle-content"></div></div>
         <div id="screen-ficha-bloque" class="screen"><div id="ficha-bloque-content"></div><div class="back-hint">← Botón atrás del móvil para volver</div></div>
+    </div>
+
+    <!-- Modal para elegir estado de la línea -->
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-container">
+            <h4>¿Cómo escalaste esta línea?</h4>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-flash" data-value="flash">⚡ Flash</button>
+                <button class="modal-btn btn-redpoint" data-value="redpoint">🔴 Red point</button>
+                <button class="modal-btn btn-proyecto" data-value="proyecto">⚪ Proyecto</button>
+                <button class="modal-btn btn-clear" data-value="clear">🗑️ Limpiar</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         const DATA_URL = 'datos/datos.json';
         let datosApp = null, currentSector = null, navigationStack = [], swiperBloques = null;
+        let currentLineaKey = null;  // Para saber qué línea se está editando en el modal
 
+        // ----- Funciones de localStorage para el estado de las líneas -----
+        function getStatusStorageKey(sectorNombre, bloqueId, lineaId) {
+            return `${sectorNombre}_${bloqueId}_${lineaId}_status`;
+        }
+
+        function getLineStatus(sectorNombre, bloqueId, lineaId) {
+            const key = getStatusStorageKey(sectorNombre, bloqueId, lineaId);
+            return localStorage.getItem(key); // "flash", "redpoint", "proyecto" o null
+        }
+
+        function setLineStatus(sectorNombre, bloqueId, lineaId, status) {
+            const key = getStatusStorageKey(sectorNombre, bloqueId, lineaId);
+            if (status === null || status === 'clear') {
+                localStorage.removeItem(key);
+            } else {
+                localStorage.setItem(key, status);
+            }
+            // Refrescar la ficha actual si se está viendo el mismo bloque
+            refreshCurrentFicha();
+        }
+
+        function refreshCurrentFicha() {
+            // Si estamos en la pantalla de ficha de bloque, la re-renderizamos (sin perder el slide actual)
+            const activeScreen = document.querySelector('.screen:not([style*="display: none"])');
+            if (activeScreen && activeScreen.id === 'screen-ficha-bloque') {
+                const currentIndex = swiperBloques ? swiperBloques.activeIndex : 0;
+                openFichaBloque(currentIndex, true); // true = mantener mismo slide
+            }
+        }
+
+        // ----- Funciones auxiliares (getColorByGrado, getSimboloSalida, etc.) -----
         function getColorByGrado(grado) {
             if (!grado) return '#FF93DB';
             const g = grado.toUpperCase().trim();
@@ -183,14 +225,8 @@
             const baseLetra = lineaId.split('.')[0];
             if (/^\d+$/.test(baseLetra)) return '';
             const partes = lineaId.split('.');
-            if (partes.length === 1) {
-                return baseLetra;
-            } else if (partes.length === 2) {
-                if (partes[1] === '1') {
-                    return baseLetra;
-                }
-                return '';
-            }
+            if (partes.length === 1) return baseLetra;
+            if (partes.length === 2 && partes[1] === '1') return baseLetra;
             return '';
         }
 
@@ -198,7 +234,6 @@
             if (!svgDoc) return null;
             let elemento = svgDoc.querySelector(`[inkscape\\:label="${label}"]`);
             if (elemento) return elemento;
-            
             const todos = svgDoc.querySelectorAll('*');
             for (let el of todos) {
                 let labelValue = el.getAttribute('inkscape:label');
@@ -217,75 +252,48 @@
 
         function aplicarColoresSVG(svgDoc, bloque, vias) {
             if (!svgDoc) return;
-            
-            console.log(`🎨 Aplicando colores a SVG del bloque ${bloque.id}`);
-            
             vias.forEach(via => {
                 const lineaId = via.linea_id;
                 const color = getColorByGrado(via.grado);
                 const simbolo = getSimboloSalida(via.salida);
                 const textoCirculo = getTextoParaCirculo(lineaId);
-                
-                console.log(`  Procesando: ${lineaId}, texto: "${textoCirculo}", simbolo: "${simbolo}"`);
-                
-                // 1. Línea
                 const linea = encontrarElementoPorLabel(svgDoc, `${lineaId}_linea`);
                 if (linea) {
                     linea.removeAttribute('style');
                     linea.setAttribute('stroke', color);
                     linea.setAttribute('fill', 'none');
                     linea.setAttribute('stroke-width', '6');
-                    console.log(`    ✅ Línea ${lineaId}_linea coloreada`);
                 }
-                
-                // 2. Círculo de entrada (con borde blanco)
                 const circuloEntrada = encontrarElementoPorLabel(svgDoc, `${lineaId}_entrada`);
                 if (circuloEntrada) {
                     circuloEntrada.removeAttribute('style');
                     circuloEntrada.setAttribute('fill', color);
                     circuloEntrada.setAttribute('stroke', '#FFFFFF');
                     circuloEntrada.setAttribute('stroke-width', '2');
-                    console.log(`    ✅ Círculo entrada ${lineaId}_entrada coloreado`);
                 }
-                
-                // 3. Círculo de salida (SIN borde)
                 const circuloSalida = encontrarElementoPorLabel(svgDoc, `${lineaId}_salida`);
                 if (circuloSalida) {
                     circuloSalida.removeAttribute('style');
                     circuloSalida.setAttribute('fill', color);
                     circuloSalida.removeAttribute('stroke');
                     circuloSalida.removeAttribute('stroke-width');
-                    console.log(`    ✅ Círculo salida ${lineaId}_salida coloreado (sin borde)`);
                 }
-                
-                // CREAR TEXTO POR SEPARADO (fuera de los círculos)
                 const svgRoot = svgDoc.documentElement;
-                
-                // Texto de entrada
                 if (textoCirculo && circuloEntrada) {
                     let cx = parseFloat(circuloEntrada.getAttribute('cx'));
                     let cy = parseFloat(circuloEntrada.getAttribute('cy'));
                     let radio = parseFloat(circuloEntrada.getAttribute('r')) || 17.5;
-                    
                     if (isNaN(cx) && circuloEntrada.hasAttribute('transform')) {
                         const transform = circuloEntrada.getAttribute('transform');
                         const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-                        if (translateMatch) {
-                            cx = parseFloat(translateMatch[1]);
-                            cy = parseFloat(translateMatch[2]);
-                        }
+                        if (translateMatch) { cx = parseFloat(translateMatch[1]); cy = parseFloat(translateMatch[2]); }
                     }
-                    
-                    if (isNaN(cx)) cx = 0;
-                    if (isNaN(cy)) cy = 0;
-                    
+                    if (isNaN(cx)) cx = 0; if (isNaN(cy)) cy = 0;
                     const oldText = svgRoot.querySelector(`text[data-for="${lineaId}_entrada"]`);
                     if (oldText) oldText.remove();
-                    
                     const textFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     textFill.setAttribute('data-for', `${lineaId}_entrada`);
-                    textFill.setAttribute('x', cx);
-                    textFill.setAttribute('y', cy);
+                    textFill.setAttribute('x', cx); textFill.setAttribute('y', cy);
                     textFill.setAttribute('text-anchor', 'middle');
                     textFill.setAttribute('dominant-baseline', 'central');
                     textFill.setAttribute('fill', '#FFFFFF');
@@ -293,50 +301,34 @@
                     textFill.setAttribute('font-weight', 'bold');
                     textFill.setAttribute('font-family', 'Arial, sans-serif');
                     textFill.textContent = textoCirculo;
-                    
                     svgRoot.appendChild(textFill);
-                    console.log(`      ✅ Texto "${textoCirculo}" añadido en (${cx},${cy})`);
                 }
-                
-                // Símbolo de salida
                 if (simbolo && circuloSalida) {
                     let cx = parseFloat(circuloSalida.getAttribute('cx'));
                     let cy = parseFloat(circuloSalida.getAttribute('cy'));
                     let radio = parseFloat(circuloSalida.getAttribute('r')) || 12.5;
-                    
                     if (isNaN(cx) && circuloSalida.hasAttribute('transform')) {
                         const transform = circuloSalida.getAttribute('transform');
                         const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-                        if (translateMatch) {
-                            cx = parseFloat(translateMatch[1]);
-                            cy = parseFloat(translateMatch[2]);
-                        }
+                        if (translateMatch) { cx = parseFloat(translateMatch[1]); cy = parseFloat(translateMatch[2]); }
                     }
-                    
-                    if (isNaN(cx)) cx = 0;
-                    if (isNaN(cy)) cy = 0;
-                    
+                    if (isNaN(cx)) cx = 0; if (isNaN(cy)) cy = 0;
                     const oldSymbol = svgRoot.querySelector(`[data-for="${lineaId}_salida"]`);
                     if (oldSymbol) oldSymbol.remove();
-                    
                     if (simbolo === 'circle') {
-                        const circleRadius = radio * 0.5;
                         const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                         innerCircle.setAttribute('data-for', `${lineaId}_salida`);
-                        innerCircle.setAttribute('cx', cx);
-                        innerCircle.setAttribute('cy', cy);
-                        innerCircle.setAttribute('r', circleRadius);
+                        innerCircle.setAttribute('cx', cx); innerCircle.setAttribute('cy', cy);
+                        innerCircle.setAttribute('r', radio * 0.5);
                         innerCircle.setAttribute('fill', '#FFFFFF');
                         innerCircle.setAttribute('stroke', 'none');
                         svgRoot.appendChild(innerCircle);
-                        console.log(`      ✅ Círculo blanco añadido en (${cx},${cy}) con radio ${circleRadius}`);
                     } else if (simbolo === '▲') {
                         const fontSize = radio * 1.75;
                         const yOffset = -radio * 0.15;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
-                        symbolFill.setAttribute('x', cx);
-                        symbolFill.setAttribute('y', cy + yOffset);
+                        symbolFill.setAttribute('x', cx); symbolFill.setAttribute('y', cy + yOffset);
                         symbolFill.setAttribute('text-anchor', 'middle');
                         symbolFill.setAttribute('dominant-baseline', 'central');
                         symbolFill.setAttribute('fill', '#FFFFFF');
@@ -345,54 +337,44 @@
                         symbolFill.setAttribute('font-family', 'Arial, sans-serif');
                         symbolFill.textContent = simbolo;
                         svgRoot.appendChild(symbolFill);
-                        console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy + yOffset}) con fontSize ${fontSize}px`);
                     } else if (simbolo === '▶') {
                         const fontSize = radio * 1.3;
                         const xOffset = radio * 0.15;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
-                        symbolFill.setAttribute('x', cx + xOffset);
-                        symbolFill.setAttribute('y', cy);
+                        symbolFill.setAttribute('x', cx + xOffset); symbolFill.setAttribute('y', cy);
                         symbolFill.setAttribute('text-anchor', 'middle');
                         symbolFill.setAttribute('dominant-baseline', 'central');
                         symbolFill.setAttribute('fill', '#FFFFFF');
                         symbolFill.setAttribute('font-size', `${fontSize}px`);
                         symbolFill.setAttribute('font-weight', 'bold');
-                        symbolFill.setAttribute('font-family', 'Arial, sans-serif');
                         symbolFill.textContent = simbolo;
                         svgRoot.appendChild(symbolFill);
-                        console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx + xOffset},${cy})`);
                     } else if (simbolo === '◀') {
                         const fontSize = radio * 1.3;
                         const xOffset = -radio * 0.15;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
-                        symbolFill.setAttribute('x', cx + xOffset);
-                        symbolFill.setAttribute('y', cy);
+                        symbolFill.setAttribute('x', cx + xOffset); symbolFill.setAttribute('y', cy);
                         symbolFill.setAttribute('text-anchor', 'middle');
                         symbolFill.setAttribute('dominant-baseline', 'central');
                         symbolFill.setAttribute('fill', '#FFFFFF');
                         symbolFill.setAttribute('font-size', `${fontSize}px`);
                         symbolFill.setAttribute('font-weight', 'bold');
-                        symbolFill.setAttribute('font-family', 'Arial, sans-serif');
                         symbolFill.textContent = simbolo;
                         svgRoot.appendChild(symbolFill);
-                        console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx + xOffset},${cy})`);
                     } else {
                         const fontSize = radio * 1.1;
                         const symbolFill = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                         symbolFill.setAttribute('data-for', `${lineaId}_salida`);
-                        symbolFill.setAttribute('x', cx);
-                        symbolFill.setAttribute('y', cy);
+                        symbolFill.setAttribute('x', cx); symbolFill.setAttribute('y', cy);
                         symbolFill.setAttribute('text-anchor', 'middle');
                         symbolFill.setAttribute('dominant-baseline', 'central');
                         symbolFill.setAttribute('fill', '#FFFFFF');
                         symbolFill.setAttribute('font-size', `${fontSize}px`);
                         symbolFill.setAttribute('font-weight', 'bold');
-                        symbolFill.setAttribute('font-family', 'Arial, sans-serif');
                         symbolFill.textContent = simbolo;
                         svgRoot.appendChild(symbolFill);
-                        console.log(`      ✅ Símbolo "${simbolo}" añadido en (${cx},${cy})`);
                     }
                 }
             });
@@ -406,14 +388,11 @@
                 if (!labelValue && el.attributes) {
                     for (let attr of el.attributes) {
                         if (attr.name === 'inkscape:label' || attr.name.endsWith(':label')) {
-                            labelValue = attr.value;
-                            break;
+                            labelValue = attr.value; break;
                         }
                     }
                 }
-                if (labelValue === label) {
-                    resultados.push(el);
-                }
+                if (labelValue === label) resultados.push(el);
             }
             return resultados;
         }
@@ -423,12 +402,9 @@
             const mapaUrl = `${sector.mapa}.jpg`;
             const svgMapaUrl = `${sector.mapa}.svg?v=${Date.now()}`;
             const containerId = `mapaContainer_${Date.now()}`;
-            
             let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
             html += `<img src="${mapaUrl}" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
-            html += `<object id="mapaObject_${containerId}" data="${svgMapaUrl}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object>`;
-            html += `</div>`;
-            
+            html += `<object id="mapaObject_${containerId}" data="${svgMapaUrl}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object></div>`;
             setTimeout(() => {
                 const objectTag = document.getElementById(`mapaObject_${containerId}`);
                 if (objectTag && objectTag.contentDocument) {
@@ -438,14 +414,11 @@
                         const allEl = svgElement.querySelectorAll('*');
                         allEl.forEach(el => {
                             if (el.tagName !== 'svg') {
-                                el.setAttribute('fill', 'transparent');
-                                el.setAttribute('stroke', 'transparent');
-                                el.setAttribute('fill-opacity', '0');
-                                el.setAttribute('stroke-opacity', '0');
+                                el.setAttribute('fill', 'transparent'); el.setAttribute('stroke', 'transparent');
+                                el.setAttribute('fill-opacity', '0'); el.setAttribute('stroke-opacity', '0');
                                 if (el.style) el.style.opacity = '0';
                             }
                         });
-                        
                         if (sector.info && sector.info.parking) {
                             const parkings = sector.info.parking;
                             for (let i = 0; i < parkings.length; i++) {
@@ -453,17 +426,13 @@
                                 const elementos = encontrarElementosPorLabel(svgDoc, parkingLabel);
                                 elementos.forEach(el => {
                                     el.style.cursor = 'pointer';
-                                    el.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        window.open(parkings[i], '_blank');
-                                    });
+                                    el.addEventListener('click', (e) => { e.stopPropagation(); window.open(parkings[i], '_blank'); });
                                 });
                             }
                         }
                     }
                 }
             }, 500);
-            
             return html;
         }
 
@@ -471,12 +440,9 @@
             const croquis = sector.croquis_list[croquisIndex];
             if (!croquis) return '<div class="info-sector"><p>Croquis no disponible</p></div>';
             const containerId = `croquisViewer_${Date.now()}`;
-            
             let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
             html += `<img src="${croquis.imagen}.jpg" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
-            html += `<object id="croquisObject_${containerId}" data="${croquis.svg}.svg?v=${Date.now()}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object>`;
-            html += `</div>`;
-            
+            html += `<object id="croquisObject_${containerId}" data="${croquis.svg}.svg?v=${Date.now()}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object></div>`;
             setTimeout(() => {
                 const objectTag = document.getElementById(`croquisObject_${containerId}`);
                 if (objectTag && objectTag.contentDocument) {
@@ -486,14 +452,11 @@
                         const allEl = svgElement.querySelectorAll('*');
                         allEl.forEach(el => {
                             if (el.tagName !== 'svg') {
-                                el.setAttribute('fill', 'transparent');
-                                el.setAttribute('stroke', 'transparent');
-                                el.setAttribute('fill-opacity', '0');
-                                el.setAttribute('stroke-opacity', '0');
+                                el.setAttribute('fill', 'transparent'); el.setAttribute('stroke', 'transparent');
+                                el.setAttribute('fill-opacity', '0'); el.setAttribute('stroke-opacity', '0');
                                 if (el.style) el.style.opacity = '0';
                             }
                         });
-                        
                         const elementosConLabel = svgDoc.querySelectorAll('*');
                         elementosConLabel.forEach(el => {
                             let label = null;
@@ -501,8 +464,7 @@
                             if (!label && el.attributes) {
                                 for (let attr of el.attributes) {
                                     if (attr.name === 'inkscape:label' || attr.name.endsWith(':label')) {
-                                        label = attr.value;
-                                        break;
+                                        label = attr.value; break;
                                     }
                                 }
                             }
@@ -518,9 +480,7 @@
                                     });
                                     if (bloqueEncontrado) {
                                         const indice = sector.bloques.findIndex(b => b.id === bloqueEncontrado.id);
-                                        if (indice !== -1) {
-                                            openFichaBloque(indice);
-                                        }
+                                        if (indice !== -1) openFichaBloque(indice);
                                     }
                                 });
                             }
@@ -528,7 +488,6 @@
                     }
                 }
             }, 500);
-            
             return html;
         }
 
@@ -539,7 +498,7 @@
             document.getElementById(screenId).style.display = 'block';
             document.querySelector('.app-content').scrollTop = 0;
         }
-        
+
         function goBack() {
             if (navigationStack.length > 0) {
                 const prev = navigationStack.pop();
@@ -550,8 +509,7 @@
                 }
             } else {
                 navigateToScreen('screen-portada');
-                if (datosApp) renderSectoresList();
-                else cargarDatos();
+                if (datosApp) renderSectoresList(); else cargarDatos();
                 currentSector = null;
             }
         }
@@ -578,28 +536,16 @@
                 const card = document.createElement('div');
                 card.className = 'sector-card';
                 const portadaUrl = sector.portada ? `${sector.portada}.jpg` : '';
-                
-                // Calcular total de bloques y líneas (mismo criterio que la gráfica)
                 let totalBloques = sector.bloques.length;
                 let totalLineas = 0;
                 sector.bloques.forEach(bloque => {
-                    bloque.vias.forEach(via => {
-                        // Contar solo líneas con grado no vacío (mismo criterio que la gráfica)
-                        if (via.grado && via.grado.trim() !== "") {
-                            totalLineas++;
-                        }
-                    });
+                    bloque.vias.forEach(via => { if (via.grado && via.grado.trim() !== "") totalLineas++; });
                 });
-                
-                card.innerHTML = `
-                    <img src="${portadaUrl}" onerror="this.src='https://picsum.photos/id/20/400/200'">
+                card.innerHTML = `<img src="${portadaUrl}" onerror="this.src='https://picsum.photos/id/20/400/200'">
                     <div class="sector-info">
-                        <div class="sector-header">
-                            <div class="sector-nombre">${sector.nombre} · ${sector.municipio}</div>
-                        </div>
+                        <div class="sector-header"><div class="sector-nombre">${sector.nombre} · ${sector.municipio}</div></div>
                         <div class="sector-stats">${totalBloques} bloques · ${totalLineas} líneas</div>
-                    </div>
-                `;
+                    </div>`;
                 card.onclick = () => openSector(sector.nombre);
                 container.appendChild(card);
             });
@@ -612,27 +558,21 @@
             const mapaHtml = cargarMapaInteractivo(currentSector);
             let croquisListHtml = '';
             if (currentSector.croquis_list && currentSector.croquis_list.length > 0) {
-                croquisListHtml = '<div class="croquis-list">';
-                croquisListHtml += '<div class="croquis-list-title">Selecciona un croquis:</div>';
-                croquisListHtml += '<div class="croquis-thumbnails">';
+                croquisListHtml = '<div class="croquis-list"><div class="croquis-list-title">Selecciona un croquis:</div><div class="croquis-thumbnails">';
                 currentSector.croquis_list.forEach((croq, idx) => {
                     croquisListHtml += `<div class="croquis-thumb" data-croquis-idx="${idx}"><img src="${croq.imagen}.jpg" onerror="this.src='https://picsum.photos/id/20/800/600'"></div>`;
                 });
-                croquisListHtml += '</div></div>';
-                croquisListHtml += '<div id="croquisViewerArea" style="margin-bottom: 60px;"></div>';
+                croquisListHtml += '</div></div><div id="croquisViewerArea" style="margin-bottom: 60px;"></div>';
             } else {
                 croquisListHtml = '<div class="info-sector"><p>No hay croquis disponibles</p></div>';
             }
-            
-            // Mostrar descripción del sector (dividiendo por //)
             let descripcionHtml = '';
             if (currentSector.descripcion) {
                 const parrafos = currentSector.descripcion.split('//');
                 descripcionHtml = parrafos.map(p => `<p>${p.trim()}</p>`).join('');
             }
-            
             container.innerHTML = `
-                <h2 style="font-family: 'Cocogoose', sans-serif;">${currentSector.nombre}</h2>
+                <h2>${currentSector.nombre}</h2>
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="info">ℹ️ Info</button>
                     <button class="tab-btn" data-tab="croquis">🗺️ Croquis</button>
@@ -660,7 +600,6 @@
                     }
                 };
             });
-            
             setTimeout(() => {
                 document.querySelectorAll('.croquis-thumb').forEach(thumb => {
                     thumb.onclick = () => {
@@ -671,7 +610,6 @@
                     };
                 });
             }, 100);
-            
             const bloquesContainer = document.getElementById('bloques-list');
             bloquesContainer.innerHTML = '';
             const grupos = {};
@@ -680,7 +618,7 @@
                 if (!grupos[numBase]) grupos[numBase] = { numBase, bloques: [] };
                 grupos[numBase].bloques.push({ ...bloque, idx });
             });
-            Object.values(grupos).sort((a, b) => a.numBase - b.numBase).forEach(grupo => {
+            Object.values(grupos).sort((a,b) => a.numBase - b.numBase).forEach(grupo => {
                 const grupoDiv = document.createElement('div');
                 grupoDiv.className = 'bloque-group';
                 grupoDiv.innerHTML = `<h3>Bloque ${grupo.numBase}</h3><div></div>`;
@@ -708,9 +646,7 @@
         function cargarCroquisEnArea(idx) {
             if (!currentSector || !currentSector.croquis_list || !currentSector.croquis_list[idx]) return;
             const area = document.getElementById('croquisViewerArea');
-            if (area) {
-                area.innerHTML = cargarCroquisInteractivo(currentSector, idx);
-            }
+            if (area) area.innerHTML = cargarCroquisInteractivo(currentSector, idx);
         }
 
         function dibujarGrafica(sector) {
@@ -723,7 +659,7 @@
                     }
                 });
             });
-            const ordenGrados = ["3", "4", "5", "5+", "6A", "6A+", "6B", "6B+", "6C", "6C+", "7A", "7A+", "7B", "7B+", "7C", "7C+", "8A", "8A+", "8B", "8B+", "8C", "8C+"];
+            const ordenGrados = ["3","4","5","5+","6A","6A+","6B","6B+","6C","6C+","7A","7A+","7B","7B+","7C","7C+","8A","8A+","8B","8B+","8C","8C+"];
             const gradosFiltrados = ordenGrados.filter(g => conteo[g] > 0);
             const valores = gradosFiltrados.map(g => conteo[g]);
             const maxValor = Math.max(...valores, 1);
@@ -783,44 +719,72 @@
             const svgUrl = `${bloque.foto_base}.svg?v=${Date.now()}`;
             const mediaContainer = document.getElementById(`mediaContainer-${slideIndex}`);
             if (!mediaContainer) return;
-            
-            fetch(svgUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return res.text();
-                })
-                .then(svgText => {
-                    const parser = new DOMParser();
-                    const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-                    const svgElement = svgDoc.documentElement;
-                    if (!svgElement) return;
-                    
-                    aplicarColoresSVG(svgDoc, bloque, vias);
-                    
-                    svgElement.setAttribute('preserveAspectRatio', 'none');
-                    svgElement.style.width = '100%';
-                    svgElement.style.height = '100%';
-                    svgElement.style.position = 'absolute';
-                    svgElement.style.top = '0';
-                    svgElement.style.left = '0';
-                    svgElement.style.pointerEvents = 'none';
-                    svgElement.style.zIndex = '20';
-                    
-                    const oldSvg = mediaContainer.querySelector('svg');
-                    if (oldSvg) oldSvg.remove();
-                    
-                    mediaContainer.appendChild(svgElement);
-                    console.log(`✅ SVG coloreado para bloque ${bloque.id}`);
-                })
-                .catch(err => console.log(`⚠️ No se pudo cargar SVG para bloque ${bloque.id}:`, err));
+            fetch(svgUrl).then(res => res.text()).then(svgText => {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svgElement = svgDoc.documentElement;
+                if (!svgElement) return;
+                aplicarColoresSVG(svgDoc, bloque, vias);
+                svgElement.setAttribute('preserveAspectRatio', 'none');
+                svgElement.style.width = '100%';
+                svgElement.style.height = '100%';
+                svgElement.style.position = 'absolute';
+                svgElement.style.top = '0';
+                svgElement.style.left = '0';
+                svgElement.style.pointerEvents = 'none';
+                svgElement.style.zIndex = '20';
+                const oldSvg = mediaContainer.querySelector('svg');
+                if (oldSvg) oldSvg.remove();
+                mediaContainer.appendChild(svgElement);
+            }).catch(err => console.log(`Error SVG ${bloque.id}:`, err));
         }
 
-        function openFichaBloque(bloqueIndex) {
+        // Función para generar el indicador visual según estado
+        function getStatusIndicator(status) {
+            if (status === 'flash') return '<span class="status-indicator status-flash">F</span>';
+            if (status === 'redpoint') return '<span class="status-indicator status-redpoint" style="background-color:#e74c3c;"></span>';
+            if (status === 'proyecto') return '<span class="status-indicator status-proyecto">P</span>';
+            return '';
+        }
+
+        // Función que abre el modal para una línea concreta
+        function showStatusModal(sectorNombre, bloqueId, lineaId, currentStatus, callback) {
+            currentLineaKey = { sectorNombre, bloqueId, lineaId, callback };
+            const modal = document.getElementById('statusModal');
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            currentLineaKey = null;
+        }
+
+        // Manejar selección en el modal
+        document.querySelectorAll('.modal-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const value = btn.dataset.value;
+                if (currentLineaKey) {
+                    const { sectorNombre, bloqueId, lineaId, callback } = currentLineaKey;
+                    if (value === 'clear') {
+                        setLineStatus(sectorNombre, bloqueId, lineaId, null);
+                    } else {
+                        setLineStatus(sectorNombre, bloqueId, lineaId, value);
+                    }
+                    if (callback) callback();
+                }
+                closeModal();
+            });
+        });
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('statusModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('statusModal')) closeModal();
+        });
+
+        function openFichaBloque(bloqueIndex, keepSlide = false) {
             if (!currentSector) return;
             const container = document.getElementById('ficha-bloque-content');
             container.innerHTML = `<div class="bloque-swiper swiper"><div class="swiper-wrapper" id="bloquesSwiperWrapper"></div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>`;
             const wrapper = document.getElementById('bloquesSwiperWrapper');
-            
             currentSector.bloques.forEach((b, idx) => {
                 const slide = document.createElement('div');
                 slide.className = 'swiper-slide';
@@ -834,15 +798,16 @@
                     </div>
                 `;
                 wrapper.appendChild(slide);
-                
                 const viasDiv = document.getElementById(`vias-${idx}`);
                 b.vias.forEach(via => {
                     const textoManos = getTextoManos(via);
                     let detalles = "";
                     if (textoManos) detalles += `<div>${textoManos}</div>`;
-                    if (via.definicion) detalles += `<div>${via.definicion}</div>`;
+                    if (via.definicion) detalles += `<div class="clickable-info" data-info="${via.linea_id}">📝 ${via.definicion}</div>`;
                     if (via.expuesta) detalles += `<div>⚠️ ${via.expuesta}</div>`;
                     const gradoColor = getColorByGrado(via.grado);
+                    const status = getLineStatus(currentSector.nombre, b.id, via.linea_id);
+                    const indicator = getStatusIndicator(status);
                     const viaDiv = document.createElement('div');
                     viaDiv.className = 'ficha-via-item';
                     viaDiv.innerHTML = `
@@ -851,16 +816,41 @@
                             ${via.grado ? `<span class="grado-badge" style="background-color: ${gradoColor};">${via.grado}</span>` : ''}
                             ${via.entrada ? `<span class="entrada-texto">${via.entrada}</span>` : ''}
                         </div>
-                        ${detalles ? `<div class="detalles-texto">${detalles}</div>` : ''}
+                        <div class="detalles-texto">
+                            <div>${detalles}</div>
+                            ${indicator ? `<div class="status-container">${indicator}</div>` : ''}
+                        </div>
                     `;
                     viasDiv.appendChild(viaDiv);
+                    // Añadir evento click a los elementos con clase clickable-info
+                    const infoDiv = viaDiv.querySelector('.clickable-info');
+                    if (infoDiv) {
+                        infoDiv.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const currentStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
+                            showStatusModal(currentSector.nombre, b.id, via.linea_id, currentStatus, () => {
+                                // Callback para refrescar la línea sin recargar todo el bloque
+                                const newStatus = getLineStatus(currentSector.nombre, b.id, via.linea_id);
+                                const newIndicator = getStatusIndicator(newStatus);
+                                const statusContainer = viaDiv.querySelector('.status-container');
+                                if (statusContainer) {
+                                    statusContainer.innerHTML = newIndicator;
+                                } else if (newIndicator) {
+                                    const detallesDiv = viaDiv.querySelector('.detalles-texto');
+                                    const newDiv = document.createElement('div');
+                                    newDiv.className = 'status-container';
+                                    newDiv.innerHTML = newIndicator;
+                                    detallesDiv.appendChild(newDiv);
+                                }
+                            });
+                        });
+                    }
                 });
-                
                 cargarYColorearSVGBloque(b, idx, b.vias);
             });
-            
             if (swiperBloques) swiperBloques.destroy();
-            swiperBloques = new Swiper('.bloque-swiper', { initialSlide: bloqueIndex, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, pagination: { el: '.swiper-pagination', clickable: true }, spaceBetween: 20, autoHeight: true });
+            const initialSlide = keepSlide && swiperBloques ? swiperBloques.activeIndex : bloqueIndex;
+            swiperBloques = new Swiper('.bloque-swiper', { initialSlide: initialSlide, navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }, pagination: { el: '.swiper-pagination', clickable: true }, spaceBetween: 20, autoHeight: true });
             navigateToScreen('screen-ficha-bloque');
             history.pushState({ sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex }, '');
         }
@@ -875,8 +865,7 @@
                     const screen = btn.dataset.screen;
                     if (screen === 'portada') {
                         navigateToScreen('screen-portada');
-                        if (datosApp) renderSectoresList();
-                        else cargarDatos();
+                        if (datosApp) renderSectoresList(); else cargarDatos();
                         currentSector = null;
                     }
                     if (screen === 'condiciones') navigateToScreen('screen-condiciones');
@@ -884,7 +873,7 @@
                 };
             });
         }
-        
+
         function init() {
             initMenu();
             cargarDatos();
