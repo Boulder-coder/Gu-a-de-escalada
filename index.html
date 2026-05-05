@@ -216,10 +216,17 @@
             padding-bottom: 30px;
         }
         .info-section-spacing {
-            margin-bottom: 25px;
+            margin-bottom: 12px;
         }
         .info-section-spacing:last-child {
             margin-bottom: 0;
+        }
+        .mapa-footer {
+            font-size: 0.7rem;
+            color: #6674FF;
+            margin-top: 8px;
+            text-align: center;
+            font-style: italic;
         }
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
@@ -863,7 +870,6 @@
                 }
                 if (prev.screen === 'screen-sector-detalle' && prev.state?.currentTab) {
                     currentTab = prev.state.currentTab;
-                    // Actualizar la interfaz de pestañas si es necesario (se hará al recargar el sector, pero mejor lo forzamos)
                     const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                     btns.forEach(btn => {
                         if (btn.dataset.tab === currentTab) {
@@ -872,7 +878,6 @@
                             btn.classList.remove('active');
                         }
                     });
-                    // Mostrar la pestaña correcta en el sector
                     if (document.getElementById('tab-info')) {
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
@@ -883,7 +888,6 @@
                     }
                 }
             } else {
-                // Si no hay pila, volvemos a la portada
                 navigateToScreen('screen-portada');
                 if (datosApp) renderSectoresList(); else cargarDatos();
                 currentSector = null;
@@ -891,7 +895,6 @@
             }
         }
 
-        // Capturar el evento de atrás del móvil
         window.addEventListener('popstate', () => goBack());
 
         async function cargarDatos() {
@@ -986,7 +989,11 @@
                     <div id="tab-info" class="tab-pane" style="display: ${currentTab === 'info' ? 'block' : 'none'}">
                         <div class="info-sector info-section-spacing">${descripcionHtml || '<p>Sin descripción disponible.</p>'}</div>
                         <div class="grafica-container info-section-spacing"><div class="grafica-titulo">📊 Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
-                        <div class="info-sector info-section-spacing"><h4>📍 Mapa de accesos</h4><div id="mapaInfo">${mapaHtml}</div></div>
+                        <div class="info-sector info-section-spacing">
+                            <h4>📍 Mapa de accesos</h4>
+                            <div id="mapaInfo">${mapaHtml}</div>
+                            <div class="mapa-footer">📍 Toca sobre los aparcamientos (P1, P2, P3...) para ver su ubicación en Google Maps</div>
+                        </div>
                     </div>
                     <div id="tab-croquis" class="tab-pane" style="display: ${currentTab === 'croquis' ? 'block' : 'none'}">${croquisListHtml}</div>
                     <div id="tab-resumen" class="tab-pane" style="display: ${currentTab === 'resumen' ? 'block' : 'none'}">${resumenHtml}</div>
@@ -999,6 +1006,11 @@
             btns.forEach(btn => {
                 btn.onclick = () => {
                     const tabName = btn.dataset.tab;
+                    
+                    // Si ya estamos en la pestaña actual, no hacer nada
+                    if (currentTab === tabName && !isInFichaBloque) return;
+                    if (isInFichaBloque && tabName === 'bloques') return;
+                    if (isInFichaBloque && tabName === 'croquis') return;
                     
                     btns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -1232,7 +1244,6 @@
             initMenu();
             cargarDatos();
             navigateToScreen('screen-portada');
-            // Agregar estado inicial a la pila para que el botón atrás no cierre la app (opcional)
             history.pushState({}, '');
         }
         init();
