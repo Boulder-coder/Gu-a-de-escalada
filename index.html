@@ -1003,43 +1003,69 @@
             
             const bottomTabs = document.getElementById('globalBottomTabs');
             const btns = bottomTabs.querySelectorAll('.bottom-tab-btn');
+            
+            // Función para cambiar de pestaña dentro del sector
+            function cambiarPestana(tabName) {
+                if (tabName === currentTab) return;
+                
+                currentTab = tabName;
+                
+                // Ocultar todas las pestañas
+                document.getElementById('tab-info').style.display = 'none';
+                document.getElementById('tab-croquis').style.display = 'none';
+                document.getElementById('tab-resumen').style.display = 'none';
+                document.getElementById('tab-bloques').style.display = 'none';
+                
+                // Mostrar la pestaña seleccionada
+                const tabElement = document.getElementById(`tab-${tabName}`);
+                if (tabElement) {
+                    tabElement.style.display = 'block';
+                }
+                
+                // Actualizar botones activos
+                btns.forEach(btn => {
+                    if (btn.dataset.tab === tabName) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // Acciones específicas por pestaña
+                if (tabName === 'info') {
+                    setTimeout(() => dibujarGrafica(currentSector), 100);
+                }
+                if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
+                    setTimeout(() => cargarCroquisEnArea(0), 100);
+                }
+            }
+            
+            // Configurar eventos de las pestañas
             btns.forEach(btn => {
                 btn.onclick = () => {
                     const tabName = btn.dataset.tab;
                     
-                    // Si ya estamos en la pestaña actual, no hacer nada
-                    if (currentTab === tabName && !isInFichaBloque) return;
-                    if (isInFichaBloque && tabName === 'bloques') return;
-                    if (isInFichaBloque && tabName === 'croquis') return;
-                    
-                    btns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
                     if (tabName === 'bloques') {
+                        // Ir a la pantalla de bloques
                         cargarFichaBloque(0);
                         currentSwiperIndex = 0;
                         navigateToScreen('screen-ficha-bloque', { sectorNombre: currentSector.nombre, bloqueIndex: 0 });
                     } else {
-                        currentTab = tabName;
-                        document.getElementById('tab-info').style.display = 'none';
-                        document.getElementById('tab-croquis').style.display = 'none';
-                        document.getElementById('tab-resumen').style.display = 'none';
-                        document.getElementById('tab-bloques').style.display = 'none';
-                        const tabElement = document.getElementById(`tab-${tabName}`);
-                        if (tabElement) {
-                            tabElement.style.display = 'block';
-                        }
-                        if (tabName === 'info') setTimeout(() => dibujarGrafica(currentSector), 100);
-                        if (tabName === 'croquis' && currentSector.croquis_list?.length > 0) {
-                            setTimeout(() => cargarCroquisEnArea(0), 100);
-                        }
+                        // Si estamos en la pantalla de bloques, volver al sector primero
                         if (document.getElementById('screen-ficha-bloque').style.display === 'block') {
                             navigateToScreen('screen-sector-detalle', { sectorNombre: currentSector.nombre });
+                            // Esperar a que se muestre el sector y luego cambiar la pestaña
+                            setTimeout(() => {
+                                cambiarPestana(tabName);
+                            }, 50);
+                        } else {
+                            cambiarPestana(tabName);
                         }
                     }
                 };
             });
             
+            // Inicializar botón activo según currentTab
             btns.forEach(btn => {
                 if (btn.dataset.tab === currentTab) {
                     btn.classList.add('active');
@@ -1048,6 +1074,7 @@
                 }
             });
             
+            // Eventos para el resumen y croquis
             setTimeout(() => {
                 document.querySelectorAll('#tab-resumen .linea-item').forEach(item => {
                     item.addEventListener('click', () => {
@@ -1056,7 +1083,6 @@
                         if (bloqueIndex !== -1) {
                             currentTab = 'bloques';
                             isInFichaBloque = true;
-                            const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
                             btns.forEach(btn => {
                                 if (btn.dataset.tab === 'bloques') {
                                     btn.classList.add('active');
