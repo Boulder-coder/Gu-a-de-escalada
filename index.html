@@ -403,14 +403,7 @@
                     if (bloqueIndex !== -1) {
                         currentTab = 'bloques';
                         isInFichaBloque = true;
-                        const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
-                        btns.forEach(btn => {
-                            if (btn.dataset.tab === 'bloques') {
-                                btn.classList.add('active');
-                            } else {
-                                btn.classList.remove('active');
-                            }
-                        });
+                        actualizarBotonActivo('bloques');
                         cargarFichaBloque(bloqueIndex);
                         navigateToScreen('screen-ficha-bloque', { sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex });
                     }
@@ -425,9 +418,23 @@
             return null;
         }
 
+        function actualizarBotonActivo(tabName) {
+            const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
+            btns.forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         function cargarFichaBloque(bloqueIndex, keepSlide = false) {
             if (!currentSector) return;
             isInFichaBloque = true;
+            actualizarBotonActivo('bloques');
+            currentTab = 'bloques';
+            
             const container = document.getElementById('ficha-bloque-content');
             container.innerHTML = `<div class="bloque-swiper swiper"><div class="swiper-wrapper" id="bloquesSwiperWrapper"></div><div class="swiper-pagination"></div><div class="swiper-button-prev"></div><div class="swiper-button-next"></div></div>`;
             const wrapper = document.getElementById('bloquesSwiperWrapper');
@@ -816,14 +823,7 @@
                                         if (indice !== -1) {
                                             currentTab = 'bloques';
                                             isInFichaBloque = true;
-                                            const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
-                                            btns.forEach(btn => {
-                                                if (btn.dataset.tab === 'bloques') {
-                                                    btn.classList.add('active');
-                                                } else {
-                                                    btn.classList.remove('active');
-                                                }
-                                            });
+                                            actualizarBotonActivo('bloques');
                                             cargarFichaBloque(indice);
                                             navigateToScreen('screen-ficha-bloque', { sectorNombre: currentSector.nombre, bloqueIndex: indice });
                                         }
@@ -853,6 +853,11 @@
             } else {
                 bottomTabs.style.display = 'none';
             }
+            
+            // Asegurar que el botón activo sea correcto en la pantalla de bloques
+            if (screenId === 'screen-ficha-bloque') {
+                actualizarBotonActivo('bloques');
+            }
         }
 
         function goBack() {
@@ -870,14 +875,7 @@
                 }
                 if (prev.screen === 'screen-sector-detalle' && prev.state?.currentTab) {
                     currentTab = prev.state.currentTab;
-                    const btns = document.querySelectorAll('#globalBottomTabs .bottom-tab-btn');
-                    btns.forEach(btn => {
-                        if (btn.dataset.tab === currentTab) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
+                    actualizarBotonActivo(currentTab);
                     if (document.getElementById('tab-info')) {
                         document.getElementById('tab-info').style.display = 'none';
                         document.getElementById('tab-croquis').style.display = 'none';
@@ -1023,13 +1021,7 @@
                 }
                 
                 // Actualizar botones activos
-                btns.forEach(btn => {
-                    if (btn.dataset.tab === tabName) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
+                actualizarBotonActivo(tabName);
                 
                 // Acciones específicas por pestaña
                 if (tabName === 'info') {
@@ -1066,13 +1058,7 @@
             });
             
             // Inicializar botón activo según currentTab
-            btns.forEach(btn => {
-                if (btn.dataset.tab === currentTab) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+            actualizarBotonActivo(currentTab);
             
             // Eventos para el resumen y croquis
             setTimeout(() => {
@@ -1083,13 +1069,7 @@
                         if (bloqueIndex !== -1) {
                             currentTab = 'bloques';
                             isInFichaBloque = true;
-                            btns.forEach(btn => {
-                                if (btn.dataset.tab === 'bloques') {
-                                    btn.classList.add('active');
-                                } else {
-                                    btn.classList.remove('active');
-                                }
-                            });
+                            actualizarBotonActivo('bloques');
                             cargarFichaBloque(bloqueIndex);
                             navigateToScreen('screen-ficha-bloque', { sectorNombre: currentSector.nombre, bloqueIndex: bloqueIndex });
                         }
