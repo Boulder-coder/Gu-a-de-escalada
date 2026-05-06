@@ -885,6 +885,8 @@
                         if (tabToShow) tabToShow.style.display = 'block';
                     }
                 }
+                // IMPORTANTE: Al volver atrás, actualizar isInFichaBloque según la pantalla actual
+                isInFichaBloque = (prev.screen === 'screen-ficha-bloque');
             } else {
                 navigateToScreen('screen-portada');
                 if (datosApp) renderSectoresList(); else cargarDatos();
@@ -934,7 +936,7 @@
         function openSector(sectorNombre) {
             currentSector = datosApp.sectores.find(s => s.nombre === sectorNombre);
             if (!currentSector) return;
-            isInFichaBloque = false;
+            isInFichaBloque = false; // IMPORTANTE: Al abrir un sector, no estamos en bloques
             const container = document.getElementById('sector-detalle-content');
             const mapaHtml = cargarMapaInteractivo(currentSector);
             let croquisListHtml = '';
@@ -1037,9 +1039,11 @@
                 btn.onclick = () => {
                     const tabName = btn.dataset.tab;
                     
-                    // Si ya estamos en esta pestaña (ya sea en sector o en bloques), no hacer nada
-                    if (currentTab === tabName && !isInFichaBloque) return;
+                    // Si estamos en la pantalla de bloques y clickamos en "Bloques", no hacer nada
                     if (isInFichaBloque && tabName === 'bloques') return;
+                    
+                    // Si estamos en el sector y la pestaña actual es la misma, no hacer nada
+                    if (!isInFichaBloque && currentTab === tabName) return;
                     
                     if (tabName === 'bloques') {
                         // Ir a la pantalla de bloques
@@ -1048,7 +1052,9 @@
                         navigateToScreen('screen-ficha-bloque', { sectorNombre: currentSector.nombre, bloqueIndex: 0 });
                     } else {
                         // Si estamos en la pantalla de bloques, volver al sector primero
-                        if (document.getElementById('screen-ficha-bloque').style.display === 'block') {
+                        if (isInFichaBloque) {
+                            // Cambiar la bandera antes de navegar
+                            isInFichaBloque = false;
                             navigateToScreen('screen-sector-detalle', { sectorNombre: currentSector.nombre });
                             // Esperar a que se muestre el sector y luego cambiar la pestaña
                             setTimeout(() => {
