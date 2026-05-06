@@ -1037,6 +1037,10 @@
                 btn.onclick = () => {
                     const tabName = btn.dataset.tab;
                     
+                    // Si ya estamos en esta pestaña (ya sea en sector o en bloques), no hacer nada
+                    if (currentTab === tabName && !isInFichaBloque) return;
+                    if (isInFichaBloque && tabName === 'bloques') return;
+                    
                     if (tabName === 'bloques') {
                         // Ir a la pantalla de bloques
                         cargarFichaBloque(0);
