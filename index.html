@@ -9,7 +9,7 @@
     <link href="https://fonts.cdnfonts.com/css/cocogoose" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn, .sector-nombre, .bottom-tab-btn, .grafica-titulo {
+        .cocogoose-font, h1, .dropdown-menu button, .ficha-footer, h2, h3, h4, .tab-btn, .sector-nombre, .bottom-tab-btn, .grafica-titulo, .croquis-titulo {
             font-family: 'Cocogoose', 'Arial Black', 'Impact', sans-serif;
         }
         body { font-family: 'Roboto', sans-serif; background: #e8e8e8; height: 100vh; overflow: hidden; }
@@ -50,6 +50,13 @@
         .croquis-thumb:active { transform: scale(0.98); }
         .croquis-thumb img { width: 100%; height: auto; display: block; }
         .croquis-thumb.active { border: 3px solid #6674FF; }
+        .croquis-titulo {
+            text-align: center;
+            color: #FFDE66;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
         .croquis-viewer { position: relative; background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
         .croquis-viewer img { width: 100%; height: auto; display: block; }
         .croquis-viewer object { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
@@ -793,15 +800,12 @@
         function cargarTodosLosMapas(sector) {
             let mapasHtml = '';
             
-            // Mapa 1 (principal) - CON pie de foto
             if (sector.mapa) {
                 mapasHtml += cargarMapaIndividual(sector, sector.mapa, true);
             }
-            // Mapa 2 - SIN pie de foto
             if (sector.mapa_2) {
                 mapasHtml += cargarMapaIndividual(sector, sector.mapa_2, false);
             }
-            // Mapa 3 - SIN pie de foto
             if (sector.mapa_3) {
                 mapasHtml += cargarMapaIndividual(sector, sector.mapa_3, false);
             }
@@ -812,10 +816,15 @@
         function cargarCroquisInteractivo(sector, croquisIndex) {
             const croquis = sector.croquis_list[croquisIndex];
             if (!croquis) return '<div class="info-sector"><p>Croquis no disponible</p></div>';
+            
             const containerId = `croquisViewer_${Date.now()}`;
-            let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
+            const titulo = croquis.nombre || `Croquis ${croquisIndex + 1}`;
+            
+            let html = `<div class="croquis-titulo">${titulo}</div>`;
+            html += `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
             html += `<img src="${croquis.imagen}.jpg" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
             html += `<object id="croquisObject_${containerId}" data="${croquis.svg}.svg?v=${Date.now()}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object></div>`;
+            
             setTimeout(() => {
                 const objectTag = document.getElementById(`croquisObject_${containerId}`);
                 if (objectTag && objectTag.contentDocument) {
@@ -825,8 +834,10 @@
                         const allEl = svgElement.querySelectorAll('*');
                         allEl.forEach(el => {
                             if (el.tagName !== 'svg') {
-                                el.setAttribute('fill', 'transparent'); el.setAttribute('stroke', 'transparent');
-                                el.setAttribute('fill-opacity', '0'); el.setAttribute('stroke-opacity', '0');
+                                el.setAttribute('fill', 'transparent');
+                                el.setAttribute('stroke', 'transparent');
+                                el.setAttribute('fill-opacity', '0');
+                                el.setAttribute('stroke-opacity', '0');
                                 if (el.style) el.style.opacity = '0';
                             }
                         });
