@@ -5,7 +5,7 @@
       "municipio": "Buñol",
       "portada": "fotos/MLC_PORTADA",
       "mapa": "fotos/MLC_MAPA",
-      "descripcion": "El Monte La Cruz es un sector ubicado en la cima del característico monte buñolero. Se trata de un sector agradable, con vistas panorámicas del pueblo, donde acostumbra a soplar brisa. Ideal para ir una tarde de verano o una mañana de invierno. // La mayaría de bloques se encuentran en la cara Sur-Este (B1-B9), aunque también diponemos de un abanico de piedra pinchosa aún por abrir en su cara norte (B10), y un bloque solitario entre los bancales de la cara sur (B11). Son bloques de poca estatura (rondan los 2,50-3,00m), con poco desplome, pero canto pequeño. Abundan los sextos grados: perfecto para inciarse en roca si llevas rodaje en rocódromo.",
+      "descripcion": "El <strong>Monte La Cruz</strong> es un sector ubicado en la cima del característico monte buñolero. Se trata de un sector agradable, con vistas panorámicas del pueblo, donde acostumbra a soplar brisa. Ideal para una tarde de verano o una mañana de invierno. // La mayoría de bloques se encuentran en la cara <strong>Este (B1-B9)</strong>, aunque también diponemos de un abanico de piedra pinchosa aún por abrir en su cara <strong>Norte (B10)</strong>, y un bloque solitario entre los <strong>Bancales de la cara sur (B11)</strong>. Son bloques de poca estatura (rondan los 2,50-3,00m), con poco desplome, pero canto pequeño. Abundan los sextos grados: perfecto para iniciarse en roca si ya llevas algo de rodaje en rocódromo.",
       "info": {
         "parking": [
           "https://maps.app.goo.gl/e1SB96eGaXCvjFn47",
@@ -16,15 +16,18 @@
       "croquis_list": [
         {
           "imagen": "fotos/MLC_CROQUIS_1",
-          "svg": "fotos/MLC_CROQUIS_1"
+          "svg": "fotos/MLC_CROQUIS_1",
+          "nombre": "Este"
         },
         {
           "imagen": "fotos/MLC_CROQUIS_2",
-          "svg": "fotos/MLC_CROQUIS_2"
+          "svg": "fotos/MLC_CROQUIS_2",
+          "nombre": "Norte"
         },
         {
           "imagen": "fotos/MLC_CROQUIS_3",
-          "svg": "fotos/MLC_CROQUIS_3"
+          "svg": "fotos/MLC_CROQUIS_3",
+          "nombre": "Bancal"
         }
       ],
       "bloques": [
@@ -721,10 +724,99 @@
       "mapa": "fotos/BG_MAPA",
       "descripcion": "",
       "info": {
-        "parking": []
+        "parking": [
+          "https://maps.app.goo.gl/c55iyQZggkbpnEKJA"
+        ]
       },
-      "croquis_list": [],
-      "bloques": []
+      "croquis_list": [
+        {
+          "imagen": "fotos/BG_CROQUIS_1",
+          "svg": "fotos/BG_CROQUIS_1",
+          "nombre": "El Salto de la Zorra"
+        },
+        {
+          "imagen": "fotos/BG_CROQUIS_2",
+          "svg": "fotos/BG_CROQUIS_2",
+          "nombre": "Tollo de Pedreguer"
+        }
+      ],
+      "bloques": [
+        {
+          "id": "1",
+          "foto_base": "fotos/BG_B1",
+          "vias": []
+        },
+        {
+          "id": "2",
+          "foto_base": "fotos/BG_B2",
+          "vias": []
+        },
+        {
+          "id": "3",
+          "foto_base": "fotos/BG_B3",
+          "vias": []
+        },
+        {
+          "id": "4",
+          "foto_base": "fotos/BG_B4",
+          "vias": []
+        },
+        {
+          "id": "5",
+          "foto_base": "fotos/BG_B5",
+          "vias": []
+        },
+        {
+          "id": "6",
+          "foto_base": "fotos/BG_B6",
+          "vias": []
+        },
+        {
+          "id": "7",
+          "foto_base": "fotos/BG_B7",
+          "vias": []
+        },
+        {
+          "id": "8",
+          "foto_base": "fotos/BG_B8",
+          "vias": []
+        },
+        {
+          "id": "9",
+          "foto_base": "fotos/BG_B9",
+          "vias": []
+        },
+        {
+          "id": "10",
+          "foto_base": "fotos/BG_B10",
+          "vias": []
+        },
+        {
+          "id": "11",
+          "foto_base": "fotos/BG_B11",
+          "vias": []
+        },
+        {
+          "id": "12",
+          "foto_base": "fotos/BG_B12",
+          "vias": []
+        },
+        {
+          "id": "13",
+          "foto_base": "fotos/BG_B13",
+          "vias": []
+        },
+        {
+          "id": "14",
+          "foto_base": "fotos/BG_B14",
+          "vias": []
+        },
+        {
+          "id": "15",
+          "foto_base": "fotos/BG_B15",
+          "vias": []
+        }
+      ]
     }
   ]
 }
