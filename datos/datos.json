@@ -738,6 +738,11 @@
           "imagen": "fotos/BG_CROQUIS_2",
           "svg": "fotos/BG_CROQUIS_2",
           "nombre": "Tollo de Pedreguer"
+        },
+        {
+          "imagen": "fotos/BG_CROQUIS_3",
+          "svg": "fotos/BG_CROQUIS_3",
+          "nombre": "Tollo de Pedreguer"
         }
       ],
       "bloques": [
