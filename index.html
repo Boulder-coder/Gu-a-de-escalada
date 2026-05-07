@@ -228,6 +228,12 @@
             text-align: center;
             font-style: italic;
         }
+        .mapa-single {
+            margin-bottom: 12px;
+        }
+        .mapa-single:last-child {
+            margin-bottom: 0;
+        }
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000;
             display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s;
@@ -737,19 +743,19 @@
             return resultados;
         }
 
-        function cargarMapaInteractivo(sector, mapaIndex = 0) {
-            let mapaBase = sector.mapa;
-            if (mapaIndex === 1 && sector.mapa_2) mapaBase = sector.mapa_2;
-            if (mapaIndex === 2 && sector.mapa_3) mapaBase = sector.mapa_3;
-            
-            if (!mapaBase) return '<div class="info-sector"><p>No hay mapa disponible</p></div>';
+        function cargarMapaIndividual(sector, mapaBase, incluirFooter = false) {
+            if (!mapaBase) return '';
             
             const mapaUrl = `${mapaBase}.jpg`;
             const svgMapaUrl = `${mapaBase}.svg?v=${Date.now()}`;
-            const containerId = `mapaContainer_${Date.now()}_${mapaIndex}`;
-            let html = `<div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
+            const containerId = `mapaContainer_${Date.now()}_${Math.random()}`;
+            let html = `<div class="mapa-single"><div id="${containerId}" class="croquis-viewer" style="position: relative;">`;
             html += `<img src="${mapaUrl}" style="width:100%; height:auto; display:block;" onerror="this.src='https://picsum.photos/id/20/800/600'">`;
             html += `<object id="mapaObject_${containerId}" data="${svgMapaUrl}" type="image/svg+xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto;"></object></div>`;
+            if (incluirFooter) {
+                html += `<div class="mapa-footer">📍 Toca sobre los aparcamientos (P1, P2, P3...) para ver su ubicación en Google Maps</div>`;
+            }
+            html += `</div>`;
             
             setTimeout(() => {
                 const objectTag = document.getElementById(`mapaObject_${containerId}`);
@@ -767,7 +773,7 @@
                                 if (el.style) el.style.opacity = '0';
                             }
                         });
-                        if (sector.info && sector.info.parking) {
+                        if (sector.info && sector.info.parking && incluirFooter) {
                             const parkings = sector.info.parking;
                             for (let i = 0; i < parkings.length; i++) {
                                 const parkingLabel = `parking_${i+1}`;
@@ -787,17 +793,17 @@
         function cargarTodosLosMapas(sector) {
             let mapasHtml = '';
             
-            // Mapa 1 (principal)
+            // Mapa 1 (principal) - CON pie de foto
             if (sector.mapa) {
-                mapasHtml += cargarMapaInteractivo(sector, 0);
+                mapasHtml += cargarMapaIndividual(sector, sector.mapa, true);
             }
-            // Mapa 2
+            // Mapa 2 - SIN pie de foto
             if (sector.mapa_2) {
-                mapasHtml += cargarMapaInteractivo(sector, 1);
+                mapasHtml += cargarMapaIndividual(sector, sector.mapa_2, false);
             }
-            // Mapa 3
+            // Mapa 3 - SIN pie de foto
             if (sector.mapa_3) {
-                mapasHtml += cargarMapaInteractivo(sector, 2);
+                mapasHtml += cargarMapaIndividual(sector, sector.mapa_3, false);
             }
             
             return mapasHtml;
@@ -1016,7 +1022,6 @@
                         <div class="grafica-container info-section-spacing"><div class="grafica-titulo">📊 Distribución de grados</div><canvas id="grafica-sector"></canvas></div>
                         <div class="info-sector info-section-spacing" id="mapasContainer">
                             ${mapasHtml}
-                            <div class="mapa-footer">📍 Toca sobre los aparcamientos (P1, P2, P3...) para ver su ubicación en Google Maps</div>
                         </div>
                     </div>
                     <div id="tab-croquis" class="tab-pane" style="display: ${currentTab === 'croquis' ? 'block' : 'none'}">${croquisListHtml}</div>
