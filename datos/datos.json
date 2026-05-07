@@ -5,6 +5,8 @@
       "municipio": "Buñol",
       "portada": "fotos/MLC_PORTADA",
       "mapa": "fotos/MLC_MAPA",
+      "mapa_2": "",
+      "mapa_3": "",
       "descripcion": "El <strong>Monte La Cruz</strong> es un sector ubicado en la cima del característico monte buñolero. Se trata de un sector agradable, con vistas panorámicas del pueblo, donde acostumbra a soplar brisa. Ideal para una tarde de verano o una mañana de invierno. // La mayoría de bloques se encuentran en la cara <strong>Este (B1-B9)</strong>, aunque también diponemos de un abanico de piedra pinchosa aún por abrir en su cara <strong>Norte (B10)</strong>, y un bloque solitario entre los <strong>Bancales de la cara sur (B11)</strong>. Son bloques de poca estatura (rondan los 2,50-3,00m), con poco desplome, pero canto pequeño. Abundan los sextos grados: perfecto para iniciarse en roca si ya llevas algo de rodaje en rocódromo.",
       "info": {
         "parking": [
@@ -722,6 +724,8 @@
       "municipio": "Chiva",
       "portada": "fotos/BG_PORTADA",
       "mapa": "fotos/BG_MAPA",
+      "mapa_2": "fotos/BG_MAPA_2",
+      "mapa_3": "fotos/BG_MAPA_3",
       "descripcion": "",
       "info": {
         "parking": [
